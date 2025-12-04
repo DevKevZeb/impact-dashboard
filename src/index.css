@@ -1,12 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@import "@fontsource-variable/dm-sans";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "DM Sans Variable", sans-serif;
   line-height: 1.5;
-  font-weight: 400;
+
 
   color-scheme: light dark;
   
@@ -148,4 +150,10 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.input-default {
+    @apply w-full px-3 py-2 rounded-lg border border-gray-200 text-gray-900
+           focus:outline-none focus:ring-2 focus:ring-sky-600
+           placeholder:text-gray-500 transition;
 }
