@@ -1,0 +1,5 @@
+@reference "tailwindcss";
+
+.modal-title {
+    @apply text-xl font-semibold text-[#1E3291] bg-clip-text;
+}
