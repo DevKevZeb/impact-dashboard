@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { MainLayout } from "@/shared/components/layout/MainLayout";
 import { DashboardPage } from "@/features/dashboard/pages/DashboardPage";
 import { SdgsPage } from "@/features/sdgs/pages/SdgsPage";
+import { ProgramStatesPage } from "@/features/program-states/pages/ProgramStatesPage";
 import { PlaceholderPage } from "@/shared/components/PlaceholderPage";
 
 export function AppRouter() {
@@ -15,6 +16,7 @@ export function AppRouter() {
             <Route path="countries" element={<PlaceholderPage title="Countries" description="Manage countries catalog" />} />
             <Route path="agencies" element={<PlaceholderPage title="Agencies" description="Manage agencies" />} />
             <Route path="sdgs" element={<SdgsPage />} />
+            <Route path="program-states" element={<ProgramStatesPage />} />
         </Route>
 
         {/* Programs & Projects Routes */}
