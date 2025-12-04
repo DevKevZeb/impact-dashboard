@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { MainLayout } from "@/shared/components/layout/MainLayout";
 import { DashboardPage } from "@/features/dashboard/pages/DashboardPage";
 import { PlaceholderPage } from "@/shared/components/PlaceholderPage";
+import AgencyListPage from "@/features/agency/pages/AgencyListPage";
 
 export function AppRouter() {
     return (
@@ -12,7 +13,7 @@ export function AppRouter() {
         {/* Configuration Routes */}
         <Route path="config">
             <Route path="countries" element={<PlaceholderPage title="Countries" description="Manage countries catalog" />} />
-            <Route path="agencies" element={<PlaceholderPage title="Agencies" description="Manage agencies" />} />
+            <Route path="agencies" element={<AgencyListPage/>} />
             <Route path="sdgs" element={<PlaceholderPage title="SDGs" description="Manage Sustainable Development Goals" />} />
         </Route>
 
