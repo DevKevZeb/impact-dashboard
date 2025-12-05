@@ -13,7 +13,7 @@ export function useUpdateAgency() {
       qc.invalidateQueries({ queryKey: ["agencies"] });
     },
     onError: (err: any) => {
-      const message = err?.response?.data?.message ?? err?.message ?? "Error al actualizar";
+      const message = err?.response?.data?.message ?? err?.message ?? "Error updating";
       toast.error(message);
     },
   });

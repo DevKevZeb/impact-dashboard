@@ -34,14 +34,20 @@ export async function createAgency(dto: CreateAgencyDto): Promise<Agency> {
     toast.success(data.message);
 
     return mapAgency(data.data ?? data);
-  } catch(error: any){
-    const message = error.response?.data?.message ??
-    "Error creating Agency";
+  } catch (error: any) {
+    const status = error.response?.status;
 
-    toast.error(message);
+    if (status === 422 && error.response?.data?.errors) {
+      const errors = error.response.data.errors as Record<string, string[]>;
+      Object.values(errors).flat().forEach((msg: string) => {
+        toast.error('Error', { description: msg });
+      });
+    } 
+
     throw error;
   }
-}
+
+} 
 
 export async function updateAgency( id: number, dto: UpdateAgencyDto): Promise<Agency> {
   try{
@@ -54,14 +60,18 @@ export async function updateAgency( id: number, dto: UpdateAgencyDto): Promise<A
     toast.success(data.message);
     
     return mapAgency(data.data ?? data);
-  } catch(error: any){
-    const message = error.response?.data?.message ??
-    "Error updating Agency";
+  } catch (error: any) {
+    const status = error.response?.status;
 
-    toast.error(message);
+    if (status === 422 && error.response?.data?.errors) {
+      const errors = error.response.data.errors as Record<string, string[]>;
+      Object.values(errors).flat().forEach((msg: string) => {
+        toast.error('Error', { description: msg });
+      });
+    } 
+
     throw error;
   }
-  
 }
 
 
