@@ -90,16 +90,16 @@ export function ProgramStateCreateDialog({
           <DialogFooter>
             <Button
               type="button"
-              variant="outline"
               onClick={handleClose}
               disabled={isSubmitting}
+              className="btn-modal-cancel"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600 text-white"
+              className="btn-modal-submit"
             >
               {isSubmitting ? "Creating..." : "Create State"}
             </Button>

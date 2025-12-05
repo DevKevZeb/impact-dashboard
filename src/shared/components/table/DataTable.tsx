@@ -45,7 +45,7 @@ export function DataTable({ children, className = "" }: DataTableProps) {
 
 export function DataTableHeader({ children }: DataTableHeaderProps) {
   return (
-    <thead className="bg-gradient-to-r from-sky-50 to-emerald-50 border-b-2 border-sky-200">
+    <thead className="bg-[#1E3291] border-b border-gray-100">
       {children}
     </thead>
   );
@@ -58,7 +58,7 @@ export function DataTableBody({ children }: DataTableBodyProps) {
 export function DataTableRow({ children, onClick }: DataTableRowProps) {
   return (
     <tr
-      className="border-b border-gray-200 hover:bg-sky-50/50 transition-all duration-200 group"
+      className="border-b border-gray-100 hover:bg-sky-100 transition"
       onClick={onClick}
     >
       {children}
@@ -77,18 +77,18 @@ export function DataTableHead({
     if (!sortable) return null;
 
     if (sortDirection === "asc") {
-      return <ArrowUp className="w-4 h-4 text-emerald-600" />;
+      return <ArrowUp className="w-4 h-4 text-white" />;
     }
     if (sortDirection === "desc") {
-      return <ArrowDown className="w-4 h-4 text-emerald-600" />;
+      return <ArrowDown className="w-4 h-4 text-white" />;
     }
-    return <ArrowUpDown className="w-4 h-4 text-gray-400" />;
+    return <ArrowUpDown className="w-4 h-4 text-white/70" />;
   };
 
   return (
     <th
-      className={`py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide ${
-        sortable ? "cursor-pointer select-none hover:bg-sky-100/50 transition-colors" : ""
+      className={`px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wide ${
+        sortable ? "cursor-pointer select-none hover:bg-[#142161] transition-colors" : ""
       } ${className}`}
       onClick={sortable ? onSort : undefined}
     >
@@ -101,5 +101,5 @@ export function DataTableHead({
 }
 
 export function DataTableCell({ children, className = "" }: DataTableCellProps) {
-  return <td className={`py-4 ${className}`}>{children}</td>;
+  return <td className={`px-4 py-3 text-sm text-gray-700 ${className}`}>{children}</td>;
 }

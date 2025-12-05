@@ -4,6 +4,7 @@ import type {
   ProgramStateCreateInput,
   ProgramStateUpdateInput,
   ProgramStatesResponse,
+  ProgramStatesPaginatedResponse,
 } from "../types/programState.types";
 
 const PROGRAM_STATES_ENDPOINT = "/program_states";
@@ -14,6 +15,21 @@ export const programStateService = {
       PROGRAM_STATES_ENDPOINT
     );
     return data.data.program_states;
+  },
+
+  getPaginated: async (page: number, perPage: number) => {
+    const { data } = await apiClient.get<ApiResponse<ProgramStatesPaginatedResponse>>(
+      `${PROGRAM_STATES_ENDPOINT}?page=${page}&per_page=${perPage}`
+    );
+    return {
+      programStates: data.data.program_states,
+      pagination: {
+        current_page: data.data.current_page,
+        last_page: data.data.last_page,
+        per_page: data.data.per_page,
+        total: data.data.total,
+      },
+    };
   },
 
   getById: async (id: number): Promise<ProgramState> => {

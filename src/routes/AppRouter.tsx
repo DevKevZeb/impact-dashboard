@@ -15,11 +15,9 @@ export function AppRouter() {
         {/* Configuration Routes */}
         <Route path="config">
             <Route path="countries" element={<PlaceholderPage title="Countries" description="Manage countries catalog" />} />
-            <Route path="agencies" element={<PlaceholderPage title="Agencies" description="Manage agencies" />} />
-            <Route path="sdgs" element={<PlaceholderPage title="SDGs" description="Manage Sustainable Development Goals" />} />
-            <Route path="program-states" element={<ProgramStatesPage />} />
             <Route path="agencies" element={<AgencyListPage/>} />
-            
+            <Route path="sdgs" element={<SdgsPage />} />
+            <Route path="program-states" element={<ProgramStatesPage />} />
         </Route>
 
         {/* Programs & Projects Routes */}

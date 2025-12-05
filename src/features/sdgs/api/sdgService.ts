@@ -1,5 +1,5 @@
 import { apiClient, type ApiResponse } from "@/shared/lib/axios";
-import type { Sdg, SdgCreateInput, SdgUpdateInput, SdgListResponse } from "../types/sdg.types";
+import type { Sdg, SdgCreateInput, SdgUpdateInput, SdgListResponse, SdgPaginatedResponse } from "../types/sdg.types";
 
 const SDGS_ENDPOINT = "/sdgs";
 
@@ -13,6 +13,25 @@ export const sdgService = {
       SDGS_ENDPOINT
     );
     return data.data.sdgs;
+  },
+
+  /**
+   * GET /api/v1/sdgs?page=1&per_page=10
+   * Get paginated SDGs
+   */
+  getPaginated: async (page: number, perPage: number) => {
+    const { data } = await apiClient.get<ApiResponse<SdgPaginatedResponse>>(
+      `${SDGS_ENDPOINT}?page=${page}&per_page=${perPage}`
+    );
+    return {
+      sdgs: data.data.sdgs,
+      pagination: {
+        current_page: data.data.current_page,
+        last_page: data.data.last_page,
+        per_page: data.data.per_page,
+        total: data.data.total,
+      },
+    };
   },
 
   /**

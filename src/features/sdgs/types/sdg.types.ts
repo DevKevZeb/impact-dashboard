@@ -32,3 +32,14 @@ export interface SdgListResponse {
   sdgs: Sdg[];
   total: number;
 }
+
+/**
+ * API response for paginated SDG list
+ */
+export interface SdgPaginatedResponse {
+  sdgs: Sdg[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}

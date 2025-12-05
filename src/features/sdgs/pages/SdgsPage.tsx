@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useSdgs } from "../api/sdgQueries";
+import { useState } from "react";
+import { useSdgsPaginated } from "../api/sdgQueries";
 import { SdgTableRow } from "../components/SdgTableRow";
 import { SdgUploadDialog } from "../components/SdgUploadDialog";
 import { SdgEditDialog } from "../components/SdgEditDialog";
@@ -16,31 +16,25 @@ import { Button } from "@/components/ui/button";
 import { Plus, Loader2, FolderOpen, Search, List } from "lucide-react";
 import type { Sdg } from "../types/sdg.types";
 
-const ITEMS_PER_PAGE = 10;
-
 export function SdgsPage() {
-  const { data: sdgs, isLoading, error } = useSdgs();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage] = useState(10);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedSdg, setSelectedSdg] = useState<Sdg | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data, isLoading, error } = useSdgsPaginated(currentPage, perPage);
 
   const handleEdit = (sdg: Sdg) => {
     setSelectedSdg(sdg);
     setEditDialogOpen(true);
   };
 
-  const filteredSdgs = useMemo(() => {
-    return sdgs?.filter((sdg) =>
-      sdg.filename.toLowerCase().includes(searchTerm.toLowerCase())
-    ) || [];
-  }, [sdgs, searchTerm]);
-
-  // Sorting
+  // Sorting on current page data
   const { sortedData, sortConfig, requestSort } = useTableSort<Sdg>(
-    filteredSdgs,
-    "id" // default sort by ID
+    data?.sdgs || [],
+    "id"
   );
 
   // Reset to page 1 when search term changes
@@ -48,12 +42,6 @@ export function SdgsPage() {
     setSearchTerm(value);
     setCurrentPage(1);
   };
-
-  // Pagination calculations
-  const totalPages = Math.ceil(sortedData.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedSdgs = sortedData.slice(startIndex, endIndex);
 
   if (isLoading) {
     return (
@@ -87,10 +75,7 @@ export function SdgsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-lg">
-              <List className="w-6 h-6 text-white" />
-            </div>
+          <h1 className="page-title">
             SDGs
           </h1>
           <p className="text-gray-500 mt-2">
@@ -101,7 +86,7 @@ export function SdgsPage() {
         <Button
           onClick={() => setUploadDialogOpen(true)}
           size="lg"
-          className="bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600 shadow-lg hover:shadow-xl transition-all"
+          className="btn-secondary"
         >
           <Plus className="w-5 h-5 mr-2" />
           Upload SDG
@@ -126,23 +111,22 @@ export function SdgsPage() {
             <List className="w-5 h-5 text-white" />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-sky-700 whitespace-nowrap">Total SDGs:</span>
-            <span className="text-xl font-bold text-sky-900">{sdgs?.length || 0}</span>
+            <span className="stat-label whitespace-nowrap">Total SDGs:</span>
+            <span className="stat-number">{data?.pagination.total || 0}</span>
           </div>
         </div>
       </div>
 
       {/* SDG List */}
-      {filteredSdgs.length > 0 ? (
+      {data && data.sdgs.length > 0 ? (
         <>
           <DataTable>
             <DataTableHeader>
               <tr>
-                <DataTableHead className="pl-8 pr-6 w-40">
+                <DataTableHead>
                   Preview
                 </DataTableHead>
                 <DataTableHead
-                  className="px-6 w-32"
                   sortable
                   sortDirection={sortConfig.key === "id" ? sortConfig.direction : null}
                   onSort={() => requestSort("id")}
@@ -150,32 +134,31 @@ export function SdgsPage() {
                   ID
                 </DataTableHead>
                 <DataTableHead
-                  className="pl-6"
                   sortable
                   sortDirection={sortConfig.key === "filename" ? sortConfig.direction : null}
                   onSort={() => requestSort("filename")}
                 >
                   Filename
                 </DataTableHead>
-                <DataTableHead className="pr-8 text-right w-36">
+                <DataTableHead>
                   Actions
                 </DataTableHead>
               </tr>
             </DataTableHeader>
             <DataTableBody>
-              {paginatedSdgs.map((sdg) => (
+              {sortedData.map((sdg) => (
                 <SdgTableRow key={sdg.id} sdg={sdg} onEdit={handleEdit} />
               ))}
             </DataTableBody>
           </DataTable>
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {data.pagination.last_page > 1 && (
             <TablePagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={sortedData.length}
-              itemsPerPage={ITEMS_PER_PAGE}
+              currentPage={data.pagination.current_page}
+              totalPages={data.pagination.last_page}
+              totalItems={data.pagination.total}
+              itemsPerPage={data.pagination.per_page}
               onPageChange={setCurrentPage}
             />
           )}

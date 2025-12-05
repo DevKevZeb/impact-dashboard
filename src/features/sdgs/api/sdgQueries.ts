@@ -35,6 +35,17 @@ export function useSdgs() {
 }
 
 /**
+ * Hook to get paginated SDGs
+ */
+export function useSdgsPaginated(page: number, perPage: number) {
+  return useQuery({
+    queryKey: [...sdgKeys.lists(), page, perPage],
+    queryFn: () => sdgService.getPaginated(page, perPage),
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+/**
  * Hook to get SDG by ID
  */
 export function useSdg(id: number) {

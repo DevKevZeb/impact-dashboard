@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Search, Plus, Loader2, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useProgramStates } from "../api/programStateQueries";
+import { useProgramStatesPaginated } from "../api/programStateQueries";
 import { ProgramStateTableRow } from "../components/ProgramStateTableRow";
 import { ProgramStateCreateDialog } from "../components/ProgramStateCreateDialog";
 import { ProgramStateEditDialog } from "../components/ProgramStateEditDialog";
@@ -16,40 +16,22 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import { useTableSort } from "@/shared/hooks/useTableSort";
 import type { ProgramState } from "../types/programState.types";
 
-const ITEMS_PER_PAGE = 10;
-
 export function ProgramStatesPage() {
-  const { data: programStates, isLoading, error } = useProgramStates();
-  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [perPage] = useState(10); // Fixed items per page for now
+  const [searchTerm, setSearchTerm] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedProgramState, setSelectedProgramState] =
     useState<ProgramState | null>(null);
 
-  // Filter program states based on search
-  const filteredProgramStates = useMemo(() => {
-    if (!programStates) return [];
-    if (!searchTerm.trim()) return programStates;
+  const { data, isLoading, error } = useProgramStatesPaginated(currentPage, perPage);
 
-    const lowerSearch = searchTerm.toLowerCase();
-    return programStates.filter((state) =>
-      state.name.toLowerCase().includes(lowerSearch)
-    );
-  }, [programStates, searchTerm]);
-
-  // Sorting
+  // Sorting on current page data
   const { sortedData, sortConfig, requestSort } = useTableSort<ProgramState>(
-    filteredProgramStates,
+    data?.programStates || [],
     "id" // default sort by ID
   );
-
-  // Pagination calculations
-  const totalPages = Math.ceil(sortedData.length / ITEMS_PER_PAGE);
-  const paginatedProgramStates = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return sortedData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [sortedData, currentPage]);
 
   // Reset to page 1 when search changes
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,10 +76,7 @@ export function ProgramStatesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-lg">
-              <Tag className="w-6 h-6 text-white" />
-            </div>
+          <h1 className="page-title">
             Program States
           </h1>
           <p className="text-gray-500 mt-2">
@@ -108,7 +87,7 @@ export function ProgramStatesPage() {
         <Button
           onClick={() => setIsCreateDialogOpen(true)}
           size="lg"
-          className="bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600 shadow-lg hover:shadow-xl transition-all"
+          className="btn-secondary"
         >
           <Plus className="w-5 h-5 mr-2" />
           New State
@@ -133,20 +112,19 @@ export function ProgramStatesPage() {
             <Tag className="w-5 h-5 text-white" />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-sky-700 whitespace-nowrap">Total States:</span>
-            <span className="text-xl font-bold text-sky-900">{programStates?.length || 0}</span>
+            <span className="stat-label whitespace-nowrap">Total States:</span>
+            <span className="stat-number">{data?.pagination.total || 0}</span>
           </div>
         </div>
       </div>
 
       {/* Table */}
-      {filteredProgramStates.length > 0 ? (
+      {data && data.programStates.length > 0 ? (
         <>
           <DataTable>
             <DataTableHeader>
               <tr>
                 <DataTableHead
-                  className="pl-8 pr-6 w-32"
                   sortable
                   sortDirection={sortConfig.key === "id" ? sortConfig.direction : null}
                   onSort={() => requestSort("id")}
@@ -154,20 +132,19 @@ export function ProgramStatesPage() {
                   ID
                 </DataTableHead>
                 <DataTableHead
-                  className="pl-6"
                   sortable
                   sortDirection={sortConfig.key === "name" ? sortConfig.direction : null}
                   onSort={() => requestSort("name")}
                 >
                   State Name
                 </DataTableHead>
-                <DataTableHead className="pr-8 text-right w-36">
+                <DataTableHead>
                   Actions
                 </DataTableHead>
               </tr>
             </DataTableHeader>
             <DataTableBody>
-              {paginatedProgramStates.map((programState) => (
+              {sortedData.map((programState) => (
                 <ProgramStateTableRow
                   key={programState.id}
                   programState={programState}
@@ -178,13 +155,15 @@ export function ProgramStatesPage() {
           </DataTable>
 
           {/* Pagination */}
-          <TablePagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={sortedData.length}
-            itemsPerPage={ITEMS_PER_PAGE}
-            onPageChange={setCurrentPage}
-          />
+          {data.pagination.last_page > 1 && (
+            <TablePagination
+              currentPage={data.pagination.current_page}
+              totalPages={data.pagination.last_page}
+              totalItems={data.pagination.total}
+              itemsPerPage={data.pagination.per_page}
+              onPageChange={setCurrentPage}
+            />
+          )}
         </>
       ) : (
         <EmptyState

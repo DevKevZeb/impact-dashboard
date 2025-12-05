@@ -3,3 +3,15 @@
 .modal-title {
     @apply text-xl font-semibold text-[#1E3291] bg-clip-text;
 }
+
+.page-title {
+    @apply text-3xl font-bold tracking-tight text-gray-900;
+}
+
+.stat-number {
+    @apply text-xl font-bold text-[#1E3291];
+}
+
+.stat-label {
+    @apply text-sm text-gray-600;
+}

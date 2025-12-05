@@ -42,6 +42,15 @@ export function useProgramStates(): UseQueryResult<ProgramState[], Error> {
   });
 }
 
+// Get paginated program states
+export function useProgramStatesPaginated(page: number, perPage: number) {
+  return useQuery({
+    queryKey: [...programStateKeys.lists(), page, perPage],
+    queryFn: () => programStateService.getPaginated(page, perPage),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
 // Get single program state by ID
 export function useProgramState(
   id: number

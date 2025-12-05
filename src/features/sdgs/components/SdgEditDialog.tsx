@@ -61,16 +61,16 @@ export function SdgEditDialog({ sdg, open, onOpenChange }: SdgEditDialogProps) {
           <div className="flex justify-end gap-2 pt-4">
             <Button
               type="button"
-              variant="outline"
               onClick={handleClose}
               disabled={isPending}
+              className="btn-modal-cancel"
             >
               Cancel
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={!selectedFile || isPending}
-              className="bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600"
+              className="btn-modal-submit"
             >
               {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               {isPending ? "Updating..." : "Update SDG"}

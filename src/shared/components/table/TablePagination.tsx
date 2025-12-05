@@ -73,13 +73,13 @@ export function TablePagination({
             return (
               <Button
                 key={pageNum}
-                variant={currentPage === pageNum ? "default" : "outline"}
+                variant="outline"
                 size="sm"
                 onClick={() => onPageChange(pageNum)}
                 className={
                   currentPage === pageNum
-                    ? "bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600"
-                    : ""
+                    ? "pagination-page-active"
+                    : "pagination-page-inactive"
                 }
               >
                 {pageNum}

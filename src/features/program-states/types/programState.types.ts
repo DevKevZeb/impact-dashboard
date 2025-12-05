@@ -17,3 +17,11 @@ export interface ProgramStatesResponse {
   program_states: ProgramState[];
   total: number;
 }
+
+export interface ProgramStatesPaginatedResponse {
+  program_states: ProgramState[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
