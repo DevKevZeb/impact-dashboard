@@ -43,29 +43,29 @@ export default function AgencyTable({ agencies, pagination, page, perPage, setPa
         </thead>
 
         <tbody>
-          {agencies.map((a) => (
-            <tr key={a.id} className="table-row">
-              <td className="table-cell">{a.name}</td>
+          {agencies.map((agency) => (
+            <tr key={agency.id} className="table-row">
+              <td className="table-cell">{agency.name}</td>
               <td className="table-cell">
-                <a href={a.url} target="_blank" className="text-blue-600 underline">
-                  {a.url}
+                <a href={agency.url} target="_blank" className="text-blue-600 underline">
+                  {agency.url}
                 </a>
               </td>
               <td className="table-cell">
-                <span className={a.isApproved ? "badge-yes" : "badge-no"}>
-                  {a.isApproved ? "Yes" : "No"}
+                <span className={agency.isApproved ? "badge-yes" : "badge-no"}>
+                  {agency.isApproved ? "Yes" : "No"}
                 </span>
               </td>
 
               <td className="table-cell space-x-2">
-                <button className="btn-edit-table" onClick={() => onEdit(a)}>
+                <button className="btn-edit-table" onClick={() => onEdit(agency)}>
                   <SquarePen className="w-4 h-4" />
                 </button>
-                <button className="btn-delete-table" onClick={() => onDelete(a)}>
+                <button className="btn-delete-table" onClick={() => onDelete(agency)}>
                   <Trash2 className="w-4 h-4" />
                 </button>
-                {!a.isApproved && (
-                  <button className="btn-tertiary-table" onClick={() => onApprove(a)}>
+                {!agency.isApproved && (
+                  <button className="btn-tertiary-table" onClick={() => onApprove(agency)}>
                     <CheckCheck className="w-4 h-4" />
                   </button>
                 )}
@@ -106,7 +106,7 @@ export default function AgencyTable({ agencies, pagination, page, perPage, setPa
           {agencies.length === 0 && (
             <tr>
               <td colSpan={4} className="px-4 py-6 text-center text-gray-500">
-                No hay agencias registradas
+                There are no registered agencies
               </td>
             </tr>
           )}

@@ -22,9 +22,8 @@ export default function AgencyListPage() {
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
 
   const handleSubmit = async (formData: CreateAgencyDto) => {
-    if (selectedAgency) {
-      await updateAgency({ id: selectedAgency.id, dto: formData });
-    } else {
+    if (selectedAgency) await updateAgency({ id: selectedAgency.id, dto: formData });
+    else {
       await createAgency(formData);
       setPage(1);
     }
@@ -52,10 +51,8 @@ export default function AgencyListPage() {
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl text-[#1E3291] font-bold">Agencies</h1>
-        <button onClick={handleOpenCreate} className="btn-secondary">
-          + CREATE AGENCY
-        </button>
+        <h1 className="label-default">Agencies</h1>
+        <button onClick={handleOpenCreate} className="btn-secondary">+ CREATE </button>
       </div>
 
 
