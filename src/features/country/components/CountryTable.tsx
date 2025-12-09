@@ -21,7 +21,7 @@ interface Props {
 }
 
 export default function CountryTable({ countries, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete} : Props) {
-    if(!pagination) return null;
+    if(!pagination) return <div>Enter the pagination</div>;
 
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newPerPage = Number(e.target.value);
@@ -50,7 +50,7 @@ export default function CountryTable({ countries, pagination, page, perPage, set
                                 <button className="btn-edit-table" onClick={() => onEdit(country)}>
                                     <SquarePen className="w-4 h-4"/>
                                 </button>
-                                <button className="btn-delete-table" onClick={() => onEdit(country)}>
+                                <button className="btn-delete-table" onClick={() => onDelete(country)}>
                                     <Trash2 className="w-4 h-4"/>
                                 </button>
                             </td>

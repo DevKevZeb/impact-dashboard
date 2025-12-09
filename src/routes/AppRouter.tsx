@@ -4,6 +4,9 @@ import { DashboardPage } from "@/features/dashboard/pages/DashboardPage";
 import { PlaceholderPage } from "@/shared/components/PlaceholderPage";
 import AgencyListPage from "@/features/agency/pages/AgencyListPage";
 import CountryListPage from "@/features/country/pages/CountryListPage";
+import CountryKpaListPage from "@/features/CountryKpa/pages/CountryKpaListPage";
+import KpasListPage from "@/features/kpa/pages/KpasListPage";
+import InfoCountryKpaPage from "@/features/CountryKpaInfo/pages/InfoCountryKpaPage";
 
 export function AppRouter() {
     return (
@@ -16,11 +19,14 @@ export function AppRouter() {
             <Route path="countries" element={<CountryListPage/>} />
             <Route path="agencies" element={<AgencyListPage/>} />
             <Route path="sdgs" element={<PlaceholderPage title="SDGs" description="Manage Sustainable Development Goals" />} />
+            <Route path="kpas" element={<KpasListPage/>} />
         </Route>
 
         {/* Programs & Projects Routes */}
         <Route path="programs" element={<PlaceholderPage title="Programs" description="Manage programs" />} />
         <Route path="projects" element={<PlaceholderPage title="Projects" description="Manage projects" />} />
+        <Route path="country-kpa" element={<CountryKpaListPage/>} />
+        <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
         
         {/* Resources Routes */}
         <Route path="resources">

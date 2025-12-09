@@ -63,3 +63,16 @@ export async function updateCountry(id: number, dto: UpdateCountryDTO): Promise<
     throw error;
   }
 }
+
+export async function fetchSearchCountries(search: string, page: number){
+  const { data } = await apiClient.get(`/countries?serch=${encodeURIComponent(search)}&page=${page}&per_page=${20}`);
+  return {
+    countries: mapCountries(data.data.countries),
+    pagination: {
+      current_page: data.data.current_page,
+      last_page: data.data.last_page,
+      per_page: data.data.per_page,
+      total: data.data.total
+    }
+  }
+}

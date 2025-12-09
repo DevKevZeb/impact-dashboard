@@ -35,7 +35,7 @@ const menuItems: MenuItem[] = [
     children: [
         { title: "Admin Dashboard", path: "/", icon: LinkIcon },
         { title: "Project Dashboard", path: "/dashboard", icon: LinkIcon },
-        { title: "Country Dashboard", path: "/dashboard", icon: LinkIcon },
+        { title: "Country Dashboard", path: "/country-kpa", icon: LinkIcon },
     ],
     },
     {
@@ -44,6 +44,7 @@ const menuItems: MenuItem[] = [
     children: [
         { title: "Countries", path: "/config/countries", icon: Globe },
         { title: "Agencies", path: "/config/agencies", icon: Building2 },
+        { title: "KPAs", path: "/config/kpas", icon: Building2 },
         { title: "SDGs", path: "/config/sdgs", icon: Flag },
     ],
     },
