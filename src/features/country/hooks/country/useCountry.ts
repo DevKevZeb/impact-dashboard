@@ -1,11 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCountry } from "../../services/country.api";
+import { fetchSearchCountries, getCountry } from "../../services/country.api";
 
 export function useCountry(id: number){
     return useQuery({
-        queryKey: ["agency", id],
+        queryKey: ["country", id],
         queryFn: () => getCountry(id),
         enabled: !!id
     })
 
+}
+
+export function useSearchCountries(search: string, page: number){
+    return useQuery({
+        queryKey: ["search-countries", search, page],
+        queryFn: () => fetchSearchCountries(search, page)
+    })
 }

@@ -1,47 +1,42 @@
 @reference "tailwindcss";
 
 .btn-primary {
-  @apply px-4 py-2 rounded-lg font-medium text-white bg-[#61C8E7] hover:bg-[#4ea4be] transition;
+  @apply cursor-pointer px-4 py-2 rounded-lg font-medium text-white bg-[#61C8E7] hover:bg-[#4ea4be] transition;
 }
 
 .btn-secondary {
-  @apply px-4 py-2 rounded-lg font-medium text-white bg-[#1E3291] hover:bg-[#142161] transition;
+  @apply cursor-pointer px-4 py-2 rounded-lg font-medium text-white bg-[#1E3291] hover:bg-[#142161] transition;
 
 }
 .btn-tertiary{
-  @apply px-4 py-2 rounded-lg font-medium text-white  bg-[#0082BE] hover:bg-[#016594] transition;
+  @apply cursor-pointer px-4 py-2 rounded-lg font-medium text-white  bg-[#0082BE] hover:bg-[#016594] transition;
 }
 
 .btn-danger{
-  @apply px-4 py-2 rounded-lg font-medium text-white bg-red-600 hover:bg-red-700 transition;
+  @apply cursor-pointer px-4 py-2 rounded-lg font-medium text-white bg-red-600 hover:bg-red-700 transition;
 }
 
 .btn-edit-table {
-  @apply px-2 py-1 text-xs rounded bg-blue-600 hover:bg-blue-700 text-white transition;
+  @apply cursor-pointer px-2 py-1 text-xs rounded bg-blue-600 hover:bg-blue-700 text-white transition;
 }
 
+
+.btn-warning-table {
+  @apply cursor-pointer px-2 py-1 text-xs rounded bg-yellow-500 hover:bg-yellow-600 text-white transition;
+}
 .btn-delete-table{
-  @apply px-2 py-1 text-xs rounded bg-red-600 hover:bg-red-800 text-white transition;
+  @apply cursor-pointer px-2 py-1 text-xs rounded bg-red-600 hover:bg-red-800 text-white transition;
 }
 
 .btn-primary-table {
-  @apply px-2 py-1 text-xs rounded transition bg-[#61C8E7] hover:bg-[#4ea4be] text-white;
+  @apply cursor-pointer px-2 py-1 text-xs rounded transition bg-[#61C8E7] hover:bg-[#4ea4be] text-white;
 }
 
 .btn-secondary-table {
-  @apply px-2 py-1 text-xs rounded transition bg-[#1E3291] hover:bg-[#182774] text-white;
+  @apply cursor-pointer px-2 py-1 text-xs rounded transition bg-[#1E3291] hover:bg-[#182774] text-white;
 
 }
 
 .btn-tertiary-table{
-  @apply px-2 py-1 text-xs rounded bg-[#0082BE] hover:bg-[#006a9b] text-white transition;
-}
-
-/* Modal buttons */
-.btn-modal-submit {
-  @apply px-4 py-2 rounded-lg font-medium text-white bg-[#1E3291] hover:bg-[#142161] transition;
-}
-
-.btn-modal-cancel {
-  @apply px-4 py-2 rounded-lg font-medium text-white bg-red-600 hover:bg-red-700 transition;
+  @apply cursor-pointer px-2 py-1 text-xs rounded bg-[#0082BE] hover:bg-[#006a9b] text-white transition;
 }

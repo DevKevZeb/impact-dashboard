@@ -50,9 +50,18 @@ export default function AgencyListPage() {
 
   return (
     <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col justify-between">
         <h1 className="label-default">Agencies</h1>
-        <button onClick={handleOpenCreate} className="btn-secondary">+ CREATE </button>
+        <div className="flex py-6 space-x-3">
+          <input
+            type="text"
+            placeholder="Search by name..."
+            //value={search}
+            //onChange={handleSearchChange}
+            className="input-default w-auto"
+          />
+          <button onClick={handleOpenCreate} className="btn-secondary">CREATE</button>
+        </div>
       </div>
 
 
