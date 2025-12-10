@@ -162,11 +162,11 @@ export function ProgramCreateDialog({
               Banner Image (Optional)
             </label>
             {previewUrl ? (
-              <div className="relative">
+              <div className="relative w-full h-32 bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center overflow-hidden">
                 <img
                   src={previewUrl}
                   alt="Banner preview"
-                  className="w-full h-32 object-cover rounded-lg border border-gray-300"
+                  className="max-w-full max-h-full object-contain"
                 />
                 <button
                   type="button"

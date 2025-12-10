@@ -1,17 +1,24 @@
-import { SquarePen, Trash2 } from "lucide-react";
+import { Eye, SquarePen, Trash2 } from "lucide-react";
 import type { Program } from "../types/program.types";
 import { DataTableRow, DataTableCell } from "@/shared/components/table";
 import { toast } from "sonner";
 
 interface ProgramTableRowProps {
   program: Program;
+  index: number;
   onEdit: (program: Program) => void;
+  onView: (program: Program) => void;
 }
 
-export function ProgramTableRow({ program, onEdit }: ProgramTableRowProps) {
+export function ProgramTableRow({ program, index, onEdit, onView }: ProgramTableRowProps) {
   const bannerUrl = program.banner_img
     ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '')}/storage/${program.banner_img}`
     : null;
+
+  const handleView = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onView(program);
+  };
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -28,16 +35,18 @@ export function ProgramTableRow({ program, onEdit }: ProgramTableRowProps) {
   return (
     <DataTableRow>
       <DataTableCell>
-        <span className="font-medium text-gray-900">{program.id}</span>
+        <span className="font-medium text-gray-900">{index}</span>
       </DataTableCell>
       
       <DataTableCell>
         {bannerUrl ? (
-          <img
-            src={bannerUrl}
-            alt={program.name}
-            className="w-16 h-16 object-cover rounded-lg border border-gray-200"
-          />
+          <div className="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden">
+            <img
+              src={bannerUrl}
+              alt={program.name}
+              className="max-w-full max-h-full object-contain"
+            />
+          </div>
         ) : (
           <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
             <span className="text-xs text-gray-400">No image</span>
@@ -92,6 +101,13 @@ export function ProgramTableRow({ program, onEdit }: ProgramTableRowProps) {
 
       <DataTableCell>
         <div className="space-x-2">
+          <button
+            onClick={handleView}
+            className="inline-flex items-center justify-center w-8 h-8 rounded-md text-sky-600 hover:bg-sky-50 transition-colors"
+            title="View Details"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
           <button
             onClick={handleEdit}
             className="btn-edit-table"

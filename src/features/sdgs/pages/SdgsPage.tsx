@@ -111,13 +111,7 @@ export function SdgsPage() {
           <DataTable>
             <DataTableHeader>
               <tr>
-                <DataTableHead
-                  sortable
-                  sortDirection={sortConfig.key === "id" ? sortConfig.direction : null}
-                  onSort={() => requestSort("id")}
-                >
-                  ID
-                </DataTableHead>
+                <DataTableHead>#</DataTableHead>
                 <DataTableHead>
                   Preview
                 </DataTableHead>
@@ -134,9 +128,12 @@ export function SdgsPage() {
               </tr>
             </DataTableHeader>
             <DataTableBody>
-              {sortedData.map((sdg) => (
-                <SdgTableRow key={sdg.id} sdg={sdg} onEdit={handleEdit} />
-              ))}
+              {sortedData.map((sdg, index) => {
+                const rowIndex = (data.pagination.current_page - 1) * data.pagination.per_page + index + 1;
+                return (
+                  <SdgTableRow key={sdg.id} sdg={sdg} index={rowIndex} onEdit={handleEdit} />
+                );
+              })}
             </DataTableBody>
           </DataTable>
 

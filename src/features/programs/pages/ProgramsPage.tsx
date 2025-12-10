@@ -5,6 +5,7 @@ import { useProgramsPaginated } from "../api/programQueries";
 import { ProgramTableRow } from "../components/ProgramTableRow";
 import { ProgramCreateDialog } from "../components/ProgramCreateDialog";
 import { ProgramEditDialog } from "../components/ProgramEditDialog";
+import { ProgramDetailDialog } from "../components/ProgramDetailDialog";
 import {
   DataTable,
   DataTableHeader,
@@ -22,6 +23,7 @@ export function ProgramsPage() {
   const [perPage] = useState(10);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
 
   const { data, isLoading, error } = useProgramsPaginated(currentPage, perPage);
@@ -40,6 +42,11 @@ export function ProgramsPage() {
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
     setCurrentPage(1);
+  };
+
+  const handleView = (program: Program) => {
+    setSelectedProgram(program);
+    setIsDetailDialogOpen(true);
   };
 
   const handleEdit = (program: Program) => {
@@ -111,13 +118,7 @@ export function ProgramsPage() {
           <DataTable>
             <DataTableHeader>
               <tr>
-                <DataTableHead
-                  sortable
-                  sortDirection={sortConfig.key === "id" ? sortConfig.direction : null}
-                  onSort={() => requestSort("id")}
-                >
-                  ID
-                </DataTableHead>
+                <DataTableHead>#</DataTableHead>
                 <DataTableHead>Banner</DataTableHead>
                 <DataTableHead
                   sortable
@@ -133,13 +134,18 @@ export function ProgramsPage() {
               </tr>
             </DataTableHeader>
             <DataTableBody>
-              {sortedData.map((program) => (
-                <ProgramTableRow
-                  key={program.id}
-                  program={program}
-                  onEdit={handleEdit}
-                />
-              ))}
+              {sortedData.map((program, index) => {
+                const rowIndex = (data.pagination.current_page - 1) * data.pagination.per_page + index + 1;
+                return (
+                  <ProgramTableRow
+                    key={program.id}
+                    program={program}
+                    index={rowIndex}
+                    onView={handleView}
+                    onEdit={handleEdit}
+                  />
+                );
+              })}
             </DataTableBody>
           </DataTable>
           
@@ -180,6 +186,11 @@ export function ProgramsPage() {
         program={selectedProgram}
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
+      />
+      <ProgramDetailDialog
+        program={selectedProgram}
+        open={isDetailDialogOpen}
+        onOpenChange={setIsDetailDialogOpen}
       />
     </div>
   );

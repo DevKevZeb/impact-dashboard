@@ -112,13 +112,7 @@ export function ProgramStatesPage() {
           <DataTable>
             <DataTableHeader>
               <tr>
-                <DataTableHead
-                  sortable
-                  sortDirection={sortConfig.key === "id" ? sortConfig.direction : null}
-                  onSort={() => requestSort("id")}
-                >
-                  ID
-                </DataTableHead>
+                <DataTableHead>#</DataTableHead>
                 <DataTableHead
                   sortable
                   sortDirection={sortConfig.key === "name" ? sortConfig.direction : null}
@@ -132,13 +126,17 @@ export function ProgramStatesPage() {
               </tr>
             </DataTableHeader>
             <DataTableBody>
-              {sortedData.map((programState) => (
-                <ProgramStateTableRow
-                  key={programState.id}
-                  programState={programState}
-                  onEdit={handleEdit}
-                />
-              ))}
+              {sortedData.map((programState, index) => {
+                const rowIndex = (data.pagination.current_page - 1) * data.pagination.per_page + index + 1;
+                return (
+                  <ProgramStateTableRow
+                    key={programState.id}
+                    programState={programState}
+                    index={rowIndex}
+                    onEdit={handleEdit}
+                  />
+                );
+              })}
             </DataTableBody>
           </DataTable>
 
