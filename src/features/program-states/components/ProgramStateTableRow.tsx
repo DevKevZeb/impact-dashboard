@@ -4,11 +4,13 @@ import { toast } from "sonner";
 
 interface ProgramStateTableRowProps {
   programState: ProgramState;
+  index: number;
   onEdit: (programState: ProgramState) => void;
 }
 
 export function ProgramStateTableRow({
   programState,
+  index,
   onEdit,
 }: ProgramStateTableRowProps) {
   const handleEdit = (e: React.MouseEvent) => {
@@ -25,9 +27,9 @@ export function ProgramStateTableRow({
 
   return (
     <tr className="border-b border-gray-100 hover:bg-sky-100 transition">
-      {/* ID */}
-      <td className="px-4 py-3 text-sm text-gray-700">
-        {programState.id}
+      {/* # (Index) */}
+      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+        {index}
       </td>
 
       {/* State Name */}

@@ -4,10 +4,11 @@ import { toast } from "sonner";
 
 interface SdgTableRowProps {
   sdg: Sdg;
+  index: number;
   onEdit: (sdg: Sdg) => void;
 }
 
-export function SdgTableRow({ sdg, onEdit }: SdgTableRowProps) {
+export function SdgTableRow({ sdg, index, onEdit }: SdgTableRowProps) {
   const imageUrl = sdg.image_url || `${import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '')}/storage/${sdg.image}`;
 
   const handleEdit = (e: React.MouseEvent) => {
@@ -24,9 +25,9 @@ export function SdgTableRow({ sdg, onEdit }: SdgTableRowProps) {
 
   return (
     <tr className="border-b border-gray-100 hover:bg-sky-100 transition">
-      {/* ID */}
-      <td className="px-4 py-3 text-sm text-gray-700">
-        {sdg.id}
+      {/* # (Index) */}
+      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+        {index}
       </td>
 
       {/* Thumbnail */}

@@ -202,11 +202,11 @@ export function ProgramEditDialog({
               Banner Image (Optional)
             </label>
             {previewUrl ? (
-              <div className="relative">
+              <div className="relative w-full h-32 bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center overflow-hidden">
                 <img
                   src={previewUrl}
                   alt="New banner preview"
-                  className="w-full h-32 object-cover rounded-lg border border-gray-300"
+                  className="max-w-full max-h-full object-contain"
                 />
                 <button
                   type="button"
@@ -218,11 +218,13 @@ export function ProgramEditDialog({
               </div>
             ) : currentBannerUrl ? (
               <div className="space-y-2">
-                <img
-                  src={currentBannerUrl}
-                  alt="Current banner"
-                  className="w-full h-32 object-cover rounded-lg border border-gray-300"
-                />
+                <div className="w-full h-32 bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center overflow-hidden">
+                  <img
+                    src={currentBannerUrl}
+                    alt="Current banner"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
