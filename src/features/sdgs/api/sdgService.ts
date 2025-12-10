@@ -5,12 +5,12 @@ const SDGS_ENDPOINT = "/sdgs";
 
 export const sdgService = {
   /**
-   * GET /api/v1/sdgs
-   * Get all SDGs with their images
+   * GET /api/v1/sdgs?per_page=100
+   * Get all SDGs with their images (without pagination limit)
    */
   getAll: async (): Promise<Sdg[]> => {
     const { data } = await apiClient.get<ApiResponse<SdgListResponse>>(
-      SDGS_ENDPOINT
+      `${SDGS_ENDPOINT}?per_page=100`
     );
     return data.data.sdgs;
   },

@@ -24,6 +24,11 @@ export function SdgTableRow({ sdg, onEdit }: SdgTableRowProps) {
 
   return (
     <tr className="border-b border-gray-100 hover:bg-sky-100 transition">
+      {/* ID */}
+      <td className="px-4 py-3 text-sm text-gray-700">
+        {sdg.id}
+      </td>
+
       {/* Thumbnail */}
       <td className="px-4 py-3 text-sm text-gray-700">
         <div className="w-16 h-16 bg-gray-50 rounded overflow-hidden flex items-center justify-center border border-gray-200">
@@ -36,11 +41,6 @@ export function SdgTableRow({ sdg, onEdit }: SdgTableRowProps) {
             }}
           />
         </div>
-      </td>
-
-      {/* ID */}
-      <td className="px-4 py-3 text-sm text-gray-700">
-        {sdg.id}
       </td>
 
       {/* Filename */}

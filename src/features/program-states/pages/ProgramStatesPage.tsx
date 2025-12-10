@@ -94,28 +94,16 @@ export function ProgramStatesPage() {
         </Button>
       </div>
 
-      {/* Search & Stats */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search program states..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-          />
-        </div>
-
-        <div className="bg-gradient-to-br from-sky-50 to-sky-100 border border-sky-200 rounded-lg px-4 py-2.5 flex items-center gap-3 min-w-fit sm:ml-auto">
-          <div className="p-2 bg-sky-500 rounded-lg">
-            <Tag className="w-5 h-5 text-white" />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="stat-label whitespace-nowrap">Total States:</span>
-            <span className="stat-number">{data?.pagination.total || 0}</span>
-          </div>
-        </div>
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Search program states..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+        />
       </div>
 
       {/* Table */}
