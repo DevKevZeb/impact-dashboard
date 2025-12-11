@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/shared/lib/axios";
-import type { Kpa } from "@/features/kpa/types/KpaType";
 
-async function fetchCountryKpas(countryId: number): Promise<Kpa[]> {
+async function fetchCountryKpas(countryId: number) {
   try {
     const res = await apiClient.get(`/country-kpas/country/${countryId}`);
     const kpas = res.data?.data?.kpas;
@@ -10,9 +9,12 @@ async function fetchCountryKpas(countryId: number): Promise<Kpa[]> {
     if (!Array.isArray(kpas)) return [];
 
     return kpas.map((item: any) => ({
-      id: item.id,
+      id_kpa: item.id_kpa,
+      id_ck: item.id_ck,
       name: item.name,
       implementation: item.implementation,
+      strategic_outputs_count: item.strategic_outputs_count
+
     }));
   } catch (err: any) {
     if (err.response?.status === 404) {

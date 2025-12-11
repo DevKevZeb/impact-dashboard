@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Info, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Country } from "@/features/country/types/CountryType";
@@ -21,8 +21,6 @@ interface Props {
   setPerPage: (perPage: number) => void;
   onEdit: (kpa: Kpa, relationId: number) => void;
 }
-
-
 
 export default function CountryKpaTable({ countries, pagination, page, perPage, setPage, setPerPage, onEdit }: Props) {
   const [expanded, setExpanded] = useState<number[]>([]);
@@ -128,10 +126,7 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
 
 import { Fragment } from "react";
 
-function SubKpaTable({ countryId, onEdit }: {
-  countryId: number;
-  onEdit: (kpa: Kpa, relationId: number) => void;
-}) {
+function SubKpaTable({ countryId }: { countryId: number; onEdit: (kpa: Kpa, relationId: number) => void; }) {
   const { data: kpas, isLoading } = useCountryKpas(countryId, true);
 
   if (isLoading) {
@@ -154,12 +149,12 @@ function SubKpaTable({ countryId, onEdit }: {
       </thead>
       <tbody>
         {kpas?.map((kpa) => (
-          <tr key={kpa.id} className="border-t">
+          <tr key={kpa.id_kpa} className="border-t">
             <td className="px-4 py-2"></td>
             <td className="px-4 py-2">{kpa.name}</td>
             <td className="px-4 py-2">{kpa.implementation}%</td>
             <td className="table-cell text-left">
-              <button onClick={() => onEdit(kpa, countryId)} title="Edit" className="btn-delete-table">
+              <button onClick={() => console.log("EDITANDO")} title="Edit" className="btn-delete-table">
                 <Trash2 className="w-4 h-4" />
               </button>
             </td>
