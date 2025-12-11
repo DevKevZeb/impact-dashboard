@@ -154,7 +154,7 @@ function SubKpaTable({ countryId }: { countryId: number; onEdit: (kpa: Kpa, rela
             <td className="px-4 py-2">{kpa.name}</td>
             <td className="px-4 py-2">{kpa.implementation}%</td>
             <td className="table-cell text-left">
-              <button onClick={() => console.log("EDITANDO")} title="Edit" className="btn-delete-table">
+              <button title="Edit" className="btn-delete-table">
                 <Trash2 className="w-4 h-4" />
               </button>
             </td>
