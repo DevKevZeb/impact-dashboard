@@ -27,7 +27,6 @@ export default function CountryKpaListPage() {
   };
 
   const handleEdit = () => {
-    console.log("EDITANDO");
   };
 
   const handleSubmit = async (dto: any) => {
