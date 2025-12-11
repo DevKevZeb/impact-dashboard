@@ -26,10 +26,7 @@ export default function CountryKpaListPage() {
     setOpenModal(true);
   };
 
-  const handleEdit = (kpa: Kpa, relationId: number) => {
-    setSelectedKpa(kpa);
-    setSelectedCountryId(relationId);
-    setOpenModal(true);
+  const handleEdit = () => {
   };
 
   const handleSubmit = async (dto: any) => {

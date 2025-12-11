@@ -86,7 +86,7 @@ export default function CreateCountryModal({ open, country, onClose, onSubmit, c
           <div className="flex flex-col space-y-1">
             <Label className="text-gray-700">NAME</Label>
             <Input
-              className="input-default"
+              className="i  nput-default"
               placeholder="E.G: United States"
               {...register("name")}
             />

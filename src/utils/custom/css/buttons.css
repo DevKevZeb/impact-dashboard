@@ -40,3 +40,11 @@
 .btn-tertiary-table{
   @apply cursor-pointer px-2 py-1 text-xs rounded bg-[#0082BE] hover:bg-[#006a9b] text-white transition;
 }
+
+.btn-delete-tree{
+  @apply p-1 text-slate-500 hover:text-red-600
+}
+
+.btn-edit-tree{
+  @apply p-1 text-slate-500 hover:text-emerald-600
+}
