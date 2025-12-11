@@ -40,6 +40,13 @@
   --chart-3: oklch(0.769 0.188 70.08); /* Amber */
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
+  
+  /* Custom action colors */
+  --action-edit: oklch(0.578 0.196 249.09);      /* Blue 500 */
+  --action-edit-hover: oklch(0.507 0.209 253.3); /* Blue 600 */
+  --action-delete: oklch(0.577 0.245 27.325);    /* Red 500 */
+  --action-delete-hover: oklch(0.536 0.237 25.331); /* Red 600 */
+  
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.205 0 0);
   --sidebar-primary: oklch(0.623 0.17 162.48);
@@ -78,6 +85,13 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  
+  /* Map custom action colors */
+  --color-action-edit: var(--action-edit);
+  --color-action-edit-hover: var(--action-edit-hover);
+  --color-action-delete: var(--action-delete);
+  --color-action-delete-hover: var(--action-delete-hover);
+  
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -112,6 +126,13 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
+  
+  /* Custom action colors - Dark mode */
+  --action-edit: oklch(0.578 0.196 249.09);
+  --action-edit-hover: oklch(0.507 0.209 253.3);
+  --action-delete: oklch(0.704 0.191 22.216);
+  --action-delete-hover: oklch(0.536 0.237 25.331);
+  
   --sidebar: oklch(0.208 0.042 265.755);
   --sidebar-foreground: oklch(0.984 0.003 247.858);
   --sidebar-primary: oklch(0.623 0.17 162.48);

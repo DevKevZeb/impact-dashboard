@@ -46,6 +46,7 @@ const menuItems: MenuItem[] = [
         { title: "Agencies", path: "/config/agencies", icon: Building2 },
         { title: "KPAs", path: "/config/kpas", icon: Building2 },
         { title: "SDGs", path: "/config/sdgs", icon: Flag },
+        { title: "Program States", path: "/config/program-states", icon: LinkIcon }
     ],
     },
     {

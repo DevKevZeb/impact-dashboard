@@ -57,3 +57,12 @@
          hover:bg-gray-200 transition enabled:cursor-pointer
          disabled:opacity-40;
 }
+
+/* Pagination page number buttons */
+.pagination-page-active {
+  @apply bg-sky-500 text-white hover:bg-sky-600 border-sky-500;
+}
+
+.pagination-page-inactive {
+  @apply bg-white text-gray-700 border-gray-300 hover:bg-gray-50;
+}
