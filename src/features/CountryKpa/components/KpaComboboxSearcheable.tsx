@@ -15,19 +15,31 @@ interface Props {
 export function KpaComboboxSearchable({ value, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [page, setPage] = useState(1);
+
   const listRef = useRef<HTMLDivElement | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data, isLoading } = useSearchKpas(search, page);
   const kpas: KpaOption[] = data?.kpas ?? [];
   const lastPage = data?.pagination?.last_page ?? 1;
 
-  // 🔄 reset pagination on search
   useEffect(() => {
     setPage(1);
   }, [search]);
 
-  // 📌 Infinite Scroll con IntersectionObserver
+  useEffect(() => {
+    if (value) setInputValue(value.name);
+  }, [value]);
+
+  const handleInputChange = (val: string) => {
+    setInputValue(val);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setSearch(val), 300);
+  };
+
   useEffect(() => {
     if (!listRef.current || isLoading) return;
 
@@ -51,9 +63,10 @@ export function KpaComboboxSearchable({ value, onChange }: Props) {
     <div className="w-full relative">
       <Command>
         <CommandInput
-          placeholder={value?.name ?? "Search KPA..."}
+          value={inputValue}
+          placeholder="Search KPA..."
           onFocus={() => setOpen(true)}
-          onValueChange={(val) => setSearch(val)}
+          onValueChange={handleInputChange}
         />
 
         {open && (
@@ -66,15 +79,7 @@ export function KpaComboboxSearchable({ value, onChange }: Props) {
             )}
 
             {kpas.map((k) => (
-              <CommandItem
-                key={k.id}
-                data-kpa-item
-                className="cursor-pointer"
-                onSelect={() => {
-                  onChange(k);
-                  setOpen(false);
-                }}
-              >
+              <CommandItem key={k.id} data-kpa-item className="cursor-pointer" onSelect={() => { onChange(k); setInputValue(k.name); setOpen(false); }} >
                 {k.name}
               </CommandItem>
             ))}

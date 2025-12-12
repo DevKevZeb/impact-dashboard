@@ -15,6 +15,7 @@ interface Props {
 export function CountryComboboxSearchable({ value, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [page, setPage] = useState(1);
 
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -28,7 +29,16 @@ export function CountryComboboxSearchable({ value, onChange }: Props) {
     setPage(1);
   }, [search]);
 
+  useEffect(() => {
+    if (value) {
+      setInputValue(value.name);
+    }
+  }, [value]);
+
+
   const handleSearch = (val: string) => {
+    setInputValue(val); 
+
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => setSearch(val), 300);
   };
@@ -49,7 +59,8 @@ export function CountryComboboxSearchable({ value, onChange }: Props) {
     <div className="w-full relative">
       <Command>
         <CommandInput
-          placeholder={value ? value.name : "Search country..."}
+          value={inputValue} 
+          placeholder="Search country..."
           onFocus={() => setOpen(true)}
           onValueChange={handleSearch}
         />
@@ -58,16 +69,21 @@ export function CountryComboboxSearchable({ value, onChange }: Props) {
           <CommandList
             ref={listRef}
             onScroll={handleScroll}
-            className="absolute left-0 top-full mt-1 w-full max-h-56 bg-white border shadow-md overflow-auto z-50"
+            className="absolute left-0 top-full mt-1 w-full max-h-56 bg-white border shadow-md overflow-auto z-50 rounded-md"
           >
             {isLoading && countries.length === 0 && (
               <div className="p-2 text-xs text-gray-500">Loading...</div>
             )}
 
-            {countries.map(c => (
+            {countries.map((c) => (
               <CommandItem
                 key={c.id}
-                onSelect={() => { onChange(c); setOpen(false); }}
+                value={c.name}
+                onSelect={() => {
+                  onChange(c);       
+                  setInputValue(c.name);
+                  setOpen(false); 
+                }}
               >
                 {c.name}
               </CommandItem>
@@ -82,7 +98,6 @@ export function CountryComboboxSearchable({ value, onChange }: Props) {
             )}
           </CommandList>
         )}
-
       </Command>
     </div>
   );

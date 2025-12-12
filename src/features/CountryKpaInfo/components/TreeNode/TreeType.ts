@@ -1,5 +1,4 @@
 import type React from "react";
-
 export interface IndicatorMeta {
   indicatorType?: string;
   target?: number | string;
@@ -21,6 +20,7 @@ export interface TreeNode<T = unknown> {
   lazy?: boolean;
   loading?: boolean;
   isTitle?: boolean;
+  parent_id?: number
 
   meta?: IndicatorMeta;
 }

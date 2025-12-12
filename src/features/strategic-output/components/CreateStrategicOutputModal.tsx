@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import type { CreateStrategicOutputDTO, StrategicOutput } from "../types/StrategicOutput";
+import type { CreateStrategicOutputDTO, UpdateStrategicOutputDTO } from "../types/StrategicOutput";
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -17,20 +17,13 @@ const soSchema = z.object({
 
 interface Props {
   open: boolean;
-  strategicOutput: StrategicOutput | null;
+  strategicOutput: UpdateStrategicOutputDTO | null;
   parentCountryKpaId: number;
   onClose: () => void;
   onSubmit: (dto: CreateStrategicOutputDTO) => void;
 }
 
-export default function CreateStrategicOutputModal({
-  open,
-  strategicOutput,
-  parentCountryKpaId,
-  onClose,
-  onSubmit
-}: Props) {
-
+export default function CreateStrategicOutputModal({ open, strategicOutput, parentCountryKpaId, onClose, onSubmit }: Props) {
   const form = useForm<CreateStrategicOutputDTO>({
     resolver: zodResolver(soSchema),
     defaultValues: {
@@ -59,7 +52,6 @@ export default function CreateStrategicOutputModal({
   }, [open, strategicOutput, parentCountryKpaId, reset]);
 
   const submitHandler = (data: CreateStrategicOutputDTO) => {
-    // ❗NO se edita el parent — lo recibimos por props
     data.country_kpa_id = parentCountryKpaId;
 
     onSubmit(data);
