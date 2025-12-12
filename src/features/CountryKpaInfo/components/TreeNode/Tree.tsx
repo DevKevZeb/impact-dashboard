@@ -8,9 +8,10 @@ interface LazyTreeProps {
   selectionKey?: string | null;
   onSelectionChange?: (key: string | null, node: TreeNode | null) => void;
   loadChildren?: (nodeKey: string) => Promise<TreeNode[]>;
+  onAddStrategicOutput?: (node: TreeNode) => void;
 }
 
-export const LazyTree: React.FC<LazyTreeProps> = ({ value, selectionKey, onSelectionChange, loadChildren }) => {
+export const LazyTree: React.FC<LazyTreeProps> = ({ value, selectionKey, onSelectionChange, loadChildren, onAddStrategicOutput }) => {
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
 
   const findNode = useCallback(
@@ -54,7 +55,7 @@ export const LazyTree: React.FC<LazyTreeProps> = ({ value, selectionKey, onSelec
   return (
     <ul className="tree-root">
       {value.map(n => (
-        <Item key={n.key} node={n} level={0} expandedKeys={expandedKeys} onToggle={toggle} onSelect={select} selectedKey={selectionKey ?? null} />
+        <Item key={n.key} node={n} level={0} expandedKeys={expandedKeys} onToggle={toggle} onSelect={select} selectedKey={selectionKey ?? null} onAddStrategicOutput={onAddStrategicOutput}/>
       ))}
     </ul>
   );
@@ -67,9 +68,10 @@ interface ItemProps {
   onToggle: (key: string) => void;
   onSelect: (node: TreeNode) => void;
   selectedKey: string | null;
+  onAddStrategicOutput?:(node: TreeNode) => void;
 }
 
-const Item: React.FC<ItemProps> = ({ node, level, expandedKeys, onToggle, onSelect, selectedKey }) => {
+const Item: React.FC<ItemProps> = ({ node, level, expandedKeys, onToggle, onSelect, selectedKey, onAddStrategicOutput }) => {
   const expanded = !!expandedKeys[node.key];
   const isLeaf = node.leaf ?? false;
   const indent = (level * 1.75) + .5 + "rem";
@@ -125,17 +127,17 @@ const Item: React.FC<ItemProps> = ({ node, level, expandedKeys, onToggle, onSele
           )}
 
           {node.data?.type === "ck" && (
-            <button type="button" onClick={(e) => { e.stopPropagation(); console.log("Add SO", node); }} className="btn-secondary text-xs" >
+            <button type="button" onClick={(e) => {  onAddStrategicOutput?.(node); }} className="btn-tertiary text-xs" >
               + Strategic Output
             </button>
           )}
           {node.data?.type === "so" && (
-            <button type="button" onClick={(e) => { e.stopPropagation(); console.log("Add ME", node); }} className="btn-secondary text-xs" >
+            <button type="button" onClick={(e) => { e.stopPropagation(); console.log("Add ME", node); }} className="btn-tertiary text-xs" >
               + Measure
             </button>
           )}
           {node.data?.type === "m" && (
-            <button type="button" onClick={(e) => { e.stopPropagation(); console.log("Add IN", node); }} className="btn-secondary text-xs" >
+            <button type="button" onClick={(e) => { e.stopPropagation(); console.log("Add IN", node); }} className="btn-tertiary text-xs" >
               + Indicator
             </button>
           )}
@@ -145,7 +147,7 @@ const Item: React.FC<ItemProps> = ({ node, level, expandedKeys, onToggle, onSele
       {!isLeaf && expanded && node.children && (
         <ul className={`tree-branch level-${node.data?.type}`}>
           {node.children.map(c => (
-            <Item key={c.key} node={c} level={level + 1} expandedKeys={expandedKeys} onToggle={onToggle} onSelect={onSelect} selectedKey={selectedKey} /> ))}
+            <Item key={c.key} node={c} level={level + 1} expandedKeys={expandedKeys} onToggle={onToggle} onSelect={onSelect} selectedKey={selectedKey} onAddStrategicOutput={onAddStrategicOutput}/> ))}
         </ul>
       )}
     </li>
