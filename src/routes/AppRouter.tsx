@@ -10,7 +10,7 @@ import CountryListPage from "@/features/country/pages/CountryListPage";
 import CountryKpaListPage from "@/features/CountryKpa/pages/CountryKpaListPage";
 import KpasListPage from "@/features/kpa/pages/KpasListPage";
 import InfoCountryKpaPage from "@/features/CountryKpaInfo/pages/InfoCountryKpaPage";
-import IndicatorTypesListPage from "@/features/indicator-type/pages/IndicatorTypesListPagw";
+import IndicatorTypesListPage from "@/features/indicator-type/pages/IndicatorTypesListPage";
 
 export function AppRouter() {
     return (

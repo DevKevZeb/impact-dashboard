@@ -116,6 +116,7 @@ export const LazyTree: React.FC<LazyTreeProps> = ({ value, selectionKey, onSelec
           onEditMeasure={onEditMeasure}
           onEditIndicator={onEditIndicator}
           onAddIndicator={onAddIndicator}
+
           onDeleteIndicator={onDeleteIndicator}
           onDeleteMeasure={onDeleteMeasure}
           onDeleteStrategicOutput={onDeleteStrategicOutput}
@@ -250,12 +251,44 @@ const Item: React.FC<ItemProps> = ({ node, level, expandedKeys, onToggle, onSele
           )
         )}
         {node.icon}
-        <span className="font-medium text-sm">
-          {node.label}
-          {typeof node.data?.count === "number" && (
-            <span className="ml-1 text-slate-500">({node.data.count})</span>
-          )}
-        </span>
+          <span className="flex items-center gap-2 text-sm font-medium">
+            <span className="flex items-center gap-2 text-sm">
+              {node.data?.type === "i" ? (
+                <span className="flex flex-col space-y-1">
+                  <span className="font-medium text-[#1E3291]">
+                    {node.label}
+                  </span>
+                  <span className="flex space-x-2">
+                    <span className="flex items-center gap-1 text-slate-600">
+                      target:
+                      <span className="rounded-md bg-[#61C8E7]/20 px-2 py-0.5 text-xs font-semibold text-[#1E3291]">
+                        {node.meta?.target}
+                      </span>
+                    </span>
+                    <span
+                      key={node.meta?.type_id}
+                      className="rounded-md bg-[#0082BE] px-2 py-0.5 text-xs font-semibold text-white"
+                    >
+                      {node.meta?.type}
+                    </span>
+                  </span>
+                  <span className="flex items-center gap-1 text-slate-600">
+                      implementation:
+                      <span className="rounded-md bg-[#61C8E7]/20 px-2 py-0.5 text-xs font-semibold text-[#1E3291]">
+                        100%
+                      </span>
+                    </span>
+                </span>
+              ) : (
+                <span className="text-slate-700">
+                  {node.label}
+                </span>
+              )}
+            </span> 
+            {typeof node.data?.count === "number" && (
+              <span className="text-slate-400">({node.data.count})</span>
+            )}
+          </span>
         <div className="flex gap-1">
           {getActionButtons(node)}
         </div>
@@ -268,6 +301,8 @@ const Item: React.FC<ItemProps> = ({ node, level, expandedKeys, onToggle, onSele
               onEditStrategicOutput={onEditStrategicOutput}
               onEditMeasure={onEditMeasure}
               onAddMeasure={onAddMeasure}
+              onAddIndicator={onAddIndicator}
+              onEditIndicator={onEditIndicator}
             />
           ))}
         </ul>

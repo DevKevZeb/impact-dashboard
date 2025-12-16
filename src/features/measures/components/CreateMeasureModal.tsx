@@ -92,5 +92,5 @@ export default function CreateMeasureModal({ open, measure, parentStrategicOutpu
         </form>
       </DialogContent>
     </Dialog>      
-    )
+  )
 }

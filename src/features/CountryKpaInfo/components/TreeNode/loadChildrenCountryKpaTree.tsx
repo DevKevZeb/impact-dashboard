@@ -12,7 +12,6 @@ export async function loadChildrenCountryKpaTree(nodeKey: string): Promise<TreeN
   switch (type) {
     case "ck": {
       const outputs = await getStrategicOutputsByCountryKpaId(numericId);
-      console.log(outputs)
       return [
         { key: `title-so-${numericId}`, label: "Strategic Outputs", isTitle: true, selectable: false },
         ...outputs.map((so) => ({
@@ -54,8 +53,9 @@ export async function loadChildrenCountryKpaTree(nodeKey: string): Promise<TreeN
           leaf: true,
           data: { type: "i" as const, id: i.id },
           meta: {
-            indicatorType: i.type,
-            target: i.target,
+            type: i.type?.name,
+            type_id: i.type?.id,
+            target: i.target as number,
           },
           parent_id: numericId
         })),

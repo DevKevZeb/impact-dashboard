@@ -88,8 +88,6 @@ export default function CreateKpaModal({ open, kpa, onClose, onSubmit }: Props) 
               <p className="text-sm text-red-600">{errors.name.message}</p>
             )}
           </div>
-
-          {/* IMPLEMENTATION */}
           <div className="flex flex-col space-y-1">
             <Label className="text-gray-700">IMPLEMENTATION (%)</Label>
             <Input
@@ -105,15 +103,8 @@ export default function CreateKpaModal({ open, kpa, onClose, onSubmit }: Props) 
               </p>
             )}
           </div>
-
-          {/* BUTTONS */}
           <div className="mt-6 flex justify-end gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="btn-primary"
-            >
+            <Button type="button" variant="outline" onClick={onClose} className="btn-primary" >
               Cancel
             </Button>
 

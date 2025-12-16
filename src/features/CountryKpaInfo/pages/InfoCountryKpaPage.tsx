@@ -13,7 +13,10 @@ import type { UpdateMeasureDTO } from "@/features/measures/types/measureTypes";
 import { useCreateMeasure } from "@/features/measures/hooks/useCreateMeasure";
 import { useUpdateMeasure } from "@/features/measures/hooks/useUpdateMeasure";
 import CreateMeasureModal from "@/features/measures/components/CreateMeasureModal";
-import type { UpdateIndicatorDTO } from "@/features/indicator/types/indicatorTypes";
+import type { Indicator, UpdateIndicatorDTO } from "@/features/indicator/types/indicatorTypes";
+import CreateIndicatorModal from "@/features/indicator/components/CreateIndicatorModal";
+import { useCreateIndicator } from "@/features/indicator/hooks/useCreateIndicator";
+import { useUpdateIndicator } from "@/features/indicator/hooks/useUpdateIndicator";
 
 interface CountryOption {
   id: number;
@@ -45,7 +48,10 @@ export default function InfoCountryKpaPage() {
 
   const [parentMeasureId, setParentMeasureId] = useState<number | null>(null);
   const [openIndicatorModal, setOpenIndicatorModal] = useState(false);
-  const [editIndicator, setEditIndicator] = useState<UpdateIndicatorDTO | null>(null);
+  const [editIndicator, setEditIndicator] = useState<Indicator | null>(null);
+  const {mutateAsync: createIndicator } = useCreateIndicator();
+  const {mutateAsync: updateIndicator } = useUpdateIndicator(); 
+
 
 
   const initial = useMemo<TreeNode[]>(() => [
@@ -77,7 +83,7 @@ export default function InfoCountryKpaPage() {
         })),
       ],
     },
-  ], [id, country, kpas]);
+  ], [id, country, kpas ]);
 
 
   const handleCreateStrategicOutput = async (node: TreeNode) => {
@@ -145,6 +151,44 @@ export default function InfoCountryKpaPage() {
     }
   }
 
+  const handleCreateIndicator = async (node: TreeNode) => {
+    setEditIndicator(null);
+    setParentMeasureId(node?.data?.id ?? null);
+    setOpenIndicatorModal(true);
+  }
+
+  const handleEditIndicator = (node: TreeNode) => {
+    setOpenIndicatorModal(true);
+    setParentMeasureId(node.parent_id ?? null);
+    console.log(node)
+    const indicator = {
+      id: node.data!.id!,
+      name: node.label,
+      target: Number(node.meta!.target!),
+      measure_id: node.parent_id!,
+      type: {
+        id: node.meta!.type_id!,
+        name: node.meta!.type!,
+      }
+    }
+
+    setEditIndicator(indicator);
+  }
+
+  const handleSubmitIndicator = async (dto: any) => {
+    if(editIndicator) await updateIndicator({ id: editIndicator.id, dto: dto});
+    else await createIndicator(dto);
+
+    setOpenIndicatorModal(false);
+    setEditIndicator(null);
+    setParentMeasureId(null);
+
+    if (refreshNode && parentStrategicOutputId !== null) {
+    refreshNode(`m-${parentStrategicOutputId}`);
+    }
+  }
+
+
   return (
     <div className="p-6 space-y-4">
       <h1 className="label-default">KPAs of {country?.name}</h1>
@@ -153,6 +197,7 @@ export default function InfoCountryKpaPage() {
         <LazyTree value={initial} onRefreshNode={(fn) => setRefreshNode(() => fn)} selectionKey={selected} onSelectionChange={(key) => setSelected(key)} loadChildren={loadChildrenCountryKpaTree} 
           onAddStrategicOutput={handleCreateStrategicOutput} onEditStrategicOutput={handleEditStrategicOutput} 
           onAddMeasure={handleCreateMeasure} onEditMeasure={handleEditMeasure}
+          onAddIndicator={handleCreateIndicator} onEditIndicator={handleEditIndicator}
 
         />
       )}
@@ -165,6 +210,9 @@ export default function InfoCountryKpaPage() {
         <CreateMeasureModal open={openMeasureModal} measure={editMeasure} parentStrategicOutputId={parentStrategicOutputId} onClose={() => setOpenMeasureModal(false)} onSubmit={handleSubmitMeasure}/>
       )}  
 
+      {parentMeasureId !== null && (
+        <CreateIndicatorModal open={openIndicatorModal} indicator={editIndicator} parentMeasureId={parentMeasureId} onClose={() => setOpenIndicatorModal(false)} onSubmit={handleSubmitIndicator}/>
+      )}
 
     </div>
   );
