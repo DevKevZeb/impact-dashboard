@@ -1,7 +1,15 @@
-export function mapMeasures(items: any[]) {
-  return items.map(item => ({
-    id: item.id,
-    name: item.name,
-    indicatorsCount: item.indicators_count ?? 0,
-  }));
+import type { Measure } from "../types/measureTypes";
+
+export function mapMeasures(rawList: any[]): Measure[] {
+  return rawList.map(mapMeasure)
+}
+
+
+export function mapMeasure(raw: any): Measure {
+  return {
+    id: raw.id,
+    name: raw.name,
+    strategic_output_id: raw.strategic_output_id,
+    indicators_count: raw.indicators_count ?? 0
+  }
 }

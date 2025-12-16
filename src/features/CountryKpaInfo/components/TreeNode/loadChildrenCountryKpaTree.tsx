@@ -12,7 +12,6 @@ export async function loadChildrenCountryKpaTree(nodeKey: string): Promise<TreeN
   switch (type) {
     case "ck": {
       const outputs = await getStrategicOutputsByCountryKpaId(numericId);
-
       return [
         { key: `title-so-${numericId}`, label: "Strategic Outputs", isTitle: true, selectable: false },
         ...outputs.map((so) => ({
@@ -22,22 +21,23 @@ export async function loadChildrenCountryKpaTree(nodeKey: string): Promise<TreeN
           lazy: so.measures_count > 0,
           leaf: so.measures_count === 0,
           data: { type: "so" as const, id: so.id,  count: so.measures_count},
+          parent_id: numericId
         })),
       ];
     }
 
     case "so": {
       const measures = await getMeasuresByStrategicOutputId(numericId);
-      console.log(measures)
       return [
         { key: `title-me-${numericId}`, label: "Measures", isTitle: true, selectable: false },
         ...measures.map((m) => ({
           key: `m-${m.id}`,
           label: m.name,
           icon: <BarChart2 className="w-4 h-4 text-purple-500" />,
-          lazy: m.indicatorsCount > 0,
-          leaf: m.indicatorsCount === 0,
-          data: { type: "m" as const, id: m.id, count: m.indicatorsCount },
+          lazy: m.indicators_count > 0,
+          leaf: m.indicators_count === 0,
+          data: { type: "m" as const, id: m.id, count: m.indicators_count },
+          parent_id: numericId
         })),
       ];
     }
@@ -53,9 +53,11 @@ export async function loadChildrenCountryKpaTree(nodeKey: string): Promise<TreeN
           leaf: true,
           data: { type: "i" as const, id: i.id },
           meta: {
-            indicatorType: i.type,
-            target: i.target,
+            type: i.type?.name,
+            type_id: i.type?.id,
+            target: i.target as number,
           },
+          parent_id: numericId
         })),
       ];
     }

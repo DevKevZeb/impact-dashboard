@@ -10,13 +10,13 @@ import CountryListPage from "@/features/country/pages/CountryListPage";
 import CountryKpaListPage from "@/features/CountryKpa/pages/CountryKpaListPage";
 import KpasListPage from "@/features/kpa/pages/KpasListPage";
 import InfoCountryKpaPage from "@/features/CountryKpaInfo/pages/InfoCountryKpaPage";
+import IndicatorTypesListPage from "@/features/indicator-type/pages/IndicatorTypesListPage";
 
 export function AppRouter() {
     return (
     <Routes>
         <Route path="/" element={<MainLayout />}>
         <Route index element={<DashboardPage />} />
-        
         {/* Configuration Routes */}
         <Route path="config">
             <Route path="countries" element={<CountryListPage/>} />
@@ -24,6 +24,7 @@ export function AppRouter() {
             <Route path="kpas" element={<KpasListPage/>} />
             <Route path="sdgs" element={<SdgsPage />} />
             <Route path="program-states" element={<ProgramStatesPage />} />
+            <Route path="indicator-types" element={<IndicatorTypesListPage/>} />
         </Route>
 
         {/* Programs & Projects Routes */}

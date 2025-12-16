@@ -15,12 +15,12 @@ const schema = z.object({
   country: z.object({
     id: z.number(),
     name: z.string()
-  }).nullable().refine(v => v !== null, { message: "Country is required" }),
+  }).nullable().refine(v => v !== null, { message: "Select a Country" }),
 
   kpa: z.object({
     id: z.number(),
     name: z.string()
-  }).nullable().refine(v => v !== null, { message: "KPA is required" }),
+  }).nullable().refine(v => v !== null, { message: "Select a KPA" }),
 });
 
 interface Props {
@@ -31,13 +31,7 @@ interface Props {
   selectedCountryId?: number | null;
 }
 
-export default function CreateCountryKpaModal({
-  open,
-  onClose,
-  onSubmit,
-  selectedKpa,
-  selectedCountryId,
-}: Props) {
+export default function CreateCountryKpaModal({ open, onClose, onSubmit, selectedKpa, selectedCountryId, }: Props) {
 
   const isEditing = !!selectedKpa;
 
@@ -87,19 +81,16 @@ export default function CreateCountryKpaModal({
                 <CountryComboboxSearchable value={field.value} onChange={field.onChange} />
               )}
             />
-            {errors.country && <p className="error">{errors.country.message as string}</p>}
+            {errors.country && <p className="error text-sm text-red-600">{errors.country.message as string}</p>}
           </div>
 
           <div className="flex flex-col space-y-1">
             <Label>KPA</Label>
-            <Controller
-              control={control}
-              name="kpa"
-              render={({ field }) => (
+            <Controller control={control} name="kpa" render={({ field }) => (
                 <KpaComboboxSearchable value={field.value} onChange={field.onChange} />
               )}
             />
-            {errors.kpa && <p className="error">{errors.kpa.message as string}</p>}
+            {errors.kpa && <p className="error text-sm text-red-600">{errors.kpa.message as string}</p>}
           </div>
 
           <div className="mt-6 flex justify-end gap-3">
