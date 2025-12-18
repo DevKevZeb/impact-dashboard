@@ -8,9 +8,7 @@ import { getIndicatorsByMeasureId } from "@/features/indicator/services/indicato
 export async function loadChildrenCountryKpaTree(nodeKey: string): Promise<TreeNode[]> {
   const [type, id] = nodeKey.split("-");
   const numericId = Number(id);
-
-  console.log(type, id)
-
+  
   switch (type) {
     case "ck": {
       const outputs = await getStrategicOutputsByCountryKpaId(numericId);
