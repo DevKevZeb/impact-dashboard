@@ -167,3 +167,7 @@
   focus:outline-none focus:ring-2 focus:ring-sky-600 focus:border-transparent transition-all
   placeholder:text-gray-500
 }
+
+.loader-default{
+  @apply w-12 h-12 animate-spin text-sky-600 mx-auto;
+}

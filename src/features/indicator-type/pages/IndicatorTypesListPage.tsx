@@ -51,7 +51,7 @@ export default function IndicatorTypesListPage(){
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
-          <Loader2 className="w-12 h-12 animate-spin text-emerald-600 mx-auto" />
+          <Loader2 className="loader-default" />
           <p className="text-gray-500">Loading Indicator Types...</p>
         </div>
       </div>
@@ -94,11 +94,11 @@ export default function IndicatorTypesListPage(){
             ) : (
                 <EmptyState
                     icon={Tag}
-                    title={searchTerm ? "No program states found" : "No program states available"}
+                    title={searchTerm ? "No Indicator Types found" : "No Indicator Types available"}
                     description={
                         searchTerm
                         ? "Try adjusting your search terms"
-                        : "Click 'New State' to create your first program state"
+                        : "Click 'New Indicator Type' to create your first indicator Type"
                     }
                 />
             )}
