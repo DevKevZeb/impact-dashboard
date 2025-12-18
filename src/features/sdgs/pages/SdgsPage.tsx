@@ -47,7 +47,7 @@ export function SdgsPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
-          <Loader2 className="w-12 h-12 animate-spin text-emerald-600 mx-auto" />
+          <Loader2 className="loader-default" />
           <p className="text-gray-500">Loading SDGs...</p>
         </div>
       </div>
@@ -71,7 +71,7 @@ export function SdgsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

@@ -33,14 +33,16 @@ export default function IndicatorTapeTable({types, pagination, page, perPage, se
             <table className="table-default">
                 <thead className="table-head">
                     <tr>
+                        <th>N°</th>
                         <th>NAME</th>
                         <th>ACTIONS</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {types.map((type)=> (
+                    {types.map((type, index)=> (
                         <tr key={type.id} className="table-row">
+                            <td className="table-cell">{index+1}</td>
                             <td className="table-cell">{type.name}</td>
                             <td className="table-cell space-x-2">
                                 <button className="btn-edit-table" onClick={() => onEdit(type)}>

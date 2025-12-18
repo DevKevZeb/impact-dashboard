@@ -44,18 +44,21 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
       <table className="table-default">
         <thead className="table-head">
           <tr>
+            <th>N°</th>
             <th>COUNTRY</th>
             <th>ACTIONS</th>
           </tr>
         </thead>
 
         <tbody>
-          {countries.map((country) => (
+          {countries.map((country, index) => (
             <Fragment key={country.id}>
+
               <tr
                 className="table-row cursor-pointer hover:bg-gray-50"
                 onClick={() => toggleExpand(country.id)}
               >
+                <td className="table-cell">{index + 1}</td>
                 <td className="table-cell font-medium">
                   {country.name}
                 </td>

@@ -8,7 +8,7 @@ import { getIndicatorsByMeasureId } from "@/features/indicator/services/indicato
 export async function loadChildrenCountryKpaTree(nodeKey: string): Promise<TreeNode[]> {
   const [type, id] = nodeKey.split("-");
   const numericId = Number(id);
-
+  
   switch (type) {
     case "ck": {
       const outputs = await getStrategicOutputsByCountryKpaId(numericId);
@@ -18,8 +18,8 @@ export async function loadChildrenCountryKpaTree(nodeKey: string): Promise<TreeN
           key: `so-${so.id}`,
           label: so.name,
           icon: <Target className="w-4 h-4 text-orange-500" />,
-          lazy: so.measures_count > 0,
-          leaf: so.measures_count === 0,
+          lazy: true,
+          leaf: false,
           data: { type: "so" as const, id: so.id,  count: so.measures_count},
           parent_id: numericId
         })),
@@ -34,8 +34,8 @@ export async function loadChildrenCountryKpaTree(nodeKey: string): Promise<TreeN
           key: `m-${m.id}`,
           label: m.name,
           icon: <BarChart2 className="w-4 h-4 text-purple-500" />,
-          lazy: m.indicators_count > 0,
-          leaf: m.indicators_count === 0,
+          lazy: true,
+          leaf: false,
           data: { type: "m" as const, id: m.id, count: m.indicators_count },
           parent_id: numericId
         })),
