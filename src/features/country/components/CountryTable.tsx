@@ -34,6 +34,7 @@ export default function CountryTable({ countries, pagination, page, perPage, set
             <table className="table-default">
                 <thead className="table-head">
                     <tr>
+                        <th>N°</th>
                         <th>NAME</th>
                         <th>CURRENCY</th>
                         <th>ACTIONS</th>
@@ -41,8 +42,9 @@ export default function CountryTable({ countries, pagination, page, perPage, set
                 </thead>
 
                 <tbody>
-                    {countries.map((country) => (
+                    {countries.map((country, index) => (
                         <tr key={country.id} className="table-row">
+                            <td className="table-cell">{index+1}</td>
                             <td className="table-cell">{country.name}</td>
                             <td className="table-cell">{country.currency.code}</td>
 

@@ -11,6 +11,7 @@ import CountryKpaListPage from "@/features/CountryKpa/pages/CountryKpaListPage";
 import KpasListPage from "@/features/kpa/pages/KpasListPage";
 import InfoCountryKpaPage from "@/features/CountryKpaInfo/pages/InfoCountryKpaPage";
 import IndicatorTypesListPage from "@/features/indicator-type/pages/IndicatorTypesListPage";
+import ProjectStateListPage from "@/features/project-states/pages/ProjectStateListPage";
 
 export function AppRouter() {
     return (
@@ -25,6 +26,7 @@ export function AppRouter() {
             <Route path="sdgs" element={<SdgsPage />} />
             <Route path="program-states" element={<ProgramStatesPage />} />
             <Route path="indicator-types" element={<IndicatorTypesListPage/>} />
+            <Route path="project-states" element={<ProjectStateListPage/>} />
         </Route>
 
         {/* Programs & Projects Routes */}

@@ -47,7 +47,8 @@ const menuItems: MenuItem[] = [
         { title: "KPAs", path: "/config/kpas", icon: Building2 },
         { title: "SDGs", path: "/config/sdgs", icon: Flag },
         { title: "Program States", path: "/config/program-states", icon: LinkIcon },
-        { title: "Indicator Types", path: "/config/indicator-types", icon: LinkIcon }
+        { title: "Indicator Types", path: "/config/indicator-types", icon: LinkIcon },
+        { title: "Project States", path: "/config/project-states", icon: LinkIcon },
     ],
     },
     {

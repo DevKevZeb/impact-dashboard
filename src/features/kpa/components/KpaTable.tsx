@@ -43,6 +43,7 @@ export default function KpaTable({
       <table className="table-default">
         <thead className="table-head">
           <tr>
+            <th>N°</th>
             <th>NAME</th>
             <th>IMPLEMENTATION</th>
             <th>ACTIONS</th>
@@ -50,8 +51,9 @@ export default function KpaTable({
         </thead>
 
         <tbody>
-          {kpas.map((kpa) => (
+          {kpas.map((kpa, index) => (
             <tr key={kpa.id} className="table-row">
+              <td className="table-cell">{index+1}</td>
               <td className="table-cell">{kpa.name}</td>
               <td className="table-cell">{kpa.implementation}%</td>
 

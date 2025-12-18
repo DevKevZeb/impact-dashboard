@@ -28,6 +28,28 @@ export const LazyTree: React.FC<LazyTreeProps> = ({ value, selectionKey, onSelec
     setInternalValue(value);
   }, [value]);
 
+  function updateNodeByKey(
+    nodes: TreeNode[],
+    key: string,
+    updater: (node: TreeNode) => TreeNode
+  ): TreeNode[] {
+    return nodes.map(node => {
+      if (node.key === key) {
+        return updater(node);
+      }
+
+      if (node.children) {
+        return {
+          ...node,
+          children: updateNodeByKey(node.children, key, updater),
+        };
+      }
+
+      return node;
+    });
+  }
+
+
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
 
   const findNode = useCallback(
@@ -79,27 +101,36 @@ export const LazyTree: React.FC<LazyTreeProps> = ({ value, selectionKey, onSelec
     return newKeys;
   };
 
-
-
   const refreshNode = async (key: string) => {
-    const node = findNode(key);
-    if (!node || !loadChildren) return;
+    if (!loadChildren) return;
 
-    node.children = undefined;
-    node.loading = true;
-    setInternalValue([...internalValue]);
+    setInternalValue(prev =>
+      updateNodeByKey(prev, key, node => ({
+        ...node,
+        loading: true,
+        children: undefined,
+      }))
+    );
 
-    const children = await loadChildren(node.key);
-    node.children = children;
-    node.loading = false;
-    setExpandedKeys(prev => {
-      const collapsed = collapseChildren(children, prev);
+    const children = await loadChildren(key);
+    const realChildren = children.filter(c => !c.isTitle);
 
-      return { ...collapsed, [key]: true };
-    });
+    setInternalValue(prev =>
+      updateNodeByKey(prev, key, node => ({
+        ...node,
+        loading: false,
+        lazy: true,
+        leaf: realChildren.length === 0,
+        data: node.data
+          ? { ...node.data, count: realChildren.length }
+          : node.data,
+        children,
+      }))
+    );
 
-    setInternalValue([...internalValue]);
+    setExpandedKeys(prev => ({ ...prev, [key]: true }));
   };
+
 
   useEffect(() => {
     if (onRefreshNode) onRefreshNode(refreshNode);
@@ -240,15 +271,11 @@ const Item: React.FC<ItemProps> = ({ node, level, expandedKeys, onToggle, onSele
 
   return (
     <li className={`tree-node-group level-${node.data?.type}`}>
-      <div className={`flex items-center gap-2 py-1 rounded-md ${ isSelected ? "bg-emerald-50" : "hover:bg-slate-50" }`} style={{ paddingLeft: indent }} onClick={() => onSelect(node)} >
+      <div className={`flex items-center gap-2 py-1 rounded-md ${ isSelected ? "bg-blue-50" : "hover:bg-slate-50" }`} style={{ paddingLeft: indent }} onClick={() => onSelect(node)} >
         {node.data?.type !== "i" && (
-          node.data?.count === 0 ? (
-            <span className="inline-block w-6" />
-          ) : (
-            <button type="button" onClick={(e) => { e.stopPropagation(); onToggle(node.key); }} className="p-1 hover:bg-slate-200 rounded" >
-              {expanded ? <ChevronDown className="w-4" /> : <ChevronRight className="w-4" />}
-            </button>
-          )
+          <button type="button" onClick={(e) => { e.stopPropagation(); onToggle(node.key);}} disabled={node.data?.count === 0} className={`p-1 rounded ${node.data?.count === 0 ? "opacity-0 cursor-default" : "hover:bg-slate-200"}`}>
+            {expanded ? (<ChevronDown className="w-4" />) : (<ChevronRight className="w-4" />)}
+          </button>
         )}
         {node.icon}
           <span className="flex items-center gap-2 text-sm font-medium">
@@ -265,10 +292,7 @@ const Item: React.FC<ItemProps> = ({ node, level, expandedKeys, onToggle, onSele
                         {node.meta?.target}
                       </span>
                     </span>
-                    <span
-                      key={node.meta?.type_id}
-                      className="rounded-md bg-[#0082BE] px-2 py-0.5 text-xs font-semibold text-white"
-                    >
+                    <span key={node.meta?.type_id} className="rounded-md bg-[#0082BE] px-2 py-0.5 text-xs font-semibold text-white" >
                       {node.meta?.type}
                     </span>
                   </span>

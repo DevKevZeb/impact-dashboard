@@ -8,6 +8,9 @@ import { useUpdateAgency } from "../hooks/useUpdateAgency";
 
 import type { Agency, CreateAgencyDto } from "../types/agency.types";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import { Loader2, Plus, Search, Tag } from "lucide-react";
+import { EmptyState } from "@/shared/components/EmptyState";
+import { Button } from "@/components/ui/button";
 
 export default function AgencyListPage() {
   const [page, setPage] = useState(1);
@@ -20,6 +23,7 @@ export default function AgencyListPage() {
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSubmit = async (formData: CreateAgencyDto) => {
     if (selectedAgency) await updateAgency({ id: selectedAgency.id, dto: formData });
@@ -48,22 +52,49 @@ export default function AgencyListPage() {
     });
   };
 
-  return (
-    <div className="p-6 space-y-4">
-      <div className="flex flex-col justify-between">
-        <h1 className="label-default">Agencies</h1>
-        <div className="flex py-6 space-x-3">
-          <input
-            type="text"
-            placeholder="Search by name..."
-            //value={search}
-            //onChange={handleSearchChange}
-            className="input-default w-auto"
-          />
-          <button onClick={handleOpenCreate} className="btn-secondary">CREATE</button>
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setPage(1);
+  };
+
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-12 h-12 animate-spin text-emerald-600 mx-auto" />
+          <p className="text-gray-500">Loading Agencies...</p>
         </div>
       </div>
+    );
+  }
 
+  return (
+    <div className="p-6 space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+       <div>
+         <h1 className="page-title">Agencies</h1>   
+          <p className="page-description">
+            Manage the Agencies
+          </p> 
+       </div>
+        <Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
+          <Plus className="w-5 h-5 mr-2"/>
+          New Agency
+        </Button>
+      </div>
+      
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Search by agency name..."
+          value={searchTerm}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          className="search-default"
+        />
+      </div>
 
       <CreateAgencyModal open={openModal} agency={selectedAgency} onClose={() => setOpenModal(false)} onSubmit={handleSubmit} />
 
@@ -71,9 +102,14 @@ export default function AgencyListPage() {
       {isLoading && <TableSkeleton columns={4} rows={10}/>}
       {error && <p>Error loading agencies</p>}
 
-      {data && (
+      {data && data.agencies.length > 0 ? (
         <AgencyTable agencies={data?.agencies} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} onEdit={handleEdit} onDelete={(agency) => console.log("DELETE", agency)} onApprove={handleApprove} setPerPage={setPerPage} />
-      )}
+      ):
+      <EmptyState 
+      icon={Tag} title={searchTerm ? "No agencies found" : "No agencies available"}
+      description={
+        searchTerm ? "Try adjusting your search terms" : "Click 'New Agency' to create your first Agency"
+      }/>}
     </div>
   );
 }

@@ -35,6 +35,7 @@ export default function AgencyTable({ agencies, pagination, page, perPage, setPa
       <table className="table-default">
         <thead className="table-head">
           <tr>
+            <th>N°</th>
             <th>NAME</th>
             <th>URL</th>
             <th>IS APPROVED</th>
@@ -43,8 +44,9 @@ export default function AgencyTable({ agencies, pagination, page, perPage, setPa
         </thead>
 
         <tbody>
-          {agencies.map((agency) => (
+          {agencies.map((agency, index) => (
             <tr key={agency.id} className="table-row">
+              <td className="table-cell">{index + 1}</td>
               <td className="table-cell">{agency.name}</td>
               <td className="table-cell">
                 <a href={agency.url} target="_blank" className="text-blue-600 underline">
@@ -74,7 +76,7 @@ export default function AgencyTable({ agencies, pagination, page, perPage, setPa
           ))}
 
           <tr className="table-pagination-row">
-            <td colSpan={4} className="table-pagination-cell">
+            <td colSpan={5} className="table-pagination-cell">
               <div className="table-pagination-container">
 
                 <div className="flex items-center gap-2 text-xs text-gray-600">

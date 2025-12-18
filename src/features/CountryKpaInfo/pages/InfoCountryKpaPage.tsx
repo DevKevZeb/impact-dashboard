@@ -13,7 +13,7 @@ import type { UpdateMeasureDTO } from "@/features/measures/types/measureTypes";
 import { useCreateMeasure } from "@/features/measures/hooks/useCreateMeasure";
 import { useUpdateMeasure } from "@/features/measures/hooks/useUpdateMeasure";
 import CreateMeasureModal from "@/features/measures/components/CreateMeasureModal";
-import type { Indicator, UpdateIndicatorDTO } from "@/features/indicator/types/indicatorTypes";
+import type { Indicator } from "@/features/indicator/types/indicatorTypes";
 import CreateIndicatorModal from "@/features/indicator/components/CreateIndicatorModal";
 import { useCreateIndicator } from "@/features/indicator/hooks/useCreateIndicator";
 import { useUpdateIndicator } from "@/features/indicator/hooks/useUpdateIndicator";
@@ -73,8 +73,8 @@ export default function InfoCountryKpaPage() {
           key: `ck-${k.id_ck}`,
           label: k.name,
           icon: <Flag className="w-4 h-4 text-sky-600" />,
-          lazy: k.strategic_outputs_count > 0,
-          leaf: k.strategic_outputs_count === 0,
+          lazy: true,
+          leaf: false,
           data: {
             type: "ck" as const,
             id: k.id_ck,
@@ -105,18 +105,17 @@ export default function InfoCountryKpaPage() {
   }
 
   const handleSubmitStrategicOutput = async (dto: any) => {
+    const parentKey = editStrategicOutput ? `ck-${editStrategicOutput.country_kpa_id}` : `ck-${dto.country_kpa_id}`;
+
     if(editStrategicOutput) await updateStrategicOutput({id: editStrategicOutput.id, dto: dto});
+    else await createStrategicOutput(dto);
     
-    else{
-      await createStrategicOutput(dto);
-    }
     setOpenStrategicOutputModal(false);
     setEditStrategicOutput(null);
     setParentKpaId(null);
 
-    if (refreshNode && parentKpaId !== null) {
-    refreshNode(`ck-${parentKpaId}`);
-    }
+    refreshNode?.(parentKey);
+
   }
 
   const handleCreateMeasure = async (node: TreeNode) => {
@@ -137,18 +136,17 @@ export default function InfoCountryKpaPage() {
   }
 
   const handleSubmitMeasure = async (dto: any) => {
+    const parentKey = editMeasure ? `so-${editMeasure.strategic_output_id}` : `so-${dto.strategic_output_id}`;
+
     if(editMeasure) await updateMeasure({ id: editMeasure.id, dto: dto });
-    else{
-      await createMeasure(dto);
-    }
+    else await createMeasure(dto);
+    
 
     setOpenMeasureModal(false);
     setEditMeasure(null);
     setParentStrategicOutputId(null);
 
-    if (refreshNode && parentStrategicOutputId !== null) {
-    refreshNode(`so-${parentStrategicOutputId}`);
-    }
+    refreshNode?.(parentKey);
   }
 
   const handleCreateIndicator = async (node: TreeNode) => {
@@ -176,6 +174,8 @@ export default function InfoCountryKpaPage() {
   }
 
   const handleSubmitIndicator = async (dto: any) => {
+    const parentKey = editIndicator ? `m-${editIndicator.measure_id}` : `m-${dto.measure_id}`;
+
     if(editIndicator) await updateIndicator({ id: editIndicator.id, dto: dto});
     else await createIndicator(dto);
 
@@ -183,9 +183,7 @@ export default function InfoCountryKpaPage() {
     setEditIndicator(null);
     setParentMeasureId(null);
 
-    if (refreshNode && parentStrategicOutputId !== null) {
-    refreshNode(`m-${parentStrategicOutputId}`);
-    }
+    refreshNode?.(parentKey);
   }
 
 
