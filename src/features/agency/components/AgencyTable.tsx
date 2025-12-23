@@ -35,7 +35,7 @@ export default function AgencyTable({ agencies, pagination, page, perPage, setPa
       <table className="table-default">
         <thead className="table-head">
           <tr>
-            <th>N°</th>
+            <th>#</th>
             <th>NAME</th>
             <th>URL</th>
             <th>IS APPROVED</th>

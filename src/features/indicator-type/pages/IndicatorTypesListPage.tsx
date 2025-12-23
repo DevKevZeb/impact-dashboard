@@ -59,19 +59,19 @@ export default function IndicatorTypesListPage(){
   }
 
     return(
-        <div className="p-6 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="page-container">
+            <div className="title-container">
                 <div>
                     <h1 className="page-title">Indicator Types</h1>   
                     <p className="page-description">
                         Manage the Indicator Types
                     </p> 
                 </div>
-                    <Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
+                <Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
                     <Plus className="w-5 h-5 mr-2"/>
                     New Indicator Type
-                    </Button>
-                </div>
+                </Button>
+            </div>
                 
                 {/* Search */}
                 <div className="relative max-w-md">

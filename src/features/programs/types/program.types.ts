@@ -21,7 +21,10 @@ export interface Program {
   sdgs?: Sdg[];
   created_at?: string;
   updated_at?: string;
+  projects_count?: number;
 }
+
+
 
 export interface ProgramCreateInput {
   name: string;

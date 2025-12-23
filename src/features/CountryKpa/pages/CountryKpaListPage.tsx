@@ -60,8 +60,8 @@ export default function CountryKpaListPage() {
   }
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="page-container">
+      <div className="title-container">
        <div>
          <h1 className="page-title">Countries with KPAs</h1>   
           <p className="page-description">
