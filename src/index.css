@@ -171,3 +171,11 @@
 .loader-default{
   @apply w-12 h-12 animate-spin text-sky-600 mx-auto;
 }
+
+.page-container {
+  @apply p-6 space-y-4;
+}
+
+.title-container {
+  @apply flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4
+}

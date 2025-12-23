@@ -81,7 +81,6 @@ export function ProgramsPage() {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="page-title">Programs</h1>
@@ -90,26 +89,15 @@ export function ProgramsPage() {
           </p>
         </div>
 
-        <Button
-          onClick={() => setIsCreateDialogOpen(true)}
-          size="lg"
-          className="btn-secondary"
-        >
+        <Button onClick={() => setIsCreateDialogOpen(true)} size="lg" className="btn-secondary" >
           <Plus className="w-5 h-5 mr-2" />
           Create Program
         </Button>
       </div>
 
-      {/* Search */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Search programs..."
-          value={searchTerm}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-        />
+        <input type="text" placeholder="Search programs..." value={searchTerm} onChange={(e) => handleSearchChange(e.target.value)} className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all" />
       </div>
 
       {/* Table */}

@@ -43,7 +43,7 @@ export default function KpaTable({
       <table className="table-default">
         <thead className="table-head">
           <tr>
-            <th>N°</th>
+            <th>#</th>
             <th>NAME</th>
             <th>IMPLEMENTATION</th>
             <th>ACTIONS</th>

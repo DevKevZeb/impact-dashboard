@@ -12,6 +12,7 @@ import KpasListPage from "@/features/kpa/pages/KpasListPage";
 import InfoCountryKpaPage from "@/features/CountryKpaInfo/pages/InfoCountryKpaPage";
 import IndicatorTypesListPage from "@/features/indicator-type/pages/IndicatorTypesListPage";
 import ProjectStateListPage from "@/features/project-states/pages/ProjectStateListPage";
+import ListProgramsWithProjects from "@/features/projects/pages/ListProgramsWithProjects";
 
 export function AppRouter() {
     return (
@@ -31,7 +32,7 @@ export function AppRouter() {
 
         {/* Programs & Projects Routes */}
         <Route path="programs" element={<ProgramsPage />} />
-        <Route path="projects" element={<PlaceholderPage title="Projects" description="Manage projects" />} />
+        <Route path="projects" element={<ListProgramsWithProjects />}/>
         <Route path="country-kpa" element={<CountryKpaListPage/>} />
         <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
         

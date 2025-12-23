@@ -1,4 +1,4 @@
-import { Eye, SquarePen, Trash2 } from "lucide-react";
+import { ChartNoAxesCombined, Eye, FolderKey, SquarePen, Trash2 } from "lucide-react";
 import type { Program } from "../types/program.types";
 import { DataTableRow, DataTableCell } from "@/shared/components/table";
 import { toast } from "sonner";
@@ -27,8 +27,8 @@ export function ProgramTableRow({ program, index, onEdit, onView }: ProgramTable
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toast.info("Delete functionality", {
-      description: "Delete feature is not yet implemented in the backend",
+    toast.info("Manage projects", {
+      description: "Manage projects feature is not yet implemented in the backend",
     });
   };
 
@@ -100,10 +100,10 @@ export function ProgramTableRow({ program, index, onEdit, onView }: ProgramTable
       </DataTableCell>
 
       <DataTableCell>
-        <div className="space-x-2">
+        <div className="space-x-1">
           <button
             onClick={handleView}
-            className="inline-flex items-center justify-center w-8 h-8 rounded-md text-sky-600 hover:bg-sky-50 transition-colors"
+            className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-sky-600 hover:bg-sky-50 transition-colors"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
@@ -120,7 +120,7 @@ export function ProgramTableRow({ program, index, onEdit, onView }: ProgramTable
             className="btn-delete-table"
             title="Delete Program (not implemented)"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-4 h-4"/>
           </button>
         </div>
       </DataTableCell>

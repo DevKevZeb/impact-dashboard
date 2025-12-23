@@ -33,7 +33,7 @@ export default function ProjectStateTable({ projectStates, pagination, page, per
             <table className="table-default">
                     <thead className="table-head">
                         <tr>
-                            <th>N°</th>
+                            <th>#</th>
                             <th>STATE</th>
                             <th>ACTIONS</th>
                         </tr>
