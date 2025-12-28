@@ -1,0 +1,103 @@
+import { useState } from "react";
+import { useBeneficiaries } from "../hooks/useBeneficiaries";
+import { useCreateBeneficiary } from "../hooks/useCreateBeneficiary";
+import { useUpdateBeneficiary } from "../hooks/useUpdateBeneficiary";
+import type { Beneficiary, BeneficiaryDTO } from "../types/beneficiaries.types";
+import { Loader2, Plus, Search, Tag } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import CreateBeneficiaryModal from "../components/CreateBeneficiaryModal";
+import BeneficiariesTable from "../components/BeneficiariesTable";
+import { EmptyState } from "@/shared/components/EmptyState";
+
+export default function BeneficiariesListPage(){
+    const [page, setPage] = useState(1);
+    const [perPage, setPerPage] = useState(10);
+
+    const { data, isLoading, error } = useBeneficiaries(page, perPage);
+
+    const { mutateAsync: createBeneficiary} = useCreateBeneficiary();
+    const { mutateAsync: updateBeneficiary } = useUpdateBeneficiary();
+
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const  handleSubmit = async (formData: BeneficiaryDTO) => {
+        if(selectedBeneficiary) await updateBeneficiary({ id: selectedBeneficiary.id, dto: formData});
+        else {
+            await createBeneficiary(formData);
+            setPage(1);
+        }
+        setOpenModal(false);
+    }
+
+    const handleOpenCreate = () => {
+        setSelectedBeneficiary(null);
+        setOpenModal(true);
+    }
+
+    const handleEdit = async (beneficiary: Beneficiary) => {
+        setSelectedBeneficiary(beneficiary);
+        setOpenModal(true);
+    }
+
+    const handleSearchChange = (value: string) => {
+        setSearchTerm(value);
+        setPage(1);
+    }
+    if (isLoading) return (
+        <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center space-y-4">
+            <Loader2 className="loader-default" />
+            <p className="text-gray-500">Loading Beneficiaries...</p>
+            </div>
+        </div>
+    );
+
+    if (error) return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4 max-w-md">
+          <span className="text-2xl">⚠️</span>
+          <p className="text-red-600 font-medium">Error loading beneficiaries</p>
+          <p className="text-sm text-gray-600">
+            {error instanceof Error ? error.message : "Unknown error"}
+          </p>
+        </div>
+      </div>
+    );
+
+    return (
+        <div className="page-container">
+            <div className="title-container">
+                <div>
+                    <h1 className="page-title">Beneficiaries</h1>   
+                    <p className="page-description">
+                        Manage the Beneficiaries
+                    </p> 
+                </div>
+                <Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
+                    <Plus className="w-5 h-5 mr-2"/>
+                    Create Beneficiary
+                </Button>
+            </div>
+
+            {/* Search */}
+            <div className="relative max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input type="text" placeholder="Search by name..." value={searchTerm} onChange={(e) => handleSearchChange(e.target.value)} className="search-default" />
+            </div>
+
+            <CreateBeneficiaryModal beneficiary={selectedBeneficiary} open={openModal} onClose={() => setOpenModal(false)} onSubmit={handleSubmit} />
+            
+            {data && data?.beneficiaries.length > 0 ? (
+                <BeneficiariesTable beneficiaries={data?.beneficiaries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(beneficiary) => console.log("DELETE", beneficiary)}/>
+            ) : (
+                <EmptyState
+                    icon={Tag}
+                    title={searchTerm ? "No beneficiaries found" : "No beneficiaries available"}
+                    description={searchTerm ? "Try adjusting your search criteria." : "Start by creating a new beneficiary."}
+                />
+            )}
+        </div>
+    )
+}
