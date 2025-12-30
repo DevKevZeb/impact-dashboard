@@ -29,15 +29,15 @@ export async function createProjectState(dto: ProjectStateDTO): Promise<ProjectS
 
         return mapProjectState(data.data ?? data);
     } catch(error: any) {
-        const status = error.response?.status;
+      const status = error.response?.status;
 
-    if (status === 422 && error.response?.data?.errors) {
-      const errors = error.response.data.errors as Record<string, string[]>;
-      Object.values(errors).flat().forEach((msg: string) => {
-        toast.error('Error', { description: msg });
-      });
-    }
-    throw error;
+      if (status === 422 && error.response?.data?.errors) {
+        const errors = error.response.data.errors as Record<string, string[]>;
+        Object.values(errors).flat().forEach((msg: string) => {
+          toast.error('Error', { description: msg });
+        });
+      }
+      throw error;
     }
 }
 

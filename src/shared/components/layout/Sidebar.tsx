@@ -42,13 +42,14 @@ const menuItems: MenuItem[] = [
     title: "Configuration",
     icon: Settings,
     children: [
-        { title: "Countries", path: "/config/countries", icon: Globe },
         { title: "Agencies", path: "/config/agencies", icon: Building2 },
-        { title: "KPAs", path: "/config/kpas", icon: Building2 },
-        { title: "SDGs", path: "/config/sdgs", icon: Flag },
-        { title: "Program States", path: "/config/program-states", icon: LinkIcon },
+        { title: "Countries", path: "/config/countries", icon: Globe },
         { title: "Indicator Types", path: "/config/indicator-types", icon: LinkIcon },
+        { title: "KPAs", path: "/config/kpas", icon: Building2 },
+        { title: "Program States", path: "/config/program-states", icon: LinkIcon },
         { title: "Project States", path: "/config/project-states", icon: LinkIcon },
+        { title: "SDGs", path: "/config/sdgs", icon: Flag },
+
     ],
     },
     {

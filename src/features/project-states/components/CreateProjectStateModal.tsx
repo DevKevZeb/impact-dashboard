@@ -6,8 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const projectStaateSchema = z.object({
+const projectStateSchema = z.object({
     state: z.string("The state must be a string").min(3, "The state must contain a minimum of 3 characters.").max(100, "The state must contain a maximum of 3 characters.")
 })
 
@@ -20,6 +21,7 @@ interface Props {
 
 export default function CreateProjectStateModal({open, projectState, onClose, onSubmit}: Props){
     const form = useForm<ProjectStateDTO>({
+      resolver: zodResolver(projectStateSchema),
         defaultValues: {
             state: ""
         }
@@ -61,6 +63,9 @@ export default function CreateProjectStateModal({open, projectState, onClose, on
                     <div className="space-y-4">
                         <Label className="text-gray-700">STATE</Label>
                         <Input className="input-default" placeholder="E.G.: Approved" {...register("state")}/>
+                        {errors.state && (
+                          <p className="text-sm text-red-600">{errors.state.message}</p>
+                        )}
                     </div>
                     <div className="mt-6 flex justify-end gap-3">
                         <Button type="button" variant="outline" onClick={onClose} className="btn-primary" >
