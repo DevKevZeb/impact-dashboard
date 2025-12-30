@@ -13,6 +13,7 @@ import InfoCountryKpaPage from "@/features/CountryKpaInfo/pages/InfoCountryKpaPa
 import IndicatorTypesListPage from "@/features/indicator-type/pages/IndicatorTypesListPage";
 import ProjectStateListPage from "@/features/project-states/pages/ProjectStateListPage";
 import ListProgramsWithProjects from "@/features/projects/pages/ListProgramsWithProjects";
+import BeneficiariesListPage from "@/features/beneficiaries/pages/BeneficiariesListPage";
 import DonorsListPage from "@/features/donors/pages/DonorsListPage";
 
 export function AppRouter() {
@@ -39,8 +40,8 @@ export function AppRouter() {
         
         {/* Resources Routes */}
         <Route path="resources">
+            <Route path="beneficiaries" element={<BeneficiariesListPage/>} />
             <Route path="donors" element={<DonorsListPage/>} />
-            <Route path="beneficiaries" element={<PlaceholderPage title="Beneficiaries" description="Manage beneficiaries" />} />
         </Route>
 
         {/* Reports Routes */}
