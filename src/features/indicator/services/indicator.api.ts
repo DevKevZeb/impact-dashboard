@@ -51,3 +51,21 @@ export async function updateIndicator(id: number, dto: UpdateIndicatorDTO): Prom
       throw error;
     }
 }
+
+interface FetchParams {
+  query: string;
+  page: number;
+  limit: number;
+}
+
+export function fetchIndicatorForSelect(measureId: number, excludedIds: number[] = []){
+  return async ({query, page, limit } : FetchParams)=>{
+    const { data } = await apiClient.get(`/indicators/measure/${measureId}`, { params: {search: query || undefined, page, per_page:limit, exclude: excludedIds.length ? excludedIds : undefined}})
+
+    return {
+      items: mapIndicators(data.data.indicators),
+      hasMore: data.data.current_page < data.data.last_page,
+    };
+
+  }
+}

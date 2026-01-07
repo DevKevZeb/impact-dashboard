@@ -1,4 +1,4 @@
-import type { Donor } from "../types/donor.types";
+import type { Donor, DonorProject } from "../types/donor.types";
 
 export function mapDonor(raw: any):Donor {
     return {

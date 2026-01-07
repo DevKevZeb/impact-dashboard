@@ -54,3 +54,29 @@ function showErrors(error: any){
       });
     }
 }
+
+export async function fetchSearchBeneficiaries(search: string, page: number){
+  const { data } = await apiClient.get(`/beneficiaries?search=${encodeURIComponent(search)}&page=${page}&per_page=${5}`);
+  return {
+    beneficiaries: mapBeneficiaries(data.data.beneficiaries),
+    pagination: {
+      current_page: data.data.current_page,
+      last_page: data.data.last_page,
+      per_page: data.data.per_page,
+      total: data.data.total
+    }
+  }
+}
+
+
+
+export async function fetchBeneficiariesForSelector(params: { query: string; page: number; limit: number; }){
+  const { query, page, limit } = params;
+  const data = await fetchSearchBeneficiaries(query, page);
+
+  return {
+    items: mapBeneficiaries(data.beneficiaries),
+    hasMore: data.pagination.current_page < data.pagination.last_page
+  }
+
+}

@@ -5,6 +5,16 @@ export interface StrategicOutput {
     measures_count: number
 }
 
+export interface StrategicOutputCountry{
+    id: number,
+    name: string,
+    country: {
+        id: number,
+        name: string,
+    }
+    measures_count: number
+}
+
 export interface  CreateStrategicOutputDTO {
     name: string,
     country_kpa_id: number

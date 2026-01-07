@@ -2,6 +2,7 @@ import { apiClient } from "@/shared/lib/axios";
 import { mapMeasure, mapMeasures } from "../mappers/measure.mapper";
 import type { CreateMeasureDTO, Measure, UpdateMeasureDTO } from "../types/measureTypes";
 import { toast } from "sonner";
+import { Search } from "lucide-react";
 
 export async function getMeasuresByStrategicOutputId(id_so: number) {
   const { data } = await apiClient.get(`/measures/strategic-output/${id_so}`);
@@ -50,4 +51,35 @@ export async function createMeasure(dto: CreateMeasureDTO): Promise<Measure>{
   
       throw error;
     }
+}
+
+export async function fetchSearchMeasuresByStrategicOutputId(search: string, page: number, id: number){
+  const { data } = await apiClient.get(`/measures/get/strategic-output/${id}?search=${encodeURIComponent(search)}&page=${page}&per_page=${5}`);
+
+  return {
+      strategic_outputs: mapMeasures(data.data.measures),
+      pagination: {
+        current_page: data.data.current_page,
+        last_page: data.data.last_page,
+        per_page: data.data.per_page,
+        total: data.data.total
+      }
+  }
+}
+
+interface FetchParams {
+  query: string;
+  page: number;
+  limit: number;
+}
+
+export function fetchMeasuresForSelect(strategicOutputId: number){
+  return async ({ query, page, limit} : FetchParams) => {
+    const { data } = await apiClient.get(`/measures/get/strategic-output/${strategicOutputId}`, {params: { search: query || undefined, page, per_page: limit}});
+    
+    return {
+      items: mapMeasures(data.data.measures),
+      hasMore: data.data.current_page < data.data.last_page,
+    }
+  }
 }
