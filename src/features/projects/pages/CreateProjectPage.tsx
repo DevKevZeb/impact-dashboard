@@ -29,137 +29,7 @@ import type { Beneficiary } from "../types/project.types";
 import { fetchBeneficiariesForSelector } from "@/features/beneficiaries/service/beneficiaries.api";
 import type { FieldErrors } from "react-hook-form";
 import { toast } from "sonner";
-
-
-const projectSchema = z.object({
-    name: z.string().min(3, "The project name must have at least 3 characters").max(255, "The project name must not exceed 255 characters"),
-    description: z.string().min(10, "Description must have at least 10 characters").max(2000, "Description must not exceed 2000 characters"),
-    kpa: z.object({
-        id: z.number(),
-        name: z.string(),
-        strategic_outputs_count: z.number(),
-    }, "KPA is required").refine((val) => val !== null, { message: "KPA is required" }),
-
-    strategicOutput: z.object({
-        id: z.number(),
-        name: z.string().min(1, "The strategic Output is required"),
-        country: z.object({
-            id: z.number(),
-            name: z.string()
-        }),
-        measures_count: z.number()
-    }, "Strategic output is required").refine((val) => val !== null, { message: "Strategic output is required" }),
-
-    measure: z.object({
-        id: z.number(),
-        name: z.string().min(1, "The measure is required"),
-        indicators_count: z.number()
-    }, "Measure is required").refine((val) => val !== null, { message: "KPA is required" }),
-
-    indicators: z.array(
-        z.object({
-        id: z.number().min(1, "You must select an indicator"),
-        name: z.string().min(1),
-        })
-    ).min(1, "At least one indicator is required"),
-
-
-    start_date: z.date().nullable(),
-    end_date: z.date().nullable(),   
-    
-    donors: z.array(
-        z.object({
-            id: z.number().min(1, "You must select a donor"),
-            name: z.string().min(1),
-            contribution: z.number().min(0, "Contribution must be ≥ 0").max(100, "Contribution must be ≤ 100"),
-        })
-    ).min(1, "At least one donor is required"),
-
-    agencies: z.array(
-        z.object({
-            id: z.number().min(1, "You must select an agency"),
-            name: z.string().min(1),
-            url: z.string().url(),
-            contribution: z.number().min(0, "Contribution must be ≥ 0").max(100, "Contribution must be ≤ 100"),
-        })
-    ).min(1, "At least one agency is required"),
-
-    project_url: z.string().url("Invalid URL").optional(),
-
-    has_budget: z.boolean().default(false),
-    budget: z.number().min(0, "Contribution must be ≥ 0").optional(),
-
-    beneficiary: z.object({
-        id: z.number(),
-        name: z.string(),
-
-    }, "Select a beneficiary"),
-
-    contact: z.object({
-        first_name: z
-            .string()
-            .min(1, "The contact first name must not be empty")
-            .min(2, "The contact first name must have at least 2 characters")
-            .max(50, "The contact first name must not exceed 50 characters")
-            .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact first name contains invalid characters"),
-
-        last_name: z
-            .string()
-            .min(1, "The contact last name must not be empty")
-            .min(2, "The contact last name must have at least 2 characters")
-            .max(50, "The contact last name must not exceed 50 characters")
-            .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact last name contains invalid characters"),
-
-        title: z
-            .string()
-            .min(1, "The contact title must not be empty")
-            .min(2, "The contact title must have at least 2 characters")
-            .max(100, "The contact title must not exceed 100 characters")
-            .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact title contains invalid characters"),
-
-        email: z
-            .string()
-            .min(1, "The contact email must not be empty")
-            .email("The contact email must have a valid format")
-            .max(254, "The contact email exceeds the maximum allowed length (254 characters)"),
-
-        phone: z
-            .string()
-            .regex(/^\+?[0-9]{7,15}$/, "The phone number format is not valid – use international format")
-            .min(7, "The phone number must have at least 7 digits")
-            .max(15, "The phone number must not exceed 15 digits"),
-        }),
-
-    progress: z.number().min(0).max(100),
-
-    comments: z.string().max(1000, "Comments must not exceed 1000 characters").optional(),
-
-    program_id: z.number().min(1),
-
-    project_state_id: z.number().min(1),
-    
-})
-.refine((data) => !!data.start_date, {
-  message: "Start date is required",
-  path: ["start_date"],
-})
-.refine((data) => !!data.end_date, {
-  message: "End date is required",
-  path: ["end_date"],
-})
-.refine(
-  (data) => data.start_date !== null && data.end_date !== null && data.end_date >= data.start_date,
-  {
-    message: "End date must be after start date",
-    path: ["end_date"],
-  }
-).refine(
-  (data) => !data.has_budget || data.budget !== undefined,
-  {
-    message: "Budget is required when enabled",
-    path: ["budget"],
-  }
-);
+import { projectSchema } from "../types/project.schema";
 
 type IndicatorFormValue = { id: number; name: string; };
 type DonorFormValue = { id: number; name: string; contribution: number };
@@ -172,6 +42,8 @@ interface Props {
 export default function ProjectFormPage({ mode }: Props) {
 
     const onInvalid = (errors: FieldErrors) => toast.error("Please fix the highlighted errors before submitting.");
+    
+    const isEditing = mode === "edit";
 
 
     const { programId, projectId } = useParams();
@@ -203,8 +75,6 @@ export default function ProjectFormPage({ mode }: Props) {
     const hasUnselectedDonor = donors?.some((i: DonorFormValue) => !i?.id || i.id === 0);
     const hasUnselectedAgency = agencies?.some((i: AgencyFormValue) => !i?.id || i.id === 0);
 
-    
-    const isEditing = mode === "edit";
 
     const fetchDonors = async (params: any) => {
         const response = await fetchDonorsForSelect(donorsFields.map((d) => d.id))(params);
@@ -515,7 +385,6 @@ export default function ProjectFormPage({ mode }: Props) {
                 )}
             </div>
             <Button type="submit" className="btn-secondary">{isEditing ? 'Edit' : 'Create'}</Button>
-
         </form>
     </div>
   );
