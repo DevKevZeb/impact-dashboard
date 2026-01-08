@@ -1,5 +1,6 @@
 import type { Program } from "@/features/programs/types/program.types";
-import { Eye } from "lucide-react";
+import { Eye, Plus } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface Pagination {
   total: number;
@@ -24,9 +25,13 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
       setPage(1);
     };
 
-  const handleView = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
+    const handleView = (e: React.MouseEvent) => {
+      e.stopPropagation();
+    };
+
+    const handleAddProject = (e: React.MouseEvent) => {
+      e.stopPropagation();
+    }
     
     return(
         <div className="table-wrapper">
@@ -36,7 +41,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                         <th>#</th>
                         <th>PROGRAM NAME</th>
                         <th>DESCRIPTION</th>
-                        <th># PROJECTS ASSIGNED</th>
+                        <th>PROJECTS ASSIGNED</th>
                         <th>VIEW PROJECTS</th>
                     </tr>
                 </thead>
@@ -48,12 +53,13 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                             <td className="table-cell">{program.description}</td>
                             <td className="table-cell">{program.projects_count}</td> {/* TODO <td>{program.projects.length}</td> */}
                             <td className="table-cell ">
+                                <Link to={`/projects/new/${program.id}`} onClick={(e) => e.stopPropagation()} className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-green-600 hover:bg-sky-50 transition-colors" title="Add Project" >
+                                    <Plus className="w-4 h-4" />
+                                </Link>
                                 <button onClick={handleView} className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-sky-600 hover:bg-sky-50 transition-colors" title="View Projects" >
                                     <Eye className="w-4 h-4" />
                                 </button>
                             </td>
-
-
                         </tr>
                     ))}
                     <tr className="table-pagination-row">

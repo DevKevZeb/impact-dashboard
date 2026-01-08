@@ -42,6 +42,24 @@ export async function updateDonor(id: number, dto: DonorDTO): Promise<Donor>{
     }
 }
 
+interface FetchParams {
+  query: string;
+  page: number;
+  limit: number;
+}
+
+export function fetchDonorsForSelect(excludedIds: number[] = []){
+  return async ({query, page, limit } : FetchParams)=>{
+    const { data } = await apiClient.get(`/donors/get/project`, { params: {search: query || undefined, page, per_page:limit, exclude: excludedIds.length ? excludedIds : undefined}})
+
+    return {
+      items: mapDonors(data.data.donors),
+      hasMore: data.data.current_page < data.data.last_page,
+      total: data.data.all
+    };
+  }
+}
+
 function showErrors(error: any) {
     const status = error.response?.status;
 

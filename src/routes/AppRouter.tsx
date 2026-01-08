@@ -15,6 +15,7 @@ import ProjectStateListPage from "@/features/project-states/pages/ProjectStateLi
 import ListProgramsWithProjects from "@/features/projects/pages/ListProgramsWithProjects";
 import BeneficiariesListPage from "@/features/beneficiaries/pages/BeneficiariesListPage";
 import DonorsListPage from "@/features/donors/pages/DonorsListPage";
+import CreateProjectPage from "@/features/projects/pages/CreateProjectPage";
 
 export function AppRouter() {
     return (
@@ -35,6 +36,8 @@ export function AppRouter() {
         {/* Programs & Projects Routes */}
         <Route path="programs" element={<ProgramsPage />} />
         <Route path="projects" element={<ListProgramsWithProjects />}/>
+        <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
+        <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
         <Route path="country-kpa" element={<CountryKpaListPage/>} />
         <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
         

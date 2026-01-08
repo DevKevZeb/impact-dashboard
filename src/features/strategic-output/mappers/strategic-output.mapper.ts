@@ -1,4 +1,4 @@
-import type { StrategicOutput } from "../types/StrategicOutput";
+import type { StrategicOutput, StrategicOutputCountry } from "../types/StrategicOutput";
 
 export function mapStrategicOutput(raw: any): StrategicOutput {
   return {
@@ -10,5 +10,22 @@ export function mapStrategicOutput(raw: any): StrategicOutput {
 }
 
 export function mapStrategicOutputs(rawList: any[]): StrategicOutput[] {
-  return rawList.map(mapStrategicOutput)
+  return rawList.map(mapStrategicOutput);
+}
+
+export function mapStrategicOutputWithCountry(raw: any): StrategicOutputCountry{
+
+  return{
+    id: raw.id,
+    name: raw.name,
+    country: {
+      id: raw.country_kpa.country.id,
+      name: raw.country_kpa.country.name,
+    },
+    measures_count: raw.measures_count ?? 0
+  }
+}
+
+export function mapStrategicOutputsWithCountry(rawList: any[]): StrategicOutputCountry[]{
+  return rawList.map(mapStrategicOutputWithCountry);
 }

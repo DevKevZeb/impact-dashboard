@@ -1,5 +1,5 @@
 import { apiClient } from "@/shared/lib/axios";
-import { mapKpa, mapKpas } from "../mappers/kpa.mapper";
+import { mapKpa, mapKpas, mapKpasProject } from "../mappers/kpa.mapper";
 import type { CreateKpaDto, Kpa, UpdateKpaDto } from "../types/KpaType";
 import { toast } from "sonner";
 
@@ -62,9 +62,9 @@ export async function updateKpa(id: number, dto: UpdateKpaDto): Promise<Kpa>{
 }
 
 export async function fetchSearchKpas(search: string, page: number){
-  const { data } = await apiClient.get(`/kpas?serch=${encodeURIComponent(search)}&page=${page}&per_page=${20}`);
+  const { data } = await apiClient.get(`/kpas?search=${encodeURIComponent(search)}&page=${page}&per_page=${5}`);
   return {
-    kpas: mapKpas(data.data.kpas),
+    kpas: mapKpasProject(data.data.kpas),
     pagination: {
       current_page: data.data.current_page,
       last_page: data.data.last_page,
@@ -72,4 +72,14 @@ export async function fetchSearchKpas(search: string, page: number){
       total: data.data.total
     }
   }
+}
+
+export async function fetchKpasForSelect(params: { query: string; page: number; limit: number; }) : Promise<{ items: Kpa[]; hasMore: boolean}>{
+  const { query, page } = params;
+  const res = await fetchSearchKpas(query, page);
+
+  return {
+    items: res.kpas,
+    hasMore: res.pagination.current_page < res.pagination.last_page,
+  };
 }

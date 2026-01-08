@@ -4,6 +4,13 @@ export interface Kpa{
     implementation: number
 }
 
+export interface KpaProject{
+    id: number,
+    name: string,
+    implementation: number,
+    strategic_outputs_count: number,
+}
+
 export interface CreateKpaDto{
     name: string, 
     implementation:number

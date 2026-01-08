@@ -4,6 +4,12 @@ export interface Donor{
 
 }
 
+export interface DonorProject{
+    id: number,
+    name: string,
+    contribution: number
+}
+
 export interface DonorDTO{
     name: string
 }
