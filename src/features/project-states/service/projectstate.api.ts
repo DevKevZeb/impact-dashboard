@@ -61,3 +61,28 @@ export async function updateProjectState(id: number, dto: ProjectStateDTO): Prom
     throw error;
   }
 }
+
+export async function fetchSearchProjectStates(search: string, page: number, per_page: number){
+  const { data } = await apiClient.get(`/project-states?search=${encodeURIComponent(search)}&page=${page}&per_page=${per_page}`);
+
+  return {
+    project_states: mapProjectStates(data.data.project_states),
+    pagination: {
+      current_page: data.data.current_page,
+      last_page: data.data.last_page,
+      per_page: data.data.per_page,
+      total: data.data.total
+    }
+  }
+}
+
+export async function fetchProjectStatesForSelector(params: { query: string, page: number, limit: number }){
+  const { query, page, limit } = params;
+
+  const data = await fetchSearchProjectStates(query, page, limit);
+
+  return {
+    items: data.project_states,
+    hasMore: data.pagination.current_page < data.pagination.last_page
+  }
+}

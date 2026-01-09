@@ -30,6 +30,8 @@ import { fetchBeneficiariesForSelector } from "@/features/beneficiaries/service/
 import type { FieldErrors } from "react-hook-form";
 import { toast } from "sonner";
 import { projectSchema } from "../types/project.schema";
+import type { ProjectState } from "@/features/project-states/types/projectstate.types";
+import { fetchProjectStatesForSelector } from "@/features/project-states/service/projectstate.api";
 
 type IndicatorFormValue = { id: number; name: string; };
 type DonorFormValue = { id: number; name: string; contribution: number };
@@ -41,7 +43,7 @@ interface Props {
 
 export default function ProjectFormPage({ mode }: Props) {
 
-    const onInvalid = (errors: FieldErrors) => toast.error("Please fix the highlighted errors before submitting.");
+    const onInvalid = (errors: FieldErrors) => { toast.error("Please fix the highlighted errors before submitting."); console.log(errors)};
     
     const isEditing = mode === "edit";
 
@@ -57,7 +59,7 @@ export default function ProjectFormPage({ mode }: Props) {
 
     const form = useForm<any>({
         resolver: zodResolver(projectSchema),
-        defaultValues: { name: "", description: "", kpa: null, strategicOutput: null, measure: null, indicators: [], start_date: null, end_date: null, donors: [], agencies: [], project_url: "", has_budget: false, budget: 0, contact: { first_name: "", last_name: "", title: "", email: "", phone: "" }, comments: "", program_id: parsedProgramId, project_state_id: 1 }
+        defaultValues: { name: "", description: "", kpa: null, strategicOutput: null, measure: null, indicators: [], start_date: null, end_date: null, donors: [], agencies: [], project_url: undefined, has_budget: false, budget: undefined, contact: { first_name: "", last_name: "", title: "", email: "", phone: "" }, comments: "", program_id: parsedProgramId, project_state_id: 1 }
     });
 
     const { register, watch, setValue, handleSubmit, reset, formState: { errors } } = form;
@@ -130,14 +132,14 @@ export default function ProjectFormPage({ mode }: Props) {
         <form className="space-y-6" onSubmit={handleSubmit(submit, onInvalid)}>
             <div className="flex flex-col space-y-2">
                 <Label className="text-gray-700">NAME</Label>
-                <Input  className="input-default" placeholder="Type the project name" {...register("name")} />
+                <Input className="input-default" placeholder="Type the project name" {...register("name")} />
                 {errors.name && (
                     <p className="text-sm text-red-600">{typeof errors.name.message === 'string' ? errors.name.message : 'Invalid input'}</p>
                 )}
             </div>
             <div className="flex flex-col space-y-2">
                 <Label className="text-gray-700">DESCRIPTION</Label>
-                <Textarea  className="input-default" placeholder="Type the project description" {...register("description")} />
+                <Textarea className="input-default" placeholder="Type the project description" {...register("description")} />
                 {errors.description && (
                     <p className="text-sm text-red-600">{typeof errors.description.message === 'string' ? errors.description.message : 'Invalid input'}</p>
                 )}
@@ -178,7 +180,7 @@ export default function ProjectFormPage({ mode }: Props) {
                         {indicatorsFields.map((field, index) => (
                             <div key={field.fieldId} className="items-center gap-2">
                             <div className="flex">
-                                <AsyncSearchSelect value={watch(`indicators.${index}`)} onChange={(v) => { if (!v) return; setValue(`indicators.${index}`, v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); }} fetchOptions={fetchIndicatorForSelect( watch("measure")!.id, indicatorsFields.map(i => Number(i.id)) )} getOptionLabel={(i) => i.name} getOptionKey={(i) => i.id} placeholder="Select an indicator" emptyMessage="No indicators found" />
+                                <AsyncSearchSelect value={watch(`indicators.${index}`)} onChange={(v) => { setValue(`indicators.${index}`, v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); }} fetchOptions={fetchIndicatorForSelect( watch("measure")!.id, indicatorsFields.map(i => Number(i.id)) )} getOptionLabel={(i) => i.name} getOptionKey={(i) => i.id} placeholder="Select an indicator" emptyMessage="No indicators found" />
                                 <Button type="button" variant="ghost" className="text-red-600 cursor-pointer" onClick={() => removeIndicator(index)} >
                                     Remove
                                 </Button>
@@ -229,7 +231,7 @@ export default function ProjectFormPage({ mode }: Props) {
             <div className="flex flex-col space-y-4">
                 <Label className="text-gray-700">SELECT DONOR(S)</Label>
                 {donorsFields.map((field, index) => (
-                    <div>
+                    <div key={index}>
                         <DonorRow key={field.fieldId} index={index} donor={donors[index]} getMaxForDonor={getMaxForDonor} setValue={setValue} removeDonor={removeDonor} fetchDonors={fetchDonors} />
                         {(errors.donors as unknown as any[])?.[index]?.id && (
                             <p className="text-sm mt-2 text-red-600">
@@ -252,7 +254,7 @@ export default function ProjectFormPage({ mode }: Props) {
             <div className="flex flex-col space-y-3">
                 <Label className="text-gray-700">SELECT AGENCY / AGENCIES</Label>
                 {agenciesFields.map((field, index) => (
-                    <div>
+                    <div key={index}>
                         <AgencyRow key={field.fieldId} index={index} agency={agencies[index]} getMaxForContributor={getMaxForAgency} setValue={setValue} removeAgency={removeAgency} fetchAgencies={fetchAgencies}/>
                         {(errors.agencies as unknown as any[])?.[index]?.id && (
                             <p className="text-sm mt-2 text-red-600">
@@ -264,7 +266,7 @@ export default function ProjectFormPage({ mode }: Props) {
                 {errors.agencies && (
                     <p className="text-sm text-red-600">{typeof errors.agencies.message === 'string' ? errors.agencies.message : ''}</p>
                 )}
-                {totalAgencies !== null && donorsFields.length >= totalAgencies && (
+                {totalAgencies !== null && agenciesFields.length >= totalAgencies && (
                     <p className="text-sm text-gray-500">
                         All agencies have been selected.
                     </p>
@@ -295,7 +297,7 @@ export default function ProjectFormPage({ mode }: Props) {
                 {watch("has_budget") && (
                     <div className="flex flex-col space-y-2 max-w-sm">
                     <Label className="text-gray-700">PROJECT BUDGET</Label>
-                    <Input type="number" min={0} placeholder="Enter project budget" {...register("budget", { valueAsNumber: true })} />
+                    <Input type="number" min={0} placeholder="Enter project budget" className="input-default no-spinner" {...register("budget", { valueAsNumber: true })} />
                     {errors.budget && (
                         <p className="text-sm text-red-600"> {typeof errors.budget.message === "string" ? errors.budget.message : "Invalid input"} </p>
                     )}
@@ -316,7 +318,7 @@ export default function ProjectFormPage({ mode }: Props) {
                 <div className="grid sm:grid-cols-2 gap-4">
                     <div className="flex flex-col space-y-2">
                         <Label>FIRST NAME</Label>
-                        <Input {...register("contact.first_name")} placeholder="First name" />
+                        <Input {...register("contact.first_name")} placeholder="First name" className="input-default" />
                         {(errors.contact as any)?.first_name && (
                             <p className="text-sm text-red-600">{typeof (errors.contact as any)?.first_name?.message === 'string' ? (errors.contact as any).first_name.message : 'Invalid input'}</p>
                         )} 
@@ -324,7 +326,7 @@ export default function ProjectFormPage({ mode }: Props) {
 
                     <div className="flex flex-col space-y-2">
                         <Label>LAST NAME</Label>
-                        <Input {...register("contact.last_name")} placeholder="Last name" />
+                        <Input {...register("contact.last_name")} placeholder="Last name" className="input-default" />
                         {(errors.contact as any)?.last_name && (
                             <p className="text-sm text-red-600">{typeof (errors.contact as any)?.last_name?.message === 'string' ? (errors.contact as any).last_name.message : 'Invalid input'}</p>
                         )} 
@@ -333,7 +335,7 @@ export default function ProjectFormPage({ mode }: Props) {
 
                 <div className="flex flex-col space-y-2">
                     <Label>TITLE</Label>
-                    <Input {...register("contact.title")} placeholder="e.g. Project Manager" />
+                    <Input {...register("contact.title")} placeholder="e.g. Project Manager" className="input-default" />
                     {(errors.contact as any)?.title && (
                         <p className="text-sm text-red-600">{typeof (errors.contact as any)?.title?.message === 'string' ? (errors.contact as any).title.message : 'Invalid input'}</p>
                     )} 
@@ -342,7 +344,7 @@ export default function ProjectFormPage({ mode }: Props) {
                 <div className="grid sm:grid-cols-2 gap-4">
                     <div className="flex flex-col space-y-2">
                         <Label>EMAIL</Label>
-                        <Input type="email" {...register("contact.email")} placeholder="email@example.org" />
+                        <Input type="email" {...register("contact.email")} placeholder="email@example.org" className="input-default"/>
                         {(errors.contact as any)?.email && (
                             <p className="text-sm text-red-600">{typeof (errors.contact as any)?.email?.message === 'string' ? (errors.contact as any).email.message : 'Invalid input'}</p>
                         )} 
@@ -350,7 +352,7 @@ export default function ProjectFormPage({ mode }: Props) {
 
                     <div className="flex flex-col space-y-2">
                         <Label>PHONE</Label>
-                        <Input {...register("contact.phone")} placeholder="+59171234567" />
+                        <Input {...register("contact.phone")} placeholder="+59171234567" className="input-default"/>
                         {(errors.contact as any)?.phone && (
                             <p className="text-sm text-red-600">{typeof (errors.contact as any)?.phone?.message === 'string' ? (errors.contact as any).phone.message : 'Invalid input'}</p>
                         )} 
@@ -360,13 +362,12 @@ export default function ProjectFormPage({ mode }: Props) {
 
             <div className="flex flex-col space-y-2">
                 <Label className="text-gray-700">PROGRESS</Label>
-
                 <Controller control={form.control} name="progress" defaultValue={50}
                     render={({ field }) => (
                         <div className="flex items-center gap-4">
                             <Slider value={[field.value]} max={100} step={1} onValueChange={(value) => field.onChange(value[0])} className="flex-1" />
                             <div className="relative w-[90px]">
-                                <Input type="number" min={0} max={100} value={field.value} onChange={(e) => { const val = Number(e.target.value); if (!Number.isNaN(val)) { field.onChange(Math.min(100, Math.max(0, val))); } }} className="pr-7 text-right" />
+                                <Input type="number" min={0} max={100} value={field.value} onChange={(e) => { const val = Number(e.target.value); if (!Number.isNaN(val)) { field.onChange(Math.min(100, Math.max(0, val))); } }} className="pr-7 text-center input-default no-spinner" />
                                 <Percent className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                             </div>
                         </div>
@@ -378,12 +379,21 @@ export default function ProjectFormPage({ mode }: Props) {
             </div>
 
             <div className="flex flex-col space-y-2">
+                <Label className="text-gray-700">SELECT THE PROJECT STATE</Label>
+                <AsyncSearchSelect<ProjectState> value={watch("project_state")} onChange={(v) => { setValue("project_state", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchProjectStatesForSelector} getOptionLabel={(k) => k.state} getOptionKey={(k: any)=> k.id} placeholder="Select the project state" emptyMessage="No project state found"/>
+                {errors.project_state && (
+                    <p className="text-sm text-red-600">{typeof errors.project_state.message === 'string' ? errors.project_state.message : 'Invalid input'}</p>
+                )}
+            </div>
+
+            <div className="flex flex-col space-y-2">
                 <Label className="text-gray-700">COMMENTS (Optional)</Label>
                 <Textarea  className="input-default" placeholder="Project comments" {...register("comments")} />
                 {errors.comments && (
                     <p className="text-sm text-red-600">{typeof errors.comments.message === 'string' ? errors.comments.message : 'Invalid input'}</p>
                 )}
             </div>
+
             <Button type="submit" className="btn-secondary">{isEditing ? 'Edit' : 'Create'}</Button>
         </form>
     </div>
