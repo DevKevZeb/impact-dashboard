@@ -12,10 +12,7 @@ export const projectSchema = z.object({
     strategicOutput: z.object({
         id: z.number(),
         name: z.string().min(1, "The strategic Output is required"),
-        country: z.object({
-            id: z.number(),
-            name: z.string()
-        }),
+        country: z.object({ id: z.number(), name: z.string() }),
         measures_count: z.number()
     }, "Strategic output is required").refine((val) => val !== null, { message: "Strategic output is required" }),
 
@@ -38,74 +35,47 @@ export const projectSchema = z.object({
     
     donors: z.array(
         z.object({
-            id: z.number().min(1, "You must select a donor"),
-            name: z.string().min(1),
+            id: z.number( "A donor is required").min(1, "You must select a donor"),
+            name: z.string( "A donor is required").min(1),
             contribution: z.number().min(0, "Contribution must be ≥ 0").max(100, "Contribution must be ≤ 100"),
-        })
+        }, "A donor is required")
     ).min(1, "At least one donor is required"),
 
     agencies: z.array(
         z.object({
-            id: z.number().min(1, "You must select an agency"),
-            name: z.string().min(1),
+            id: z.number( "A donor is required").min(1, "You must select an agency"),
+            name: z.string( "A donor is required").min(1,  "A donor is required"),
             url: z.string().url(),
             contribution: z.number().min(0, "Contribution must be ≥ 0").max(100, "Contribution must be ≤ 100"),
-        })
+        }, "An agency is required")
     ).min(1, "At least one agency is required"),
 
-    project_url: z.string().url("Invalid URL").optional(),
-
+    project_url: z.preprocess(v => v === "" ? undefined : v,z.url({ message: "Invalid URL" }).optional()),
     has_budget: z.boolean().default(false),
-    budget: z.number().min(0, "Contribution must be ≥ 0").optional(),
+    budget: z.preprocess(v => v === "" || v === null ? undefined : v, z.number("Budget is required when enabled").min(0, "Contribution must be ≥ 0").optional()),
+
 
     beneficiary: z.object({
-        id: z.number(),
-        name: z.string(),
-
-    }, "Select a beneficiary"),
+        id: z.number("A beneficiary is required").min(1, "A beneficiary is required"),
+        name: z.string("A beneficiary is required").min(1, "A beneficiary is required"),
+    }, "A beneficiary is required"),
 
     contact: z.object({
-        first_name: z
-            .string()
-            .min(1, "The contact first name must not be empty")
-            .min(2, "The contact first name must have at least 2 characters")
-            .max(50, "The contact first name must not exceed 50 characters")
-            .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact first name contains invalid characters"),
-
-        last_name: z
-            .string()
-            .min(1, "The contact last name must not be empty")
-            .min(2, "The contact last name must have at least 2 characters")
-            .max(50, "The contact last name must not exceed 50 characters")
-            .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact last name contains invalid characters"),
-
-        title: z
-            .string()
-            .min(1, "The contact title must not be empty")
-            .min(2, "The contact title must have at least 2 characters")
-            .max(100, "The contact title must not exceed 100 characters")
-            .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact title contains invalid characters"),
-
-        email: z
-            .string()
-            .min(1, "The contact email must not be empty")
-            .email("The contact email must have a valid format")
-            .max(254, "The contact email exceeds the maximum allowed length (254 characters)"),
-
-        phone: z
-            .string()
-            .regex(/^\+?[0-9]{7,15}$/, "The phone number format is not valid – use international format")
-            .min(7, "The phone number must have at least 7 digits")
-            .max(15, "The phone number must not exceed 15 digits"),
-        }),
+        first_name: z.string().min(1, "The contact first name must not be empty").min(2, "The contact first name must have at least 2 characters").max(50, "The contact first name must not exceed 50 characters").regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact first name contains invalid characters"),
+        last_name: z.string().min(1, "The contact last name must not be empty").min(2, "The contact last name must have at least 2 characters").max(50, "The contact last name must not exceed 50 characters").regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact last name contains invalid characters"),
+        title: z.string().min(1, "The contact title must not be empty").min(2, "The contact title must have at least 2 characters").max(100, "The contact title must not exceed 100 characters").regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact title contains invalid characters"),
+        email: z.string().min(1, "The contact email must not be empty").email("The contact email must have a valid format").max(254, "The contact email exceeds the maximum allowed length (254 characters)"),
+        phone: z.string().regex(/^\+?[0-9]{7,15}$/, "The phone number format is not valid – use international format").min(7, "The phone number must have at least 7 digits").max(15, "The phone number must not exceed 15 digits"),
+    }),
 
     progress: z.number().min(0).max(100),
-
     comments: z.string().max(1000, "Comments must not exceed 1000 characters").optional(),
-
     program_id: z.number().min(1),
 
-    project_state_id: z.number().min(1),
+    project_state: z.object({
+      id: z.number("Project state is required").min(1, "Project state is required"),
+      state: z.string("Project state is required").min(1, "Project state is required")
+    }, "Project state is required"),
     
 })
 .refine((data) => !!data.start_date, {
@@ -116,14 +86,12 @@ export const projectSchema = z.object({
   message: "End date is required",
   path: ["end_date"],
 })
-.refine(
-  (data) =>  data.end_date >= data.start_date,
+.refine((data) =>  data.end_date >= data.start_date,
   {
     message: "End date must be after start date",
     path: ["end_date"],
   }
-).refine(
-  (data) => !data.has_budget || data.budget !== undefined,
+).refine((data) => !data.has_budget || data.budget !== undefined,
   {
     message: "Budget is required when enabled",
     path: ["budget"],

@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-
 @import "@fontsource-variable/dm-sans";
 
 @custom-variant dark (&:is(.dark *));
@@ -23,10 +22,15 @@
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.623 0.17 162.48); /* Emerald 500 */
+  /* #61C8E7 */
+  --primary: oklch(0.82 0.10 220);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.704 0.14 235.07); /* Sky 500 */
+  /* #1E3291 */
+  --secondary: oklch(0.39 0.16 260);
   --secondary-foreground: oklch(0.985 0 0);
+  /* #0082BE */
+  --tertiary: oklch(0.55 0.18 230);
+  --tertiary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
@@ -34,8 +38,8 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.623 0.17 162.48); /* Emerald 500 */
-  --chart-1: oklch(0.623 0.17 162.48); /* Emerald */
+  --ring: oklch(0.82 0.10 220);/* Emerald 500 */
+  --chart-1: oklch(0.55 0.18 230);/* Emerald */
   --chart-2: oklch(0.704 0.14 235.07); /* Sky */
   --chart-3: oklch(0.769 0.188 70.08); /* Amber */
   --chart-4: oklch(0.627 0.265 303.9);
@@ -178,4 +182,14 @@
 
 .title-container {
   @apply flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4
+}
+
+.no-spinner {
+  -moz-appearance: textfield;
+}
+
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
