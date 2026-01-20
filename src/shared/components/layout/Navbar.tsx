@@ -1,4 +1,5 @@
 import { Search, Bell, HelpCircle, Menu } from "lucide-react";
+import { UserMenu } from "@/features/auth/components/UserMenu";
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -49,15 +50,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
 
           <div className="h-8 w-px bg-white/20 mx-1 hidden sm:block"></div>
 
-          <div className="flex items-center gap-3 pl-1 cursor-pointer hover:bg-white/20 py-1 px-2 rounded-lg transition-colors">
-            <div className="w-8 h-8 bg-orange-400 rounded-full flex items-center justify-center text-sm font-bold shadow-sm border-2 border-white/20 text-white">
-              AD
-            </div>
-            <div className="hidden lg:block text-sm">
-              <p className="font-medium leading-none text-white">Admin User</p>
-              <p className="text-xs text-white/80 opacity-90">Administrator</p>
-            </div>
-          </div>
+          <UserMenu />
         </div>
       </div>
     </header>

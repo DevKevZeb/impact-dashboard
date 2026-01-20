@@ -12,11 +12,17 @@ import KpasListPage from "@/features/kpa/pages/KpasListPage";
 import InfoCountryKpaPage from "@/features/CountryKpaInfo/pages/InfoCountryKpaPage";
 import IndicatorTypesListPage from "@/features/indicator-type/pages/IndicatorTypesListPage";
 import ProjectStateListPage from "@/features/project-states/pages/ProjectStateListPage";
+import { LoginPage } from "@/features/auth/pages/LoginPage";
+import { PrivateRoute } from "./PrivateRoute";
 
 export function AppRouter() {
     return (
     <Routes>
-        <Route path="/" element={<MainLayout />}>
+        {/* Public Route - Login */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Protected Routes - Require Authentication */}
+        <Route path="/" element={<PrivateRoute><MainLayout /></PrivateRoute>}>
         <Route index element={<DashboardPage />} />
         {/* Configuration Routes */}
         <Route path="config">
