@@ -16,11 +16,19 @@ import ListProgramsWithProjects from "@/features/projects/pages/ListProgramsWith
 import BeneficiariesListPage from "@/features/beneficiaries/pages/BeneficiariesListPage";
 import DonorsListPage from "@/features/donors/pages/DonorsListPage";
 import CreateProjectPage from "@/features/projects/pages/CreateProjectPage";
+import { LoginPage } from "@/features/auth/pages/LoginPage";
+import { PrivateRoute } from "./PrivateRoute";
+
+
 
 export function AppRouter() {
     return (
     <Routes>
-        <Route path="/" element={<MainLayout />}>
+        {/* Public Route - Login */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Protected Routes - Require Authentication */}
+        <Route path="/" element={<PrivateRoute><MainLayout /></PrivateRoute>}>
         <Route index element={<DashboardPage />} />
         {/* Configuration Routes */}
         <Route path="config">
