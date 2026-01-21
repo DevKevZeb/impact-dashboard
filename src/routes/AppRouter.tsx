@@ -12,8 +12,14 @@ import KpasListPage from "@/features/kpa/pages/KpasListPage";
 import InfoCountryKpaPage from "@/features/CountryKpaInfo/pages/InfoCountryKpaPage";
 import IndicatorTypesListPage from "@/features/indicator-type/pages/IndicatorTypesListPage";
 import ProjectStateListPage from "@/features/project-states/pages/ProjectStateListPage";
+import ListProgramsWithProjects from "@/features/projects/pages/ListProgramsWithProjects";
+import BeneficiariesListPage from "@/features/beneficiaries/pages/BeneficiariesListPage";
+import DonorsListPage from "@/features/donors/pages/DonorsListPage";
+import CreateProjectPage from "@/features/projects/pages/CreateProjectPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { PrivateRoute } from "./PrivateRoute";
+
+
 
 export function AppRouter() {
     return (
@@ -37,14 +43,16 @@ export function AppRouter() {
 
         {/* Programs & Projects Routes */}
         <Route path="programs" element={<ProgramsPage />} />
-        <Route path="projects" element={<PlaceholderPage title="Projects" description="Manage projects" />} />
+        <Route path="projects" element={<ListProgramsWithProjects />}/>
+        <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
+        <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
         <Route path="country-kpa" element={<CountryKpaListPage/>} />
         <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
         
         {/* Resources Routes */}
         <Route path="resources">
-            <Route path="donors" element={<PlaceholderPage title="Donors" description="Manage donors" />} />
-            <Route path="beneficiaries" element={<PlaceholderPage title="Beneficiaries" description="Manage beneficiaries" />} />
+            <Route path="beneficiaries" element={<BeneficiariesListPage/>} />
+            <Route path="donors" element={<DonorsListPage/>} />
         </Route>
 
         {/* Reports Routes */}

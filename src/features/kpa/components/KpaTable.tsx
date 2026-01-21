@@ -20,16 +20,7 @@ interface Props {
   onDelete: (kpa: Kpa) => void;
 }
 
-export default function KpaTable({
-  kpas,
-  pagination,
-  page,
-  perPage,
-  setPage,
-  setPerPage,
-  onEdit,
-  onDelete,
-}: Props) {
+export default function KpaTable({ kpas, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete }: Props) {
   if (!pagination) return <div>Enter the pagination</div>;
 
   const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -43,7 +34,7 @@ export default function KpaTable({
       <table className="table-default">
         <thead className="table-head">
           <tr>
-            <th>N°</th>
+            <th>#</th>
             <th>NAME</th>
             <th>IMPLEMENTATION</th>
             <th>ACTIONS</th>

@@ -44,7 +44,7 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
       <table className="table-default">
         <thead className="table-head">
           <tr>
-            <th>N°</th>
+            <th>#</th>
             <th>COUNTRY</th>
             <th>ACTIONS</th>
           </tr>
@@ -80,7 +80,6 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
             </Fragment>
           ))}
 
-          {/* Pagination */}
           <tr className="table-pagination-row">
             <td colSpan={3} className="table-pagination-cell">
               <div className="table-pagination-container">
@@ -144,16 +143,21 @@ function SubKpaTable({ countryId }: { countryId: number; onEdit: (kpa: Kpa, rela
     <table className="w-full text-xs">
       <thead>
         <tr className="bg-gray-100">
+          <th className="px-4 py-2 text-center" colSpan={5}>ASSIGNED KPAs</th>         
+        </tr>
+        <tr className="bg-gray-100">
           <th></th>
+          <th className="px-4 py-2 text-left">No.</th>
           <th className="px-4 py-2 text-left">KPA</th>
           <th className="px-4 py-2 text-left">IMPLEMENTATION</th>
           <th className="px-4 py-2 text-left">ACTIONS</th>
         </tr>
       </thead>
       <tbody>
-        {kpas?.map((kpa) => (
+        {kpas?.map((kpa, index) => (
           <tr key={kpa.id_kpa} className="border-t">
             <td className="px-4 py-2"></td>
+            <td className="px-4 py-2">{index + 1}</td>
             <td className="px-4 py-2">{kpa.name}</td>
             <td className="px-4 py-2">{kpa.implementation}%</td>
             <td className="table-cell text-left">

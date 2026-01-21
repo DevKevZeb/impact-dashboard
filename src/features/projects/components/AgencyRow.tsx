@@ -1,0 +1,56 @@
+import React, { useEffect, useState } from "react";
+import { AsyncSearchSelect } from "./AsyncSearchSelect/AsyncSearchSelect";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ExternalLink, Percent } from "lucide-react";
+
+
+type AgencyFormValue = { id: number; name: string; url: string, contribution: number };
+type AgencyRowProps =  { index: number; agency: AgencyFormValue; getMaxForContributor: (index: number) => number; setValue: any; removeAgency: (index: number) => void; fetchAgencies: any; };
+
+
+export const AgencyRow = React.memo(({index, agency, getMaxForContributor, setValue, removeAgency, fetchAgencies} : AgencyRowProps) => {
+    const [sliderValue, setSliderValue] = useState<number>(agency.contribution ?? 0);
+
+    useEffect(() => {
+          setSliderValue(agency.contribution ?? 0);
+    }, [agency.contribution]);
+
+    return(
+        <div className="grid lg:grid-cols-2 gap-3">
+        <div>
+          <AsyncSearchSelect value={agency.id ? agency : null} onChange={(v) => { setValue(`agencies.${index}`, { ...v, contribution: 0 }, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); }} fetchOptions={fetchAgencies} getOptionLabel={(i) => i.name} getOptionKey={(i) => i.id}/>
+          <div className="p-2 bg-blue-100 mt-2 rounded-sm border border-gray-300">
+            <Label className="flex items-center gap-2 text-gray-700">
+              URL:
+              {agency.id && agency.url ? (
+                <a href={agency.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-blue-600 underline underline-offset-2 transition-colors hover:text-blue-800" >
+                  {agency.url}
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              ) : (
+                <span className="rounded-md bg-gray-100 px-2 py-0.5 text-sm font-medium text-gray-400">
+                  N/A
+                </span>
+              )}
+            </Label>
+
+          </div>
+        </div>
+        <div className="flex flex-col space-y-3 md:flex-row space-x-4 items-center">
+          <Label className="whitespace-nowrap text-gray-700">CONTRIBUTION</Label>
+          <Slider min={0} max={100} step={1} value={[sliderValue]} onValueChange={([val]) => { const clamped = Math.min(val, getMaxForContributor(index)); setSliderValue(clamped); setValue(`agencies.${index}.contribution`, clamped, { shouldDirty: true, shouldValidate: true, }); }} className="flex-1 "/>
+          <div className="relative w-[90px] flex items-center">
+            <Input type="number" min={0} max={100} value={sliderValue} onChange={(e) => { const val = Number(e.target.value); const clamped = Math.min( Math.max(val, 0), getMaxForContributor(index) ); setSliderValue(clamped); setValue(`agencies.${index}.contribution`, clamped, { shouldDirty: true, shouldValidate: true, }); }} className=" text-center input-default no-spinner"/>
+            <Percent className="absolute  right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+          </div>
+          <Button className="text-red-600 cursor-pointer" type="button" variant="ghost" onClick={() => removeAgency(index)}>
+            Remove
+          </Button>
+        </div>
+      </div>
+
+    )
+})

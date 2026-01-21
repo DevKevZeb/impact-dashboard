@@ -1,6 +1,6 @@
 import { apiClient } from "@/shared/lib/axios";
-import { mapStrategicOutput, mapStrategicOutputs } from "../mappers/strategic-output.mapper";
-import type { CreateStrategicOutputDTO, StrategicOutput, UpdateStrategicOutputDTO } from "../types/StrategicOutput";
+import { mapStrategicOutput, mapStrategicOutputs, mapStrategicOutputsWithCountry } from "../mappers/strategic-output.mapper";
+import type { CreateStrategicOutputDTO, StrategicOutput, StrategicOutputCountry, UpdateStrategicOutputDTO } from "../types/StrategicOutput";
 import { toast } from "sonner";
 
 export async function getStrategicOutputsByCountryKpaId(id_ck: number) {
@@ -48,4 +48,35 @@ export async function createStrategicOutput(dto: CreateStrategicOutputDTO){
 
     throw error;
   }
+}
+
+export async function fetchSearchStrategicOutputByKpaId(search: string, page: number, id: number){
+  const { data } = await apiClient.get(`/strategic-outputs/kpa/${id}?search=${encodeURIComponent(search)}&page=${page}&per_page=${5}`);
+
+  return {
+    strategic_outputs: mapStrategicOutputsWithCountry(data.data.strategic_outputs),
+    pagination: {
+      current_page: data.data.current_page,
+      last_page: data.data.last_page,
+      per_page: data.data.per_page,
+      total: data.data.total
+    }
+  }
+}
+
+interface FetchParams {
+  query: string;
+  page: number;
+  limit: number;
+}
+
+export function fetchStrategicOutputsForSelect(kpaId: number) {
+  return async ({ query, page, limit }: FetchParams) => {
+    const { data } = await apiClient.get(`/strategic-outputs/kpa/${kpaId}`, { params: { search: query || undefined, page, per_page: limit}});
+  
+    return {
+      items: mapStrategicOutputsWithCountry(data.data.strategic_outputs),
+      hasMore: data.data.current_page < data.data.last_page,
+    };
+  };
 }

@@ -34,7 +34,7 @@ export default function CountryTable({ countries, pagination, page, perPage, set
             <table className="table-default">
                 <thead className="table-head">
                     <tr>
-                        <th>N°</th>
+                        <th>#</th>
                         <th>NAME</th>
                         <th>CURRENCY</th>
                         <th>ACTIONS</th>

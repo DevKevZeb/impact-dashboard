@@ -33,7 +33,7 @@ export default function IndicatorTapeTable({types, pagination, page, perPage, se
             <table className="table-default">
                 <thead className="table-head">
                     <tr>
-                        <th>N°</th>
+                        <th>#</th>
                         <th>NAME</th>
                         <th>ACTIONS</th>
                     </tr>

@@ -74,6 +74,25 @@ export async function updateAgency( id: number, dto: UpdateAgencyDto): Promise<A
   }
 }
 
+interface FetchParams {
+  query: string;
+  page: number;
+  limit: number;
+}
+
+export function fetchAgenciesForSelector(excludedIds: number[] = []){
+  return async ({ query, page, limit} : FetchParams) =>{
+
+    const { data } = await apiClient.get(`/agencies/get/project`, { params: { search: query || undefined, page, per_page: limit, exclude: excludedIds.length? excludedIds:undefined}});
+
+    return {
+      items: mapAgencies(data.data.agencies),
+      hasMore: data.data.current_page < data.data.last_page,
+      total: data.data.all
+    };
+  }
+}
+
 
 /*
 export async function deleteAgency(id: number): Promise<void> {
