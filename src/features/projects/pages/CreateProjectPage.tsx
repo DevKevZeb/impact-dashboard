@@ -19,12 +19,11 @@ import { fetchMeasuresForSelect } from "@/features/measures/services/measure.api
 import { Button } from "@/components/ui/button";
 import { fetchIndicatorForSelect } from "@/features/indicator/services/indicator.api";
 import { fetchDonorsForSelect } from "@/features/donors/services/donor.api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DonorRow } from "../components/DonorRow";
 import { AlertBox } from "../components/AlertBox";
 import { AgencyRow } from "../components/AgencyRow";
 import { fetchAgenciesForSelector } from "@/features/agency/services/agency.api";
-import { Checkbox } from "@/components/ui/checkbox";
 import type { Beneficiary } from "../types/project.types";
 import { fetchBeneficiariesForSelector } from "@/features/beneficiaries/service/beneficiaries.api";
 import type { FieldErrors } from "react-hook-form";
@@ -32,6 +31,7 @@ import { toast } from "sonner";
 import { projectSchema } from "../types/project.schema";
 import type { ProjectState } from "@/features/project-states/types/projectstate.types";
 import { fetchProjectStatesForSelector } from "@/features/project-states/service/projectstate.api";
+import { useProject } from "../hooks/useProjects";
 
 type IndicatorFormValue = { id: number; name: string; };
 type DonorFormValue = { id: number; name: string; contribution: number };
@@ -56,10 +56,13 @@ export default function ProjectFormPage({ mode }: Props) {
     const parsedProjectId = projectId ? Number(projectId) : undefined;
 
     if (Number.isNaN(parsedProgramId)) return <div>Invalid program</div>;
+    const { data: project, isLoading: isProjectLoading, isError } = useProject(isEditing ? parsedProjectId : undefined);
+
+
 
     const form = useForm<any>({
         resolver: zodResolver(projectSchema),
-        defaultValues: { name: "", description: "", kpa: null, strategicOutput: null, measure: null, indicators: [], start_date: null, end_date: null, donors: [], agencies: [], project_url: undefined, has_budget: false, budget: undefined, contact: { first_name: "", last_name: "", title: "", email: "", phone: "" }, comments: "", program_id: parsedProgramId, project_state_id: 1 }
+        defaultValues: { name: "", description: "", kpa: null, strategicOutput: null, measure: null, indicators: [], start_date: null, end_date: null, donors: [], agencies: [], project_url: undefined, budget: 0, contact: { first_name: "", last_name: "", title: "", email: "", phone: "" }, comments: "", program_id: parsedProgramId, project_state_id: 1 }
     });
 
     const { register, watch, setValue, handleSubmit, reset, formState: { errors } } = form;
@@ -118,6 +121,32 @@ export default function ProjectFormPage({ mode }: Props) {
         console.log(data)
     }
 
+    useEffect(() => {
+    if (isEditing && project) {
+        reset({
+        name: project.name,
+        description: project.description,
+        kpa: project.kpa,
+        strategicOutput: project.strategic_output,
+        measure: project.measure,
+        indicators: project.indicators,
+        start_date: project.start_date ? new Date(project.start_date) : null,
+        end_date: project.end_date ? new Date(project.end_date) : null,
+        donors: project.donors,
+        agencies: project.agencies,
+        project_url: project.project_url,
+        budget: project.budget,
+        beneficiary: project.beneficiary,
+        contact: project.contact,
+        progress: project.progress,
+        project_state: project.project_state,
+        comments: project.comments,
+        program_id: project.program_id,
+        });
+    }
+    }, [isEditing, project, reset]);
+
+
     return (
     <div className="page-container">
         <div className="title-container">
@@ -146,7 +175,7 @@ export default function ProjectFormPage({ mode }: Props) {
             </div>
             <div className="flex flex-col space-y-2">
                 <Label className="text-gray-700">SELECT A KPA</Label>
-                <AsyncSearchSelect<Kpa> value={watch("kpa")} onChange={(v) => { setValue("kpa", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); setValue("strategicOutput", null); setValue("measure", null); setValue("indicators", []); }} fetchOptions={fetchKpasForSelect} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} placeholder="Select a KPA" emptyMessage="No KPAs found"/>
+                <AsyncSearchSelect<Kpa> value={watch("kpa")} onChange={(v) => { setValue("kpa", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); setValue("strategicOutput", null); setValue("measure", null); setValue("indicators", []); }} fetchOptions={fetchKpasForSelect} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a KPA" emptyMessage="No KPAs found"/>
                     {errors.kpa && (
                     <p className="text-sm text-red-600">{typeof errors.kpa.message === 'string' ? errors.kpa.message : 'Invalid input'}</p>
                 )}
@@ -155,7 +184,7 @@ export default function ProjectFormPage({ mode }: Props) {
             {watch("kpa") && (watch("kpa")!.strategic_outputs_count > 0 ? 
             <div className="flex flex-col space-y-2">
                 <Label className="text-gray-700">SELECT A STRATEGIC OUTPUT</Label>
-                <AsyncSearchSelect<StrategicOutputCountry> value={watch("strategicOutput")} onChange={(v) => { setValue("strategicOutput", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); setValue("measure", null); setValue("indicators", []); }} fetchOptions={fetchStrategicOutputsForSelect(watch("kpa")!.id)} getOptionLabel={(k) => k.name + " - " + k.country.name} getOptionKey={(k)=> k.id} placeholder="Select a Strategic Output" emptyMessage="No Strategic Outputs found"/>
+                <AsyncSearchSelect<StrategicOutputCountry> value={watch("strategicOutput")} onChange={(v) => { setValue("strategicOutput", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); setValue("measure", null); setValue("indicators", []); }} fetchOptions={fetchStrategicOutputsForSelect(watch("kpa")!.id)} getOptionLabel={(k) => `${k?.name ?? ""} - ${k?.country?.name ?? ""}`} getOptionKey={(k)=> k.id} placeholder="Select a Strategic Output" emptyMessage="No Strategic Outputs found"/>
                 {errors.strategicOutput && (
                     <p className="text-sm text-red-600">{typeof errors.strategicOutput.message === 'string' ? errors.strategicOutput.message : 'Invalid input'}</p>
                 )}
@@ -165,7 +194,7 @@ export default function ProjectFormPage({ mode }: Props) {
             {watch("strategicOutput") && (watch("strategicOutput")!.measures_count > 0 ? 
             <div className="flex flex-col space-y-2">
                 <Label className="text-gray-700">SELECT A MEASURE</Label>
-                <AsyncSearchSelect<Measure> value={watch("measure")} onChange={(v) => { setValue("measure", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); setValue("indicators", []); }} fetchOptions={fetchMeasuresForSelect(watch("strategicOutput")!.id)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} placeholder="Select a Measure" emptyMessage="No Measure found"/>
+                <AsyncSearchSelect<Measure> value={watch("measure")} onChange={(v) => { setValue("measure", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); setValue("indicators", []); }} fetchOptions={fetchMeasuresForSelect(watch("strategicOutput")!.id)} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a Measure" emptyMessage="No Measure found"/>
                 {errors.measure && (
                     <p className="text-sm text-red-600">{typeof errors.measure.message === 'string' ? errors.measure.message : 'Invalid input'}</p>
                 )}
@@ -180,7 +209,7 @@ export default function ProjectFormPage({ mode }: Props) {
                         {indicatorsFields.map((field, index) => (
                             <div key={field.fieldId} className="items-center gap-2">
                             <div className="flex">
-                                <AsyncSearchSelect value={watch(`indicators.${index}`)} onChange={(v) => { setValue(`indicators.${index}`, v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); }} fetchOptions={fetchIndicatorForSelect( watch("measure")!.id, indicatorsFields.map(i => Number(i.id)) )} getOptionLabel={(i) => i.name} getOptionKey={(i) => i.id} placeholder="Select an indicator" emptyMessage="No indicators found" />
+                                <AsyncSearchSelect value={watch(`indicators.${index}`)} onChange={(v) => { setValue(`indicators.${index}`, v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); }} fetchOptions={fetchIndicatorForSelect( watch("measure")!.id, indicatorsFields.map(i => Number(i.id)) )} getOptionLabel={(i) => i.name ?? ""} getOptionKey={(i) => i.id} placeholder="Select an indicator" emptyMessage="No indicators found" />
                                 <Button type="button" variant="ghost" className="text-red-600 cursor-pointer" onClick={() => removeIndicator(index)} >
                                     Remove
                                 </Button>
@@ -284,30 +313,17 @@ export default function ProjectFormPage({ mode }: Props) {
                 )}
             </div>
 
-            <div className="flex flex-col space-y-3">
-                <div className="flex items-center space-x-2">
-                    <Controller control={form.control} name="has_budget"
-                    render={({ field }) => (
-                        <Checkbox checked={field.value} onCheckedChange={(checked) => { field.onChange(checked); if (!checked) { setValue("budget", undefined); } }} />
-                    )}
-                    />
-                    <Label className="text-gray-700">This project has a budget</Label>
-                </div>
-
-                {watch("has_budget") && (
-                    <div className="flex flex-col space-y-2 max-w-sm">
-                    <Label className="text-gray-700">PROJECT BUDGET</Label>
-                    <Input type="number" min={0} placeholder="Enter project budget" className="input-default no-spinner" {...register("budget", { valueAsNumber: true })} />
-                    {errors.budget && (
-                        <p className="text-sm text-red-600"> {typeof errors.budget.message === "string" ? errors.budget.message : "Invalid input"} </p>
-                    )}
-                    </div>
-                )}
+            <div className="flex flex-col space-y-2">
+                <Label className="text-gray-700">PROJECT BUDGET</Label>
+                <Input type="number" min={0} placeholder="Enter project budget" className="input-default no-spinner" {...register("budget", { valueAsNumber: true })} />
+                {errors.budget && (
+                    <p className="text-sm text-red-600"> {typeof errors.budget.message === "string" ? errors.budget.message : "Invalid input"} </p>
+                )}    
             </div>
 
             <div className="flex flex-col space-y-2">
                 <Label className="text-gray-700">SELECT A BENEFICIARY</Label>
-                <AsyncSearchSelect<Beneficiary> value={watch("beneficiary")} onChange={(v) => { setValue("beneficiary", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchBeneficiariesForSelector} getOptionLabel={(k) => k.name} getOptionKey={(k: any)=> k.id} placeholder="Select a Beneficiary" emptyMessage="No Beneficiaries found"/>
+                <AsyncSearchSelect<Beneficiary> value={watch("beneficiary")} onChange={(v) => { setValue("beneficiary", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchBeneficiariesForSelector} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k: any)=> k.id} placeholder="Select a Beneficiary" emptyMessage="No Beneficiaries found"/>
                 {errors.beneficiary && (
                     <p className="text-sm text-red-600">{typeof errors.beneficiary.message === 'string' ? errors.beneficiary.message : 'Invalid input'}</p>
                 )}
@@ -380,7 +396,7 @@ export default function ProjectFormPage({ mode }: Props) {
 
             <div className="flex flex-col space-y-2">
                 <Label className="text-gray-700">SELECT THE PROJECT STATE</Label>
-                <AsyncSearchSelect<ProjectState> value={watch("project_state")} onChange={(v) => { setValue("project_state", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchProjectStatesForSelector} getOptionLabel={(k) => k.state} getOptionKey={(k: any)=> k.id} placeholder="Select the project state" emptyMessage="No project state found"/>
+                <AsyncSearchSelect<ProjectState> value={watch("project_state")} onChange={(v) => { setValue("project_state", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchProjectStatesForSelector} getOptionLabel={(k) => k.state ?? ""} getOptionKey={(k: any)=> k.id} placeholder="Select the project state" emptyMessage="No project state found"/>
                 {errors.project_state && (
                     <p className="text-sm text-red-600">{typeof errors.project_state.message === 'string' ? errors.project_state.message : 'Invalid input'}</p>
                 )}

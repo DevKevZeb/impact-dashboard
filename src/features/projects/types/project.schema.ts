@@ -51,8 +51,7 @@ export const projectSchema = z.object({
     ).min(1, "At least one agency is required"),
 
     project_url: z.preprocess(v => v === "" ? undefined : v,z.url({ message: "Invalid URL" }).optional()),
-    has_budget: z.boolean().default(false),
-    budget: z.preprocess(v => v === "" || v === null ? undefined : v, z.number("Budget is required when enabled").min(0, "Contribution must be ≥ 0").optional()),
+    budget: z.number("Budget is required").min(0, "Contribution must be ≥ 0").optional(),
 
 
     beneficiary: z.object({
@@ -90,10 +89,5 @@ export const projectSchema = z.object({
   {
     message: "End date must be after start date",
     path: ["end_date"],
-  }
-).refine((data) => !data.has_budget || data.budget !== undefined,
-  {
-    message: "Budget is required when enabled",
-    path: ["budget"],
   }
 );

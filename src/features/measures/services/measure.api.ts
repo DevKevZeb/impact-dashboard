@@ -2,7 +2,7 @@ import { apiClient } from "@/shared/lib/axios";
 import { mapMeasure, mapMeasures } from "../mappers/measure.mapper";
 import type { CreateMeasureDTO, Measure, UpdateMeasureDTO } from "../types/measureTypes";
 import { toast } from "sonner";
-import { Search } from "lucide-react";
+
 
 export async function getMeasuresByStrategicOutputId(id_so: number) {
   const { data } = await apiClient.get(`/measures/strategic-output/${id_so}`);

@@ -7,7 +7,6 @@ import { EmptyState } from "@/shared/components/EmptyState";
 export default function ListProgramsWithProjects(){
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
-    const [openModal, setOpenModal] = useState(false); 
 
     const [searchTerm, setSearchTerm] = useState("");
     const { data, isLoading, error } = useProgramsPaginated(page, perPage);
