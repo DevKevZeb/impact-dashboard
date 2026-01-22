@@ -51,7 +51,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                             <td className="table-cell">{index + 1}</td>
                             <td className="table-cell">{program.name}</td>
                             <td className="table-cell">{program.description}</td>
-                            <td className="table-cell">{program.projects_count}</td> {/* TODO <td>{program.projects.length}</td> */}
+                            <td className="table-cell">{program.projects_count}</td>
                             <td className="table-cell ">
                                 <Link to={`/projects/new/${program.id}`} onClick={(e) => e.stopPropagation()} className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-green-600 hover:bg-sky-50 transition-colors" title="Add Project" >
                                     <Plus className="w-4 h-4" />

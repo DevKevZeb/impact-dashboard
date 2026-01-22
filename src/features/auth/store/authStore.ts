@@ -44,13 +44,17 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: () => {
+        localStorage.removeItem("auth-storage");
         localStorage.removeItem("auth_token");
+        localStorage.removeItem("filters-storage");
+        localStorage.removeItem("ui-storage");
         set({
           user: null,
           token: null,
           isAuthenticated: false,
           scopes: [],
         });
+
       },
 
       hasScope: (scope) => {
