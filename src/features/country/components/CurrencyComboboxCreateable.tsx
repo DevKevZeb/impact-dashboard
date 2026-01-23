@@ -48,7 +48,7 @@ export function CurrencyComboboxCreateable({ options, value, onChange, placehold
       <PopoverContent className="w-[250px] p-0">
         <Command>
           <CommandInput placeholder={placeholder} value={displayValue} onValueChange={(text) => onChange({ code: text })} />
-          <CommandList>
+          <CommandList className="max-h-[200px] overflow-y-auto" onWheelCapture={(e) => {e.stopPropagation();}}>
             <CommandEmpty>
               <button className="w-full text-left text-sm px-3 py-2 text-emerald-600 hover:bg-muted" onClick={handleFreeValue} >
                 Use “{displayValue}” like new currency

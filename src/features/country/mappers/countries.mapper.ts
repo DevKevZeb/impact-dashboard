@@ -7,7 +7,8 @@ export function mapCountry(raw: any): Country {
         currency: {
             id: raw.currency.id,
             code: raw.currency.code,
-        }
+        },
+        kpas_count: raw.kpas_count,
     }
 }
 

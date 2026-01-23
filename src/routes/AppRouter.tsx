@@ -46,8 +46,8 @@ export function AppRouter() {
         <Route path="programs" element={<ProgramsPage />} />
         <Route path="projects" element={<ListProgramsWithProjects />}/>
         <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
-        <Route path="projects/program/:programId" element={<ListProjectsForProgramPage/>}/>
         <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
+        <Route path="projects/program/:programId" element={<ListProjectsForProgramPage/>}/>
         <Route path="country-kpa" element={<CountryKpaListPage/>} />
         <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
         

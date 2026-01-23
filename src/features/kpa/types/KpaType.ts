@@ -1,13 +1,12 @@
 export interface Kpa{
     id: number,
     name: string,
-    implementation: number
+    implementation: number,
 }
 
 export interface KpaProject{
     id: number,
     name: string,
-    implementation: number,
     strategic_outputs_count: number,
 }
 

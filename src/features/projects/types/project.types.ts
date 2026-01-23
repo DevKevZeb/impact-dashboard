@@ -6,7 +6,7 @@ import type { ProjectState } from "@/features/project-states/types/projectstate.
 import type { StrategicOutputCountry } from "@/features/strategic-output/types/StrategicOutput";
 
 export interface Beneficiary {
-    id?: number;
+    id: number;
     name: string;
 }
 

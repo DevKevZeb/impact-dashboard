@@ -11,7 +11,13 @@ export interface StrategicOutputCountry{
     country: {
         id: number,
         name: string,
-    }
+    },
+    country_kpa?:{
+    country: {
+        id: number,
+        nane: string,
+    },
+}
     measures_count: number
 }
 

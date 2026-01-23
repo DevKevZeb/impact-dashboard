@@ -73,3 +73,13 @@ export async function fetchSearchIndicatorTypes(search:string, page: number){
         }
     }
 }
+
+export async function fetchIndicatorTypesForSelect(params: { query: string; page: number; limit: number; }) : Promise<{ items: IndicatorType[]; hasMore: boolean}>{
+  const { query, page } = params;
+  const res = await fetchSearchIndicatorTypes(query, page);
+
+  return {
+    items: res.types,
+    hasMore: res.pagination.current_page < res.pagination.last_page,
+  };
+}

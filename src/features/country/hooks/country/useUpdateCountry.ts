@@ -11,6 +11,7 @@ export function useUpdateCountry(){
             updateCountry(id, dto),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["countries"]});
+            qc.invalidateQueries({ queryKey: ["currencies"] });
         },
         onError: (err: any) => {
             const message = err?.response?.data?.message ?? err?.message ?? "Error updating";
