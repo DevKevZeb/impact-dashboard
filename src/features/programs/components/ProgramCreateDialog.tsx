@@ -11,6 +11,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, Upload, X, Check } from "lucide-react";
+import { Can } from "@/features/auth/components/Can";
+import { CannotAccess } from "@/features/auth/components/CannotAccess";
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
+import { SCOPES } from "@/features/auth/utils/permissions";
+import { toast } from "sonner";
 import { useCreateProgram } from "../api/programQueries";
 import { useSdgs } from "@/features/sdgs/api/sdgQueries";
 import {
@@ -27,6 +32,7 @@ export function ProgramCreateDialog({
   open,
   onOpenChange,
 }: ProgramCreateDialogProps) {
+  const canWrite = useHasScope(SCOPES.PROGRAMS_WRITE);
   const createMutation = useCreateProgram();
   const { data: sdgs } = useSdgs();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,6 +78,11 @@ export function ProgramCreateDialog({
   };
 
   const onSubmit = async (data: ProgramCreateFormData) => {
+    if (!canWrite) {
+      toast.error("Insufficient permissions to create programs");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await createMutation.mutateAsync({
@@ -116,7 +127,16 @@ export function ProgramCreateDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <Can 
+          scope={SCOPES.PROGRAMS_WRITE}
+          fallback={
+            <CannotAccess 
+              message="Create Program Restricted"
+              description="You don't have permission to create programs. Contact your administrator to request access."
+            />
+          }
+        >
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* 1. Program Name */}
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium text-gray-700 block">
@@ -383,6 +403,7 @@ export function ProgramCreateDialog({
             </Button>
           </DialogFooter>
         </form>
+        </Can>
       </DialogContent>
     </Dialog>
   );
