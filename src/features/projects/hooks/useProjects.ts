@@ -12,6 +12,6 @@ export function useProject(projectId?: number) {
   return useQuery({
     queryKey: ["project", projectId],
     queryFn: () => getProjectsByProjectId(projectId!),
-    enabled: !!projectId,
+    enabled: !!projectId, 
   });
 }
