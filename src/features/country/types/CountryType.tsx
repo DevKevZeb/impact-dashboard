@@ -4,7 +4,8 @@ export interface Country {
     currency: {
         id: number,
         code: string
-    }
+    },
+    kpas_count?: number
 }
 
 export interface  CreateCountryDTO {

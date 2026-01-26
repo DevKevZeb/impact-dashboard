@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -25,7 +26,7 @@ type MenuItem = {
     title: string;
     icon: any;
     path?: string;
-    children?: { title: string; path: string; icon?: any }[];
+    children?: { title: string; path: string; icon?: any, scope?: string }[];
 };
 
 const menuItems: MenuItem[] = [
@@ -35,37 +36,36 @@ const menuItems: MenuItem[] = [
     children: [
         { title: "Admin Dashboard", path: "/", icon: LinkIcon },
         { title: "Project Dashboard", path: "/dashboard", icon: LinkIcon },
-        { title: "Country Dashboard", path: "/country-kpa", icon: LinkIcon },
+        { title: "Country Dashboard", path: "/country-kpa", icon: LinkIcon, scope: "countries:read" },
     ],
     },
     {
     title: "Configuration",
     icon: Settings,
     children: [
-        { title: "Agencies", path: "/config/agencies", icon: Building2 },
-        { title: "Countries", path: "/config/countries", icon: Globe },
-        { title: "Indicator Types", path: "/config/indicator-types", icon: LinkIcon },
-        { title: "KPAs", path: "/config/kpas", icon: Building2 },
-        { title: "Program States", path: "/config/program-states", icon: LinkIcon },
-        { title: "Project States", path: "/config/project-states", icon: LinkIcon },
-        { title: "SDGs", path: "/config/sdgs", icon: Flag },
-
+        { title: "Agencies", path: "/config/agencies", icon: Building2, scope: "agencies:read" },
+        { title: "Countries", path: "/config/countries", icon: Globe, scope: "countries:read" },
+        { title: "Indicator Types", path: "/config/indicator-types", icon: LinkIcon, scope: "indicator-types:read" },
+        { title: "KPAs", path: "/config/kpas", icon: Building2, scope: "kpas:read" },
+        { title: "Program States", path: "/config/program-states", icon: LinkIcon, scope: "program-states:read" },
+        { title: "Project States", path: "/config/project-states", icon: LinkIcon, scope: "project-states:read" },
+        { title: "SDGs", path: "/config/sdgs", icon: Flag, scope: "sdgs:read" },    
     ],
     },
     {
     title: "Programs & Projects",
     icon: Briefcase,
     children: [
-        { title: "Programs", path: "/programs", icon: FolderKanban },
-        { title: "Projects", path: "/projects", icon: FolderKanban },
+        { title: "Programs", path: "/programs", icon: FolderKanban, scope: "programs:read" },
+        { title: "Projects", path: "/projects", icon: FolderKanban, scope: "projects:read" },
     ],
 },
     {
     title: "Resources",
     icon: Users,
     children: [
-        { title: "Donors", path: "/resources/donors", icon: Wallet },
-        { title: "Beneficiaries", path: "/resources/beneficiaries", icon: Users },
+        { title: "Donors", path: "/resources/donors", icon: Wallet, scope: "donors:read" },
+        { title: "Beneficiaries", path: "/resources/beneficiaries", icon: Users, scope: "beneficiaries:read" },
     //   { title: "Contacts", path: "/resources/contacts", icon: Contact },
     ],
     },
@@ -83,6 +83,8 @@ const menuItems: MenuItem[] = [
 export function Sidebar({ isOpen }: SidebarProps) {
     const location = useLocation();
     const [expandedItems, setExpandedItems] = useState<string[]>(["Configuration", "Programs & Projects"]);
+
+    const canSeeDonors = useHasScope("donors:read");
 
     const toggleExpand = (title: string) => {
     setExpandedItems((prev) =>
@@ -142,7 +144,8 @@ export function Sidebar({ isOpen }: SidebarProps) {
                     >
                     {item.children.map((child) => {
                         const isChildActive = location.pathname === child.path;
-                        return (
+
+                        if (child.scope && useHasScope(child.scope)) return (
                         <Link
                             key={child.path}
                             to={child.path}

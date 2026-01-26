@@ -7,20 +7,20 @@ export const projectSchema = z.object({
         id: z.number(),
         name: z.string(),
         strategic_outputs_count: z.number(),
-    }, "KPA is required").refine((val) => val !== null, { message: "KPA is required" }),
+    }).nullable().refine(Boolean, { message: "KPA is required" }),
 
     strategicOutput: z.object({
         id: z.number(),
         name: z.string().min(1, "The strategic Output is required"),
         country: z.object({ id: z.number(), name: z.string() }),
         measures_count: z.number()
-    }, "Strategic output is required").refine((val) => val !== null, { message: "Strategic output is required" }),
+    }).nullable().refine(Boolean, { message: "Strategic Output is required" }),
 
     measure: z.object({
         id: z.number(),
         name: z.string().min(1, "The measure is required"),
         indicators_count: z.number()
-    }, "Measure is required").refine((val) => val !== null, { message: "KPA is required" }),
+    }).nullable().refine(Boolean, { message: "Measure is required" }),
 
     indicators: z.array(
         z.object({
@@ -30,9 +30,10 @@ export const projectSchema = z.object({
     ).min(1, "At least one indicator is required"),
 
 
-    start_date: z.date("Start date is required"),
-    end_date: z.date("End date is required"),   
-    
+    start_date: z.date().nullable().refine(Boolean, {message: "Start date is required",}),
+    end_date: z.date().nullable().refine(Boolean, {message: "End date is required",}),
+
+
     donors: z.array(
         z.object({
             id: z.number( "A donor is required").min(1, "You must select a donor"),
@@ -51,14 +52,13 @@ export const projectSchema = z.object({
     ).min(1, "At least one agency is required"),
 
     project_url: z.preprocess(v => v === "" ? undefined : v,z.url({ message: "Invalid URL" }).optional()),
-    has_budget: z.boolean().default(false),
-    budget: z.preprocess(v => v === "" || v === null ? undefined : v, z.number("Budget is required when enabled").min(0, "Contribution must be ≥ 0").optional()),
+    budget: z.number("Budget is required").min(0, "Contribution must be ≥ 0").optional(),
 
 
     beneficiary: z.object({
         id: z.number("A beneficiary is required").min(1, "A beneficiary is required"),
         name: z.string("A beneficiary is required").min(1, "A beneficiary is required"),
-    }, "A beneficiary is required"),
+    }).nullable().refine(Boolean, { message: "A beneficiary is required" }),
 
     contact: z.object({
         first_name: z.string().min(1, "The contact first name must not be empty").min(2, "The contact first name must have at least 2 characters").max(50, "The contact first name must not exceed 50 characters").regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact first name contains invalid characters"),
@@ -75,7 +75,7 @@ export const projectSchema = z.object({
     project_state: z.object({
       id: z.number("Project state is required").min(1, "Project state is required"),
       state: z.string("Project state is required").min(1, "Project state is required")
-    }, "Project state is required"),
+    }).nullable().refine(Boolean, { message: "Project state is required" }),
     
 })
 .refine((data) => !!data.start_date, {
@@ -86,14 +86,9 @@ export const projectSchema = z.object({
   message: "End date is required",
   path: ["end_date"],
 })
-.refine((data) =>  data.end_date >= data.start_date,
+.refine((data) => data.end_date !== null && data.start_date !== null && data.end_date >= data.start_date,
   {
     message: "End date must be after start date",
     path: ["end_date"],
-  }
-).refine((data) => !data.has_budget || data.budget !== undefined,
-  {
-    message: "Budget is required when enabled",
-    path: ["budget"],
   }
 );

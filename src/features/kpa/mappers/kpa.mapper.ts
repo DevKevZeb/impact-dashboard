@@ -16,11 +16,10 @@ export function mapKpaProject(raw: any): KpaProject {
     return {
         id: raw.id,
         name: raw.name,
-        implementation: raw.implementation,
         strategic_outputs_count: raw.strategic_outputs_count
     }
 }
 
-export function mapKpasProject(rawList: any[]): Kpa[]{
+export function mapKpasProject(rawList: any[]): KpaProject[]{
     return rawList.map(mapKpaProject)
 }
