@@ -24,6 +24,7 @@ export function getDefaultProjectValues(programId: number) {
     project_url: undefined,
     budget: 0,
     contact: {
+        id: null,
       first_name: "",
       last_name: "",
       title: "",

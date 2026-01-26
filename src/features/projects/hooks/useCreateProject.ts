@@ -1,17 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createProjectState } from "../service/projectstate.api";
+import { createProject } from "../services/project.api";
+import { toast } from "sonner";
 
-export function useCreateProjectState(){
+export function useCreateProject(){
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: createProjectState,
+        mutationFn: createProject,
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["project-states"] });
+          queryClient.invalidateQueries({ queryKey: ["projects"] });
         },
         onError: (err: any) => {
           const message = err?.response?.data?.message ?? err?.message ?? "Error updating project";
-          console.error(message);
+          toast.error(message);
         },
     })
 }

@@ -46,6 +46,27 @@ export interface Project {
     indicators: Indicator[];
 }
 
+export interface ProjectDTO {
+    name: string;
+    description: string;
+    project_url: string;
+    start_date: Date;
+    end_date: Date;
+    progress: number;
+    comments: string;
+    budget: number;
+    contact: Contact;
+    beneficiary: Beneficiary;
+    project_state: ProjectState;
+    kpa: KpaProject;
+    measure: Measure;
+    strategic_output: StrategicOutputCountry;
+    donors: ProjectDonor[];
+    agencies: ProjectAgency[];  
+    program_id: number;
+    indicators: Indicator[];
+}
+
 export interface ProjectTable {
     id: number;
     name: string;

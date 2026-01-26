@@ -67,8 +67,6 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
         return res;
     };
 
-
-
     return (
         <div className="page-container">
             <div className="title-container">

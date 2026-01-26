@@ -50,7 +50,6 @@ export function mapProjects(rawList: any[]): Project[]{
 }
 
 export function mapProjectToForm(project: Project) {
-  console.log("Mapping project to form:", project);
   return {
     name: project.name,
     description: project.description,

@@ -1,3 +1,4 @@
+import { id } from "date-fns/locale";
 import z from "zod";
 
 export const projectSchema = z.object({
@@ -61,6 +62,7 @@ export const projectSchema = z.object({
     }).nullable().refine(Boolean, { message: "A beneficiary is required" }),
 
     contact: z.object({
+        id: z.number().optional(),
         first_name: z.string().min(1, "The contact first name must not be empty").min(2, "The contact first name must have at least 2 characters").max(50, "The contact first name must not exceed 50 characters").regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact first name contains invalid characters"),
         last_name: z.string().min(1, "The contact last name must not be empty").min(2, "The contact last name must have at least 2 characters").max(50, "The contact last name must not exceed 50 characters").regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact last name contains invalid characters"),
         title: z.string().min(1, "The contact title must not be empty").min(2, "The contact title must have at least 2 characters").max(100, "The contact title must not exceed 100 characters").regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact title contains invalid characters"),
