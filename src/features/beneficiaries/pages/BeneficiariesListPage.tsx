@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/button";
 import CreateBeneficiaryModal from "../components/CreateBeneficiaryModal";
 import BeneficiariesTable from "../components/BeneficiariesTable";
 import { EmptyState } from "@/shared/components/EmptyState";
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
 
 export default function BeneficiariesListPage(){
+    const canWrite = useHasScope("beneficiaries:write");
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
 
@@ -75,10 +77,12 @@ export default function BeneficiariesListPage(){
                         Manage the Beneficiaries
                     </p> 
                 </div>
-                <Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
-                    <Plus className="w-5 h-5 mr-2"/>
-                    Create Beneficiary
-                </Button>
+                { canWrite && (
+                    <Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
+                        <Plus className="w-5 h-5 mr-2"/>
+                        Create Beneficiary
+                    </Button>
+                )}
             </div>
 
             {/* Search */}
@@ -90,7 +94,7 @@ export default function BeneficiariesListPage(){
             <CreateBeneficiaryModal beneficiary={selectedBeneficiary} open={openModal} onClose={() => setOpenModal(false)} onSubmit={handleSubmit} />
             
             {data && data?.beneficiaries.length > 0 ? (
-                <BeneficiariesTable beneficiaries={data?.beneficiaries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(beneficiary) => console.log("DELETE", beneficiary)}/>
+                <BeneficiariesTable beneficiaries={data?.beneficiaries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(beneficiary) => console.log("DELETE", beneficiary)} canWrite={canWrite}/>
             ) : (
                 <EmptyState
                     icon={Tag}

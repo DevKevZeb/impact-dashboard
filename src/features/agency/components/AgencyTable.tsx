@@ -1,5 +1,6 @@
 import { CheckCheck, SquarePen, Trash2 } from "lucide-react";
 import type { Agency } from "../types/agency.types";
+import { ca } from "date-fns/locale";
 
 interface Pagination {
   total: number;
@@ -19,9 +20,11 @@ interface Props {
   onEdit: (agency: Agency) => void;
   onDelete: (agency: Agency) => void;
   onApprove: (agency: Agency) => void;
+
+  canWrite?: boolean;
 }
 
-export default function AgencyTable({ agencies, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete, onApprove }: Props) {
+export default function AgencyTable({ agencies, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete, onApprove, canWrite }: Props) {
   
   if (!pagination) return <div>Enter the pagination</div>;
   const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -39,7 +42,7 @@ export default function AgencyTable({ agencies, pagination, page, perPage, setPa
             <th>NAME</th>
             <th>URL</th>
             <th>IS APPROVED</th>
-            <th>ACTIONS</th>
+            {canWrite && <th>ACTIONS</th>}
           </tr>
         </thead>
 
@@ -59,7 +62,7 @@ export default function AgencyTable({ agencies, pagination, page, perPage, setPa
                 </span>
               </td>
 
-              <td className="table-cell space-x-2">
+              {canWrite && (<td className="table-cell space-x-2">
                 <button className="btn-edit-table" onClick={() => onEdit(agency)}>
                   <SquarePen className="w-4 h-4" />
                 </button>
@@ -71,7 +74,7 @@ export default function AgencyTable({ agencies, pagination, page, perPage, setPa
                     <CheckCheck className="w-4 h-4" />
                   </button>
                 )}
-              </td>
+              </td>)}
             </tr>
           ))}
 
@@ -107,7 +110,7 @@ export default function AgencyTable({ agencies, pagination, page, perPage, setPa
 
           {agencies.length === 0 && (
             <tr>
-              <td colSpan={4} className="px-4 py-6 text-center text-gray-500">
+              <td colSpan={canWrite ? 4 : 3} className="px-4 py-6 text-center text-gray-500">
                 There are no registered agencies
               </td>
             </tr>

@@ -12,8 +12,10 @@ import { useUpdateCountry } from "../hooks/country/useUpdateCountry.ts";
 import { Loader2, Plus, Search, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
 import { EmptyState } from "@/shared/components/EmptyState.tsx";
+import { useHasScope } from "@/features/auth/hooks/useHasScope.ts";
 
 export default function CountryListPage() {
+  const canWrite = useHasScope("countries:write");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
@@ -75,10 +77,10 @@ export default function CountryListPage() {
             Manage the Countries
           </p> 
        </div>
-        <Button className="btn-secondary" size="lg" onClick={handleCreate}>
+        {canWrite && (<Button className="btn-secondary" size="lg" onClick={handleCreate}>
           <Plus className="w-5 h-5 mr-2"/>
           New Country
-        </Button>
+        </Button>)}
       </div>
       
       {/* Search */}
@@ -97,7 +99,7 @@ export default function CountryListPage() {
       {error && <p>Error loading countries</p>}
 
       {data && data.countries.length > 0 ? (
-        <CountryTable countries={data?.countries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(country) => console.log("DELETE", country)} />
+        <CountryTable countries={data?.countries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(country) => console.log("DELETE", country)} canWrite={canWrite} />
       ): (
         <EmptyState
           icon={Tag}
