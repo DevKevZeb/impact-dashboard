@@ -11,6 +11,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, Upload, X, Check } from "lucide-react";
+import { Can } from "@/features/auth/components/Can";
+import { CannotAccess } from "@/features/auth/components/CannotAccess";
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
+import { SCOPES } from "@/features/auth/utils/permissions";
+import { toast } from "sonner";
 import { useUpdateProgram } from "../api/programQueries";
 import { useSdgs } from "@/features/sdgs/api/sdgQueries";
 import { useProgramStates } from "@/features/program-states/api/programStateQueries";
@@ -31,6 +36,7 @@ export function ProgramEditDialog({
   open,
   onOpenChange,
 }: ProgramEditDialogProps) {
+  const canWrite = useHasScope(SCOPES.PROGRAMS_WRITE);
   const updateMutation = useUpdateProgram();
   const { data: sdgs } = useSdgs();
   const { data: programStates } = useProgramStates();
@@ -101,6 +107,11 @@ export function ProgramEditDialog({
   const onSubmit = async (data: ProgramUpdateFormData) => {
     if (!program) return;
 
+    if (!canWrite) {
+      toast.error("Insufficient permissions to edit programs");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await updateMutation.mutateAsync({
@@ -156,7 +167,16 @@ export function ProgramEditDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <Can 
+          scope={SCOPES.PROGRAMS_WRITE}
+          fallback={
+            <CannotAccess 
+              message="Edit Program Restricted"
+              description="You don't have permission to edit programs. Contact your administrator to request access."
+            />
+          }
+        >
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* 1. Program Name */}
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium text-gray-700 block">
@@ -462,6 +482,7 @@ export function ProgramEditDialog({
             </Button>
           </DialogFooter>
         </form>
+        </Can>
       </DialogContent>
     </Dialog>
   );

@@ -2,6 +2,8 @@ import { ChartNoAxesCombined, Eye, FolderKey, SquarePen, Trash2 } from "lucide-r
 import type { Program } from "../types/program.types";
 import { DataTableRow, DataTableCell } from "@/shared/components/table";
 import { toast } from "sonner";
+import { Can } from "@/features/auth/components/Can";
+import { SCOPES } from "@/features/auth/utils/permissions";
 
 interface ProgramTableRowProps {
   program: Program;
@@ -108,20 +110,22 @@ export function ProgramTableRow({ program, index, onEdit, onView }: ProgramTable
           >
             <Eye className="w-4 h-4" />
           </button>
-          <button
-            onClick={handleEdit}
-            className="btn-edit-table"
-            title="Edit Program"
-          >
-            <SquarePen className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleDelete}
-            className="btn-delete-table"
-            title="Delete Program (not implemented)"
-          >
-            <Trash2 className="w-4 h-4"/>
-          </button>
+          <Can scope={SCOPES.PROGRAMS_WRITE}>
+            <button
+              onClick={handleEdit}
+              className="btn-edit-table"
+              title="Edit Program"
+            >
+              <SquarePen className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleDelete}
+              className="btn-delete-table"
+              title="Delete Program (not implemented)"
+            >
+              <Trash2 className="w-4 h-4"/>
+            </button>
+          </Can>
         </div>
       </DataTableCell>
     </DataTableRow>
