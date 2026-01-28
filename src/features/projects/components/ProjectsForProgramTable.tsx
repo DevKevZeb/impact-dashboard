@@ -1,0 +1,121 @@
+import type { ProjectTable } from "../types/project.types";
+import { useNavigate } from "react-router-dom";
+import { Pencil } from "lucide-react";
+
+
+interface Pagination {
+  total: number;
+  per_page: number;
+  current_page: number;
+  last_page: number;
+}
+
+interface Props {
+    projects: ProjectTable[];
+    pagination: Pagination;
+    page: number;
+    perPage: number;
+    setPage: (page: number) => void;
+    setPerPage: (perPage: number) => void;
+}
+
+
+export default function ProjectsForProgramTable({projects, pagination, page, perPage, setPage, setPerPage }: Props){
+    const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setPerPage(Number(e.target.value));
+      setPage(1);
+    };
+
+    const formatDate = (date: any) =>
+    new Date(date).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
+    
+    const navigate = useNavigate();
+
+    return(
+        <div className="table-wrapper">
+            <table className="table-default">
+                <thead className="table-head">
+                    <tr>
+                        <th>#</th> 
+                        <th>NAME</th> 
+                        <th>DESCRIPTION</th> 
+                        <th>PROJECT URL</th> 
+                        <th>START DATE</th> 
+                        <th>END DATE</th> 
+                        <th>PROGRESS</th>
+                        <th>STATE</th> 
+                        <th>ACTIONS</th> 
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {projects.map((project, index) => (
+                    <tr key={project.id} className="table-row hover:bg-gray-50">
+                        <td className="table-cell">{index + 1}</td>
+                        <td className="table-cell">{project.name}</td>
+
+                        <td className="table-cell">{project.description}</td>
+                        <td className="table-cell">{project.project_url || "—"}</td>
+
+                        <td className="table-cell">
+                            {formatDate(project.start_date)}
+                        </td>
+
+                        <td className="table-cell">
+                            {formatDate(project.end_date)}
+                        </td>
+
+                        <td className="px-4 py-2 text-sm font-semibold text-emerald-600">
+                            {project.progress}%
+                        </td>
+                        <td className="table-cell">
+                            {project.state.state}
+                        </td>
+                        <td className="table-cell text-center">
+                        <button
+                            className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-sky-600 hover:text-sky-800 transition-colors"
+                            onClick={() =>
+                            navigate(`/projects/edit/${project.program_id}/${project.id}`)
+                            }
+                        >
+                            <Pencil className="w-4 h-4" />
+                            Edit
+                        </button>
+                        </td>
+
+                    </tr>
+                    ))}
+                    <tr className="table-pagination-row">
+                        <td colSpan={5} className="table-pagination-cell">
+                            <div className="table-pagination-container">
+                                <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    <span>Rows per page:</span>
+                                    <select className="table-perpage-select" value={perPage} onChange={handlePerPageChange} >
+                                        <option value={10}>10</option>
+                                        <option value={25}>25</option>
+                                        <option value={50}>50</option>
+                                    </select>
+                                </div>
+                                <div className="table-pagination-actions">
+                                    <button className="table-pagination-btn" onClick={() => setPage(page - 1)} disabled={page === 1} >
+                                        ← Prev
+                                    </button>
+                                    <span className="text-gray-600 text-xs">
+                                        Page {pagination.current_page} of {pagination.last_page}
+                                    </span>
+                                    <button className="table-pagination-btn" onClick={() => setPage(page + 1)} disabled={page === pagination.last_page} >
+                                        Next →
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    )
+}

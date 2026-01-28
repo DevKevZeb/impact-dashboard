@@ -7,10 +7,9 @@ export function useUpdateProjectState(){
     const qc = useQueryClient();
 
     return useMutation({
-        mutationFn: ({id, dto}: {id: number, dto: ProjectStateDTO}) =>
-            updateProjectState(id, dto),
+        mutationFn: ({id, dto}: {id: number, dto: ProjectStateDTO}) => updateProjectState(id, dto),
         onSuccess: () => {
-        qc.invalidateQueries({ queryKey: ["project-states"] });
+            qc.invalidateQueries({ queryKey: ["project-states"] });
         },
         onError: (err: any) => {
         const message = err?.response?.data?.message ?? err?.message ?? "Error updating";

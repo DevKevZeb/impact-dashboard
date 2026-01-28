@@ -4,11 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 
 import type { CreateIndicatorDTO, Indicator, UpdateIndicatorDTO } from "../types/indicatorTypes";
-import { IndicatorTypeComboboxSearchable } from "./IndicatorComboboxSearcheable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
+import type { IndicatorType } from "@/features/indicator-type/types/IndicatorTypeType";
+import { fetchIndicatorTypesForSelect } from "@/features/indicator-type/services/indicatortype.api";
 
 const indicatorSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -109,7 +111,8 @@ export default function CreateIndicatorModal({ open, indicator, parentMeasureId,
             )}
           </div>
           <Controller control={control} name="type" render={({ field }) => (
-              <IndicatorTypeComboboxSearchable value={field.value?? null} onChange={field.onChange} error={errors.type?.message} /> )} />
+              <AsyncSearchSelect<IndicatorType> value={field.value ?? null} onChange={field.onChange} placeholder="Search Indicator Types..." fetchOptions={fetchIndicatorTypesForSelect} getOptionLabel={(k) => k.name} getOptionKey={(k) => k.id} />)}
+          />
           <div className="mt-6 flex justify-end gap-3">
             <Button variant="outline" type="button" onClick={onClose}>
               Cancel

@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import CreateDonorModal from "../components/CreateDonorModal";
 import DonorTable from "../components/DonorTable";
 import { EmptyState } from "@/shared/components/EmptyState";
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
 
 export default function DonorsListPage() {
-    
+    const canWrite = useHasScope("donors:write");
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
 
@@ -81,10 +82,12 @@ export default function DonorsListPage() {
                         Manage all donors
                 </p>
             </div>
+            {canWrite &&
             <Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
                <Plus className="w-5 h-5 mr-2"/>
                 New Donor 
             </Button>
+            }
         </div>
         {/* Search */}
         <div className="relative max-w-md">
@@ -99,7 +102,7 @@ export default function DonorsListPage() {
         </div>
         <CreateDonorModal open={openModal} donor={selectedDonor} onClose={()=> setOpenModal(false)} onSubmit={handleSubmit}/>
         {data && data.donors.length > 0 ?
-        <DonorTable donors={data.donors} pagination={data.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(donor) => console.log("DELETE", donor)}/>
+        <DonorTable donors={data.donors} pagination={data.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(donor) => console.log("DELETE", donor)} canWrite={canWrite}/>
         :
         <EmptyState
           icon={Tag} title={searchTerm ? "No donor found" : "No donors available"}

@@ -1,7 +1,7 @@
 export interface Measure {
     id: number, 
     name: string,
-    strategic_output_id: number, 
+    strategic_output_id?: number, 
     indicators_count: number
 }
 

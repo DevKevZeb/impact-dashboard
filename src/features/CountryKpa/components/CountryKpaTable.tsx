@@ -54,19 +54,17 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
           {countries.map((country, index) => (
             <Fragment key={country.id}>
 
-              <tr
-                className="table-row cursor-pointer hover:bg-gray-50"
-                onClick={() => toggleExpand(country.id)}
-              >
+              <tr className="table-row cursor-pointer hover:bg-gray-50" onClick={() => toggleExpand(country.id)} >
                 <td className="table-cell">{index + 1}</td>
                 <td className="table-cell font-medium">
                   {country.name}
                 </td>
                 
                 <td className="table-cell text-left">
+                  {(country.kpas_count ?? 0) > 0 && 
                   <button title="More info" className="btn-warning-table" onClick={(e) => { e.stopPropagation(); navigate(`/country-kpa//${country.id}`, { state: {country}}); }} >
                     <Info className="w-4 h-4" />
-                  </button>
+                  </button>}
                 </td>
               </tr>
 
@@ -85,11 +83,7 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
               <div className="table-pagination-container">
                 <div className="flex items-center gap-2 text-xs text-gray-600">
                   <span>Rows per page:</span>
-                  <select
-                    className="table-perpage-select"
-                    value={perPage}
-                    onChange={handlePerPageChange}
-                  >
+                  <select className="table-perpage-select" value={perPage} onChange={handlePerPageChange} >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
                     <option value={50}>50</option>
@@ -97,11 +91,7 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
                 </div>
 
                 <div className="table-pagination-actions">
-                  <button
-                    className="table-pagination-btn"
-                    onClick={() => setPage(page - 1)}
-                    disabled={page === 1}
-                  >
+                  <button className="table-pagination-btn" onClick={() => setPage(page - 1)} disabled={page === 1} >
                     ← Prev
                   </button>
 
@@ -109,11 +99,7 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
                     Page {pagination.current_page} of {pagination.last_page}
                   </span>
 
-                  <button
-                    className="table-pagination-btn"
-                    onClick={() => setPage(page + 1)}
-                    disabled={page === pagination.last_page}
-                  >
+                  <button className="table-pagination-btn" onClick={() => setPage(page + 1)} disabled={page === pagination.last_page} >
                     Next →
                   </button>
                 </div>
@@ -129,7 +115,8 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
 import { Fragment } from "react";
 
 function SubKpaTable({ countryId }: { countryId: number; onEdit: (kpa: Kpa, relationId: number) => void; }) {
-  const { data: kpas, isLoading } = useCountryKpas(countryId, true);
+  const { data, isLoading } = useCountryKpas(countryId, true);
+  const kpas = !Array.isArray(data) && data?.kpas ? data.kpas : [];
 
   if (isLoading) {
     return (

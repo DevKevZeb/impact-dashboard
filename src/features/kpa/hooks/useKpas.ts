@@ -8,9 +8,9 @@ export function useKpas(page: number, perPage: number) {
     });
 }
 
-export function useSearchKpas(search: string, page: number){
+export function useSearchKpas(search: string, page: number, limit: number){
     return useQuery({
-        queryKey: ["search-kpas", search, page],
-        queryFn: () => fetchSearchKpas(search, page),
+        queryKey: ["search-kpas", search, page, limit],
+        queryFn: () => fetchSearchKpas(search, page, limit),
     })
 }

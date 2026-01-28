@@ -35,12 +35,7 @@ export function KpaComboboxSearchable({ value, onChange, error, label = "KPA", }
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
+      if (wrapperRef.current &&!wrapperRef.current.contains(event.target as Node)) setOpen(false);
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -53,22 +48,8 @@ export function KpaComboboxSearchable({ value, onChange, error, label = "KPA", }
   }, [search]);
 
   useEffect(() => {
-    if (value) {
-      setInputValue(value.name);
-    }
+    if (value) setInputValue(value.name);
   }, [value]);
-
-  const handleInputChange = (val: string) => {
-    setInputValue(val);
-    setOpen(true);
-
-    if (value && val !== value.name) {
-      onChange(null);
-    }
-
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => setSearch(val), 300);
-  };
 
   useEffect(() => {
     if (!listRef.current || isLoading) return;
@@ -83,11 +64,21 @@ export function KpaComboboxSearchable({ value, onChange, error, label = "KPA", }
       if (entries[0].isIntersecting) {
         setPage((prev) => prev + 1);
       }
-    });
+    },{ root: container, threshold: 1.0 });
 
     observer.observe(lastItem);
     return () => observer.disconnect();
   }, [kpas, isLoading, page, lastPage]);
+
+  const handleInputChange = (val: string) => {
+    setInputValue(val);
+    setOpen(true);
+
+    if (value && val !== value.name) onChange(null);
+  
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setSearch(val), 300);
+  };
 
   return (
     <div ref={wrapperRef} className="w-full space-y-1">
@@ -95,7 +86,7 @@ export function KpaComboboxSearchable({ value, onChange, error, label = "KPA", }
         <Command>
           <CommandInput value={inputValue} placeholder="Search KPA..." onFocus={() => setOpen(true)} onValueChange={handleInputChange} className={error ? "border-rose-500 focus:ring-rose-500" : ""} />
           {open && 
-            <CommandList ref={listRef} className=" absolute left-0 top-full mt-1 w-full bg-white border rounded-md shadow-md max-h-56 overflow-auto z-50 " >
+            <CommandList ref={listRef} className="absolute left-0 top-full mt-1 w-full bg-white border rounded-md shadow-md max-h-[200px] overflow-auto z-50" >
               {isLoading && kpas.length === 0 && (
                 <div className="p-2 text-xs text-gray-500">Loading...</div>
               )}

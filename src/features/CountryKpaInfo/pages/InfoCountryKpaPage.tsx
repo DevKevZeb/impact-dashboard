@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { LazyTree } from "../components/TreeNode/Tree";
 import { loadChildrenCountryKpaTree } from "../components/TreeNode/loadChildrenCountryKpaTree";
 import { useCountryKpas } from "@/features/CountryKpa/hooks/useCountryKpas";
@@ -18,19 +18,16 @@ import CreateIndicatorModal from "@/features/indicator/components/CreateIndicato
 import { useCreateIndicator } from "@/features/indicator/hooks/useCreateIndicator";
 import { useUpdateIndicator } from "@/features/indicator/hooks/useUpdateIndicator";
 
-interface CountryOption {
-  id: number;
-  name: string;
-}
 
 export default function InfoCountryKpaPage() {
   const { countryId } = useParams();
-  const { state } = useLocation();
-
   const id = Number(countryId);
-  const country = state?.country as CountryOption | undefined;
 
-  const { data: kpas = [], isLoading } = useCountryKpas(id, true);
+  const { data, isLoading } = useCountryKpas(id, true);
+
+  const kpas = !Array.isArray(data) && data?.kpas ? data.kpas : [];
+  const country = Array.isArray(data) ? undefined : data?.country;
+
   const [selected, setSelected] = useState<string | null>(null);
   const [refreshNode, setRefreshNode] = useState<(key: string) => void>();
 
