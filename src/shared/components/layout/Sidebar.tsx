@@ -11,12 +11,13 @@ import {
     Link as LinkIcon,
     Wallet,
     FileText,
-    ChevronDown
+    ChevronDown,
+    ShieldCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useHasAnyScope } from "@/features/auth/hooks/useHasScope";
+import { useAuthStore } from "@/features/auth/store/authStore";
 import { SCOPES } from "@/features/auth/utils/permissions";
 
 interface SidebarProps {
@@ -25,10 +26,10 @@ interface SidebarProps {
 
 type MenuItem = {
     title: string;
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
     path?: string;
     requiredScopes?: string[]; // Scopes needed to see this item
-    children?: { title: string; path: string; icon?: any; requiredScopes?: string[] }[];
+    children?: { title: string; path: string; icon?: React.ComponentType<{ className?: string }>; requiredScopes?: string[] }[];
 };
 
 const menuItems: MenuItem[] = [
@@ -73,6 +74,13 @@ const menuItems: MenuItem[] = [
     ],
     },
     {
+    title: "Administration",
+    icon: ShieldCheck,
+    children: [
+        { title: "Users", path: "/admin/users", icon: Users, requiredScopes: [SCOPES.USERS_READ] },
+    ],
+    },
+    {
     title: "Reports",
     icon: FileBarChart,
     children: [
@@ -95,20 +103,22 @@ export function Sidebar({ isOpen }: SidebarProps) {
     );
     };
 
+    // Get hasScope function from auth store
+    const hasScope = useAuthStore((state) => state.hasScope);
+
     // Filter menu items based on permissions
     const filterMenuItem = (item: MenuItem): MenuItem | null => {
         // If item has children, filter them
         if (item.children) {
             const filteredChildren = item.children
-                .map(child => {
+                .filter(child => {
                     // Check if user has required scopes for this child
                     if (child.requiredScopes && child.requiredScopes.length > 0) {
-                        const hasAccess = useHasAnyScope(child.requiredScopes);
-                        return hasAccess ? child : null;
+                        // Check if user has at least one of the required scopes
+                        return child.requiredScopes.some(scope => hasScope(scope));
                     }
-                    return child; // No scopes required, show by default
-                })
-                .filter((child): child is NonNullable<typeof child> => child !== null);
+                    return true; // No scopes required, show by default
+                });
 
             // If no children remain after filtering, hide the parent
             if (filteredChildren.length === 0) return null;
@@ -118,8 +128,8 @@ export function Sidebar({ isOpen }: SidebarProps) {
 
         // If item has required scopes, check them
         if (item.requiredScopes && item.requiredScopes.length > 0) {
-            const hasAccess = useHasAnyScope(item.requiredScopes);
-            return hasAccess ? item : null;
+            // Check if user has at least one of the required scopes
+            return item.requiredScopes.some(scope => hasScope(scope)) ? item : null;
         }
 
         return item; // No scopes required, show by default
