@@ -18,8 +18,10 @@ interface Props {
 
   onEdit: (type: IndicatorType) => void;
   onDelete: (type: IndicatorType) => void;
+
+  canWrite?: boolean;
 }
-export default function IndicatorTapeTable({types, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete } : Props){
+export default function IndicatorTypeTable({types, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete, canWrite } : Props){
     if(!pagination) return <div>Enter the pagination</div>
 
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -35,7 +37,7 @@ export default function IndicatorTapeTable({types, pagination, page, perPage, se
                     <tr>
                         <th>#</th>
                         <th>NAME</th>
-                        <th>ACTIONS</th>
+                        {canWrite && <th>ACTIONS</th>}
                     </tr>
                 </thead>
 
@@ -44,19 +46,19 @@ export default function IndicatorTapeTable({types, pagination, page, perPage, se
                         <tr key={type.id} className="table-row">
                             <td className="table-cell">{index+1}</td>
                             <td className="table-cell">{type.name}</td>
-                            <td className="table-cell space-x-2">
+                            {canWrite && (<td className="table-cell space-x-2">
                                 <button className="btn-edit-table" onClick={() => onEdit(type)}>
                                     <SquarePen className="w-4 h-4" />
                                 </button>
                                 <button className="btn-delete-table" onClick={() => onDelete(type)}>
                                     <Trash2 className="w-4 h-4" />
                                 </button>
-                            </td>
+                            </td>)}
                         </tr>
                     ))}
 
                     <tr className="table-pagination-row">
-                        <td colSpan={4} className="table-pagination-cell">
+                        <td colSpan={canWrite ? 4 : 3} className="table-pagination-cell">
                         <div className="table-pagination-container">
                             <div className="flex items-center gap-2 text-xs text-gray-600">
                                 <span>Rows per page:</span>

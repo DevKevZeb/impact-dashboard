@@ -19,9 +19,11 @@ interface Props {
 
     onEdit: (beneficiary: Beneficiary) => void;
     onDelete: (beneficiary: Beneficiary) => void;
+
+    canWrite?: boolean;
 }
 
-export default function BeneficiariesTable({ beneficiaries, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete }: Props) {
+export default function BeneficiariesTable({ beneficiaries, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete, canWrite }: Props) {
   
   if (!pagination) return <div>Enter the pagination</div>;
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -36,7 +38,7 @@ export default function BeneficiariesTable({ beneficiaries, pagination, page, pe
             <tr>
             <th>#</th>
             <th>NAME</th>
-            <th>ACTIONS</th>
+            {canWrite && (<th>ACTIONS</th>)}
             </tr>
         </thead>
         <tbody>
@@ -44,18 +46,18 @@ export default function BeneficiariesTable({ beneficiaries, pagination, page, pe
             <tr key={beneficiary.id} className="table-row">
                 <td className="table-cell">{index + 1}</td>
                 <td className="table-cell">{beneficiary.name}</td>
-                <td className="table-cell space-x-2">
-                <button className="btn-edit-table" onClick={() => onEdit(beneficiary)}>
-                  <SquarePen className="w-4 h-4" />
-                </button>
-                <button className="btn-delete-table" onClick={() => onDelete(beneficiary)}>
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </td>
+                {canWrite && (<td className="table-cell space-x-2">
+                  <button className="btn-edit-table" onClick={() => onEdit(beneficiary)}>
+                    <SquarePen className="w-4 h-4" />
+                  </button>
+                  <button className="btn-delete-table" onClick={() => onDelete(beneficiary)}>
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </td>)}
             </tr>
           ))}
           <tr className="table-pagination-row">
-            <td colSpan={5} className="table-pagination-cell">
+            <td colSpan={canWrite ? 3 : 2} className="table-pagination-cell">
               <div className="table-pagination-container">
 
                 <div className="flex items-center gap-2 text-xs text-gray-600">

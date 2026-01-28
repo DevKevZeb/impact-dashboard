@@ -1,5 +1,6 @@
 import { SquarePen, Trash2 } from "lucide-react";
 import type { Country } from "../types/CountryType";
+import { ca } from "date-fns/locale";
 
 interface Pagination {
   total: number;
@@ -18,9 +19,10 @@ interface Props {
 
   onEdit: (agency: Country) => void;
   onDelete: (agency: Country) => void;
+  canWrite?: boolean;
 }
 
-export default function CountryTable({ countries, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete} : Props) {
+export default function CountryTable({ countries, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete, canWrite }: Props) {
     if(!pagination) return <div>Enter the pagination</div>;
 
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -37,7 +39,7 @@ export default function CountryTable({ countries, pagination, page, perPage, set
                         <th>#</th>
                         <th>NAME</th>
                         <th>CURRENCY</th>
-                        <th>ACTIONS</th>
+                        {canWrite && <th>ACTIONS</th>}
                     </tr>
                 </thead>
 
@@ -48,19 +50,19 @@ export default function CountryTable({ countries, pagination, page, perPage, set
                             <td className="table-cell">{country.name}</td>
                             <td className="table-cell">{country.currency.code}</td>
 
-                            <td className="table-cell space-x-2">
+                            {canWrite && (<td className="table-cell space-x-2">
                                 <button className="btn-edit-table" onClick={() => onEdit(country)}>
                                     <SquarePen className="w-4 h-4"/>
                                 </button>
                                 <button className="btn-delete-table" onClick={() => onDelete(country)}>
                                     <Trash2 className="w-4 h-4"/>
                                 </button>
-                            </td>
+                            </td>)}
                         </tr>
                     ))}
 
                     <tr className="table-pagination-row">
-                        <td colSpan={4} className="table-pagination-cell">
+                        <td colSpan={canWrite ? 4 : 3} className="table-pagination-cell">
                         <div className="table-pagination-container">
 
                             <div className="flex items-center gap-2 text-xs text-gray-600">

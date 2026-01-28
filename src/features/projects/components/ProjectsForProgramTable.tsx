@@ -1,6 +1,7 @@
 import type { ProjectTable } from "../types/project.types";
 import { useNavigate } from "react-router-dom";
 import { Pencil } from "lucide-react";
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
 
 
 interface Pagination {
@@ -21,6 +22,7 @@ interface Props {
 
 
 export default function ProjectsForProgramTable({projects, pagination, page, perPage, setPage, setPerPage }: Props){
+    const canWrite = useHasScope("projects:write") && useHasScope("kpas:write") && useHasScope("indicators:write");
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       setPerPage(Number(e.target.value));
       setPage(1);
@@ -48,7 +50,7 @@ export default function ProjectsForProgramTable({projects, pagination, page, per
                         <th>END DATE</th> 
                         <th>PROGRESS</th>
                         <th>STATE</th> 
-                        <th>ACTIONS</th> 
+                        {canWrite && <th>ACTIONS</th>}
                     </tr>
                 </thead>
 
@@ -75,22 +77,18 @@ export default function ProjectsForProgramTable({projects, pagination, page, per
                         <td className="table-cell">
                             {project.state.state}
                         </td>
+                        {canWrite && (
                         <td className="table-cell text-center">
-                        <button
-                            className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-sky-600 hover:text-sky-800 transition-colors"
-                            onClick={() =>
-                            navigate(`/projects/edit/${project.program_id}/${project.id}`)
-                            }
-                        >
-                            <Pencil className="w-4 h-4" />
-                            Edit
-                        </button>
-                        </td>
+                            <button className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-sky-600 hover:text-sky-800 transition-colors" onClick={() => navigate(`/projects/edit/${project.program_id}/${project.id}`) } >
+                                <Pencil className="w-4 h-4" />
+                                Edit
+                            </button>
+                        </td>)}
 
                     </tr>
                     ))}
                     <tr className="table-pagination-row">
-                        <td colSpan={5} className="table-pagination-cell">
+                        <td colSpan={canWrite ? 9 : 8} className="table-pagination-cell">
                             <div className="table-pagination-container">
                                 <div className="flex items-center gap-2 text-xs text-gray-600">
                                     <span>Rows per page:</span>

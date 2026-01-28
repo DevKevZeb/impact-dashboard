@@ -8,8 +8,11 @@ import CreateProjectStateModal from "../components/CreateProjectStateModal";
 import { EmptyState } from "@/shared/components/EmptyState";
 import ProjectStateTable from "../components/ProjectStateTable";
 import { Button } from "@/components/ui/button";
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
 
 export default function ProjectStateListPage(){
+
+    const canWrite = useHasScope("projects:write");
 
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
@@ -66,10 +69,10 @@ export default function ProjectStateListPage(){
                         Manage the Project States
                     </p> 
                 </div>
-                <Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
+                {canWrite && (<Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
                     <Plus className="w-5 h-5 mr-2"/>
                     New Project State
-                </Button>
+                </Button>)}
                 </div>
                 
                 {/* Search */}
@@ -86,7 +89,7 @@ export default function ProjectStateListPage(){
 
             <CreateProjectStateModal open={openModal} projectState={selectedProjectState} onClose={() => setOpenModal(false)} onSubmit={handleSubmit}/>
             {data && data.project_states.length > 0 ? 
-                <ProjectStateTable projectStates={data?.project_states} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(projectState) => console.log("DELETE", projectState)}/>
+                <ProjectStateTable projectStates={data?.project_states} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(projectState) => console.log("DELETE", projectState)} canWrite={canWrite}/>
                 :
                 <EmptyState 
                 icon={Tag} title={searchTerm ? "No project States found" : "No project states available"}

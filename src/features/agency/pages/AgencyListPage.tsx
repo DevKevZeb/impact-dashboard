@@ -11,8 +11,10 @@ import TableSkeleton from "@/components/ui/TableSkeleton";
 import { Loader2, Plus, Search, Tag } from "lucide-react";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { Button } from "@/components/ui/button";
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
 
 export default function AgencyListPage() {
+  const canWrite = useHasScope("agencies:write");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
@@ -78,10 +80,10 @@ export default function AgencyListPage() {
             Manage the Agencies
           </p> 
        </div>
-        <Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
+        {canWrite && (<Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
           <Plus className="w-5 h-5 mr-2"/>
           New Agency
-        </Button>
+        </Button>)}
       </div>
       
       {/* Search */}
@@ -98,12 +100,11 @@ export default function AgencyListPage() {
 
       <CreateAgencyModal open={openModal} agency={selectedAgency} onClose={() => setOpenModal(false)} onSubmit={handleSubmit} />
 
-
       {isLoading && <TableSkeleton columns={4} rows={10}/>}
       {error && <p>Error loading agencies</p>}
 
       {data && data.agencies.length > 0 ? (
-        <AgencyTable agencies={data?.agencies} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} onEdit={handleEdit} onDelete={(agency) => console.log("DELETE", agency)} onApprove={handleApprove} setPerPage={setPerPage} />
+        <AgencyTable agencies={data?.agencies} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} onEdit={handleEdit} onDelete={(agency) => console.log("DELETE", agency)} onApprove={handleApprove} setPerPage={setPerPage} canWrite={canWrite}  />
       ):
       <EmptyState 
       icon={Tag} title={searchTerm ? "No agencies found" : "No agencies available"}
