@@ -1,3 +1,4 @@
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
 import type { Program } from "@/features/programs/types/program.types";
 import { Eye, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -20,6 +21,8 @@ interface Props {
 
 export default function ProgramsWithProjectsTable({ programs, pagination, page, perPage, setPage, setPerPage }: Props) {
 
+    const canWrite = useHasScope("projects:write") && useHasScope("kpas:write") && useHasScope("indicators:write");
+    
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       setPerPage(Number(e.target.value));
       setPage(1);
@@ -34,7 +37,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                         <th>PROGRAM NAME</th>
                         <th>DESCRIPTION</th>
                         <th>PROJECTS ASSIGNED</th>
-                        <th>VIEW PROJECTS</th>
+                        <th>ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,9 +48,9 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                             <td className="table-cell">{program.description}</td>
                             <td className="table-cell">{program.projects_count}</td>
                             <td className="table-cell ">
-                                <Link to={`/projects/new/${program.id}`} onClick={(e) => e.stopPropagation()} className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-green-600 hover:bg-sky-50 transition-colors" title="Add Project" >
+                                {canWrite && (<Link to={`/projects/new/${program.id}`} onClick={(e) => e.stopPropagation()} className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-green-600 hover:bg-sky-50 transition-colors" title="Add Project" >
                                     <Plus className="w-4 h-4" />
-                                </Link>
+                                </Link>)}
                                 <Link to={`/projects/program/${program.id}`} className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-sky-600 hover:bg-sky-50 transition-colors" title="View Projects" >
                                     <Eye className="w-4 h-4" />
                                 </Link>

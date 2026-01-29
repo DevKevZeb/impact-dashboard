@@ -9,8 +9,10 @@ import CreateKpaModal from "../components/CreateKpaModal";
 import { Loader2, Plus, Search, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/shared/components/EmptyState";
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
 
 export default function KpasListPage(){
+  const canWrite = useHasScope("kpas:write");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [openModal, setOpenModal] = useState(false);
@@ -67,10 +69,10 @@ export default function KpasListPage(){
             Manage the KPAs
           </p> 
        </div>
-        <Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
+        {canWrite && (<Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
           <Plus className="w-5 h-5 mr-2"/>
           New KPA
-        </Button>
+        </Button>)}
       </div>
       
       {/* Search */}
@@ -90,7 +92,7 @@ export default function KpasListPage(){
     {isLoading && <TableSkeleton columns={3} rows={10}/>}
     {error && <p>Error loading agencies</p>}
     {data && data.kpas.length > 0 ? (
-      <KpaTable kpas={data?.kpas} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} onEdit={handleEdit} onDelete={(agency) => console.log("DELETE", agency)} setPerPage={setPerPage} />
+      <KpaTable kpas={data?.kpas} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} onEdit={handleEdit} onDelete={(agency) => console.log("DELETE", agency)} setPerPage={setPerPage} canWrite={canWrite} />
     ): (
         <EmptyState
           icon={Tag}
