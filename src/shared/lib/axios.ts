@@ -52,10 +52,16 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error: AxiosError<ValidationErrorResponse | BusinessErrorResponse>) => {
-    // Handle 401 Unauthorized - Redirect to login
+    // Handle 401 Unauthorized - Redirect to login (except for login endpoint itself)
     if (error.response?.status === 401) {
-      localStorage.removeItem("auth_token");
-      window.location.href = "/login";
+      const requestUrl = error.config?.url || "";
+      
+      // Don't redirect if we're already trying to login
+      if (!requestUrl.includes("/auth/login") && !requestUrl.includes("/auth/register")) {
+        localStorage.removeItem("auth_token");
+        window.location.href = "/login";
+      }
+      
       return Promise.reject(error);
     }
 
