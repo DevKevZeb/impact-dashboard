@@ -23,19 +23,29 @@ export async function login(credentials: LoginInput): Promise<AuthResponse> {
   } catch (error) {
     const axiosError = error as AxiosError<{ message?: string }>;
     const status = axiosError.response?.status;
+    const message = axiosError.response?.data?.message;
 
-    if (status === 400 || status === 422) {
-      const message = axiosError.response?.data?.message || "Invalid credentials";
+    if (status === 401) {
+      // Invalid credentials or account issues
+      toast.error("Authentication failed", {
+        description: message || "Invalid email or password",
+      });
+    } else if (status === 400 || status === 422) {
       toast.error("Authentication error", {
-        description: message,
+        description: message || "Invalid credentials",
       });
     } else if (status === 500) {
       toast.error("Server error", {
         description: "Please try again later",
       });
-    } else {
+    } else if (!status) {
+      // Network error - no response from server
       toast.error("Connection error", {
-        description: "Please check your internet connection",
+        description: "Unable to connect to the server. Please check your internet connection.",
+      });
+    } else {
+      toast.error("Error", {
+        description: message || "An unexpected error occurred",
       });
     }
 

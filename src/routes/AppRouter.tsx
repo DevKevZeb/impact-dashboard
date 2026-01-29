@@ -16,7 +16,9 @@ import ListProgramsWithProjects from "@/features/projects/pages/ListProgramsWith
 import BeneficiariesListPage from "@/features/beneficiaries/pages/BeneficiariesListPage";
 import DonorsListPage from "@/features/donors/pages/DonorsListPage";
 import CreateProjectPage from "@/features/projects/pages/CreateProjectPage";
+import { UsersPage } from "@/features/users/pages/UsersPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
+import { RegisterPage } from "@/features/auth/pages/RegisterPage";
 import { PrivateRoute } from "./PrivateRoute";
 
 
@@ -25,8 +27,9 @@ import ListProjectsForProgramPage from "@/features/projects/pages/ListProjectsFo
 export function AppRouter() {
     return (
     <Routes>
-        {/* Public Route - Login */}
+        {/* Public Routes - Login & Register */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* Protected Routes - Require Authentication */}
         <Route path="/" element={<PrivateRoute><MainLayout /></PrivateRoute>}>
@@ -55,6 +58,11 @@ export function AppRouter() {
         <Route path="resources">
             <Route path="beneficiaries" element={<BeneficiariesListPage/>} />
             <Route path="donors" element={<DonorsListPage/>} />
+        </Route>
+
+        {/* Administration Routes */}
+        <Route path="admin">
+            <Route path="users" element={<UsersPage />} />
         </Route>
 
         {/* Reports Routes */}
