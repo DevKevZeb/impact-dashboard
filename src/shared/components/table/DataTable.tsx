@@ -37,7 +37,7 @@ export function DataTable({ children, className = "" }: DataTableProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
-        <table className={`w-full table-fixed ${className}`}>{children}</table>
+        <table className={`w-full table-auto ${className}`}>{children}</table>
       </div>
     </div>
   );
