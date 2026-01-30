@@ -3,7 +3,7 @@ interface TableSkeletonProps {
   rows?: number;
 }
 
-export default function TableSkeleton({ columns, rows = 6 }: TableSkeletonProps) {
+export default function TableSkeleton({ columns, rows = 1 }: TableSkeletonProps) {
   const skeletonRows = Array.from({ length: rows });
 
   return (

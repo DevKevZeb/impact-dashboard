@@ -3,8 +3,8 @@ import { mapIndicatorType, mapIndicatorTypes } from "../mappers/indicatortype.ma
 import type { IndicatorType, IndicatorTypeDTO } from "../types/IndicatorTypeType";
 import { toast } from "sonner";
 
-export async function getIndicatorTypesPaginated(page: number, perPage: number){
-    const { data } = await apiClient.get(`/indicator-types?page=${page}&per_page=${perPage}`);
+export async function getIndicatorTypesPaginated(page: number, perPage: number, search: string): Promise<{ types: IndicatorType[]; pagination: { current_page: number; last_page: number; per_page: number; total: number; } }> {
+    const { data } = await apiClient.get(`/indicator-types?page=${page}&per_page=${perPage}&search=${search}`);
 
     return {
         types: mapIndicatorTypes(data.data.indicator_types),
