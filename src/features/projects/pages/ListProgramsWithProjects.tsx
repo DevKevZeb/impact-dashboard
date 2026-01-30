@@ -22,8 +22,6 @@ export default function ListProgramsWithProjects(){
 
     const showSkeleton = isFetching && (searchChanged || pageChanged);
 
-
-
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
     };
