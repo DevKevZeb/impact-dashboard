@@ -3,8 +3,8 @@ import { mapKpa, mapKpas, mapKpasProject } from "../mappers/kpa.mapper";
 import type { CreateKpaDto, Kpa, KpaProject, UpdateKpaDto } from "../types/KpaType";
 import { toast } from "sonner";
 
-export async function getKpasPaginated(page: number, perPage: number){
-    const { data } = await apiClient.get(`/kpas?page=${page}&per_page=${perPage}`);
+export async function getKpasPaginated(page: number, perPage: number, search: string) {
+    const { data } = await apiClient.get(`/kpas?page=${page}&per_page=${perPage}&search=${encodeURIComponent(search)}`);
 
     return {
         kpas: mapKpas(data.data.kpas),

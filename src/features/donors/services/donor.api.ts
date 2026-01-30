@@ -3,8 +3,8 @@ import { mapDonor, mapDonors } from "../mappers/donor.mapper";
 import type { Donor, DonorDTO } from "../types/donor.types";
 import { toast } from "sonner";
 
-export async function getDonorsPaginated(page: number, perPage: number) {
-    const { data } = await apiClient.get(`/donors?page=${page}&per_page=${perPage}`);
+export async function getDonorsPaginated(page: number, perPage: number, search: string): Promise<{ donors: Donor[]; pagination: { current_page: number; last_page: number; per_page: number; total: number } }> {
+    const { data } = await apiClient.get(`/donors?page=${page}&per_page=${perPage}&search=${encodeURIComponent(search)}`);
     return {
         donors: mapDonors(data.data.donors),
         pagination: {

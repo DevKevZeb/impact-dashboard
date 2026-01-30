@@ -20,7 +20,6 @@ interface Props {
 }
 
 export default function ProgramsWithProjectsTable({ programs, pagination, page, perPage, setPage, setPerPage }: Props) {
-
     const canWrite = useHasScope("projects:write") && useHasScope("kpas:write") && useHasScope("indicators:write");
     
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

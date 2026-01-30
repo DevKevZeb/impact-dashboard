@@ -22,7 +22,7 @@ import { RegisterPage } from "@/features/auth/pages/RegisterPage";
 import { PrivateRoute } from "./PrivateRoute";
 
 
-import ListProjectsForProgramPage from "@/features/projects/pages/ListProjectsForProgramPage";
+import ListProjectsOfProgramPage from "@/features/projects/pages/ListProjectsOfProgramPage";
 
 export function AppRouter() {
     return (
@@ -50,7 +50,7 @@ export function AppRouter() {
         <Route path="projects" element={<ListProgramsWithProjects />}/>
         <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
         <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
-        <Route path="projects/program/:programId" element={<ListProjectsForProgramPage/>}/>
+        <Route path="projects/program/:programId" element={<ListProjectsOfProgramPage/>}/>
         <Route path="country-kpa" element={<CountryKpaListPage/>} />
         <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
         
