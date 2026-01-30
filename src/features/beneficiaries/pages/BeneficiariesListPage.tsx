@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useBeneficiaries } from "../hooks/useBeneficiaries";
 import { useCreateBeneficiary } from "../hooks/useCreateBeneficiary";
 import { useUpdateBeneficiary } from "../hooks/useUpdateBeneficiary";
@@ -9,20 +9,32 @@ import CreateBeneficiaryModal from "../components/CreateBeneficiaryModal";
 import BeneficiariesTable from "../components/BeneficiariesTable";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
+import { useDebounce } from "@/shared/hooks/useDebounce";
+import TableSkeleton from "@/components/ui/TableSkeleton";
 
 export default function BeneficiariesListPage(){
     const canWrite = useHasScope("beneficiaries:write");
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    const { data, isLoading, error } = useBeneficiaries(page, perPage);
+    const prevSearch = useRef(searchTerm);
+    const prevPage = useRef(page);
+    
+    const searchChanged = prevSearch.current !== searchTerm;
+    const pageChanged = prevPage.current !== page;
+
+    const debouncedSearch = useDebounce(searchTerm, 400);
+
+    const { data, isLoading, isFetching, error } = useBeneficiaries(page, perPage, debouncedSearch);
+
+    const showSkeleton = isFetching && (searchChanged || pageChanged);
 
     const { mutateAsync: createBeneficiary} = useCreateBeneficiary();
     const { mutateAsync: updateBeneficiary } = useUpdateBeneficiary();
 
     const [openModal, setOpenModal] = useState(false);
     const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null);
-    const [searchTerm, setSearchTerm] = useState('');
 
     const  handleSubmit = async (formData: BeneficiaryDTO) => {
         if(selectedBeneficiary) await updateBeneficiary({ id: selectedBeneficiary.id, dto: formData});
@@ -47,6 +59,13 @@ export default function BeneficiariesListPage(){
         setSearchTerm(value);
         setPage(1);
     }
+
+    useEffect(() => {
+        prevSearch.current = searchTerm;
+        prevPage.current = page;
+    }, [searchTerm, page]);
+
+
     if (isLoading) return (
         <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center space-y-4">
@@ -85,7 +104,6 @@ export default function BeneficiariesListPage(){
                 )}
             </div>
 
-            {/* Search */}
             <div className="relative max-w-md">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input type="text" placeholder="Search by name..." value={searchTerm} onChange={(e) => handleSearchChange(e.target.value)} className="search-default" />
@@ -93,7 +111,8 @@ export default function BeneficiariesListPage(){
 
             <CreateBeneficiaryModal beneficiary={selectedBeneficiary} open={openModal} onClose={() => setOpenModal(false)} onSubmit={handleSubmit} />
             
-            {data && data?.beneficiaries.length > 0 ? (
+            {showSkeleton ? <TableSkeleton columns={2}/> :
+            data && data?.beneficiaries.length > 0 ? (
                 <BeneficiariesTable beneficiaries={data?.beneficiaries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(beneficiary) => console.log("DELETE", beneficiary)} canWrite={canWrite}/>
             ) : (
                 <EmptyState
