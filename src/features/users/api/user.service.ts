@@ -32,4 +32,12 @@ export const userService = {
   rejectUser: async (userId: number): Promise<void> => {
     await apiClient.delete(`${USERS_ENDPOINT}/${userId}/reject`);
   },
+
+  changeUserState: async (userId: number, newState: "active" | "inactive"): Promise<User> => {
+    const { data } = await apiClient.put<ApiResponse<UserDTO>>(
+      `${USERS_ENDPOINT}/${userId}/state`,
+      { state: newState }
+    );
+    return mapUserFromDTO(data.data);
+  },
 };

@@ -77,7 +77,8 @@ const menuItems: MenuItem[] = [
     title: "Administration",
     icon: ShieldCheck,
     children: [
-        { title: "Users", path: "/admin/users", icon: Users, requiredScopes: [SCOPES.USERS_READ] },
+        { title: "Pending Approvals", path: "/admin/users", icon: Users, requiredScopes: [SCOPES.USERS_READ] },
+        { title: "User Management", path: "/admin/users/active", icon: Users, requiredScopes: [SCOPES.USERS_READ] },
     ],
     },
     {
