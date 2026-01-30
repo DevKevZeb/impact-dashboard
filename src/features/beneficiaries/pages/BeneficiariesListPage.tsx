@@ -59,11 +59,11 @@ export default function BeneficiariesListPage(){
         setSearchTerm(value);
         setPage(1);
     }
+    
     useEffect(() => {
         prevSearch.current = searchTerm;
         prevPage.current = page;
     }, [searchTerm, page]);
-
 
     if (isLoading) return (
         <div className="flex items-center justify-center min-h-[60vh]">
