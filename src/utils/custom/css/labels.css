@@ -1,0 +1,13 @@
+@reference "tailwindcss";
+
+.nav-label-color{
+    @apply text-slate-500 hover:text-[#1e3291];
+}
+
+.selected-nav-label-color{
+    @apply text-[#1e3291] ;
+}
+
+.span-line-color{
+    @apply bg-[#1e3291];
+}

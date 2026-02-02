@@ -23,56 +23,76 @@ import { PrivateRoute } from "./PrivateRoute";
 
 
 import ListProjectsForProgramPage from "@/features/projects/pages/ListProjectsForProgramPage";
+import HomePage from "@/features/public/pages/HomePage";
+import PublicRoute from "./PublicRoute";
+import { PublicLayout } from "@/shared/components/layout/PublicLayout";
 
 export function AppRouter() {
     return (
     <Routes>
         {/* Public Routes - Login & Register */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/" element={<PublicRoute><PublicLayout/></PublicRoute>}>
+            <Route index element={<HomePage />} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
+            <Route path="resources" element={<PlaceholderPage title="Resources Page" />} />
+            <Route path="library" element={<PlaceholderPage title="Library Page" />} />
+            <Route path="statistics" element={<PlaceholderPage title="Statistics Page" />} />
+            <Route path="news" element={<PlaceholderPage title="News Page" />} />
+            <Route path="about" element={<PlaceholderPage title="About Page" />} />
+            <Route path="team" element={<PlaceholderPage title="Team Page" />} />
+
+            <Route path="development">
+                <Route path="programs" element={<PlaceholderPage title="Programs List" />} />
+                <Route path="projects" element={<PlaceholderPage title="Projects List" />} />
+                <Route path="progress" element={<PlaceholderPage title="Progress Tracking" />} />
+            </Route>
+        
+        </Route>
 
         {/* Protected Routes - Require Authentication */}
-        <Route path="/" element={<PrivateRoute><MainLayout /></PrivateRoute>}>
-        <Route index element={<DashboardPage />} />
-        {/* Configuration Routes */}
-        <Route path="config">
-            <Route path="countries" element={<CountryListPage/>} />
-            <Route path="agencies" element={<AgencyListPage/>} />
-            <Route path="kpas" element={<KpasListPage/>} />
-            <Route path="sdgs" element={<SdgsPage />} />
-            <Route path="program-states" element={<ProgramStatesPage />} />
-            <Route path="indicator-types" element={<IndicatorTypesListPage/>} />
-            <Route path="project-states" element={<ProjectStateListPage/>} />
-        </Route>
+        <Route path="/app" element={<PrivateRoute><MainLayout /></PrivateRoute>}>
+            <Route index element={<DashboardPage />} />
 
-        {/* Programs & Projects Routes */}
-        <Route path="programs" element={<ProgramsPage />} />
-        <Route path="projects" element={<ListProgramsWithProjects />}/>
-        <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
-        <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
-        <Route path="projects/program/:programId" element={<ListProjectsForProgramPage/>}/>
-        <Route path="country-kpa" element={<CountryKpaListPage/>} />
-        <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
-        
-        {/* Resources Routes */}
-        <Route path="resources">
-            <Route path="beneficiaries" element={<BeneficiariesListPage/>} />
-            <Route path="donors" element={<DonorsListPage/>} />
-        </Route>
+            {/* Configuration Routes */}
+            <Route path="config">
+                <Route path="countries" element={<CountryListPage/>} />
+                <Route path="agencies" element={<AgencyListPage/>} />
+                <Route path="kpas" element={<KpasListPage/>} />
+                <Route path="sdgs" element={<SdgsPage />} />
+                <Route path="program-states" element={<ProgramStatesPage />} />
+                <Route path="indicator-types" element={<IndicatorTypesListPage/>} />
+                <Route path="project-states" element={<ProjectStateListPage/>} />
+            </Route>
 
-        {/* Administration Routes */}
-        <Route path="admin">
-            <Route path="users" element={<UsersPage />} />
-        </Route>
+            {/* Programs & Projects Routes */}
+            <Route path="programs" element={<ProgramsPage />} />
+            <Route path="projects" element={<ListProgramsWithProjects />}/>
+            <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
+            <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
+            <Route path="projects/program/:programId" element={<ListProjectsForProgramPage/>}/>
+            <Route path="country-kpa" element={<CountryKpaListPage/>} />
+            <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
+            
+            {/* Resources Routes */}
+            <Route path="resources">
+                <Route path="beneficiaries" element={<BeneficiariesListPage/>} />
+                <Route path="donors" element={<DonorsListPage/>} />
+            </Route>
 
-        {/* Reports Routes */}
-        <Route path="reports">
-            <Route path="performance" element={<PlaceholderPage title="Performance Reports" />} />
-            <Route path="budget" element={<PlaceholderPage title="Budget Analysis" />} />
-            <Route path="impact" element={<PlaceholderPage title="Impact Reports" />} />
-        </Route>
+            {/* Administration Routes */}
+            <Route path="admin">
+                <Route path="users" element={<UsersPage />} />
+            </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+            {/* Reports Routes */}
+            <Route path="reports">
+                <Route path="performance" element={<PlaceholderPage title="Performance Reports" />} />
+                <Route path="budget" element={<PlaceholderPage title="Budget Analysis" />} />
+                <Route path="impact" element={<PlaceholderPage title="Impact Reports" />} />
+            </Route>
+
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
     </Routes>
     );
