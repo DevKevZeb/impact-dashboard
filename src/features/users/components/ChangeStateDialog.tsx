@@ -3,7 +3,7 @@ import { ConfirmationDialog } from "@/shared/components/ConfirmationDialog";
 import type { User } from "../types/user.types";
 
 interface ChangeStateDialogProps {
-  user: User | null;
+  user: User;
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -17,8 +17,6 @@ export function ChangeStateDialog({
   onConfirm,
   isLoading,
 }: ChangeStateDialogProps) {
-  if (!user) return null;
-
   const isActive = user.userState.name.toLowerCase() === "active";
   const action = isActive ? "deactivate" : "activate";
   const actionCapitalized = action.charAt(0).toUpperCase() + action.slice(1);

@@ -342,16 +342,18 @@ export function ActiveUsersPage() {
       )}
 
       {/* State Change Confirmation Dialog */}
-      <ChangeStateDialog
-        user={selectedUserForToggle}
-        isOpen={isStateChangeDialogOpen}
-        onClose={() => {
-          setIsStateChangeDialogOpen(false);
-          setSelectedUserForToggle(null);
-        }}
-        onConfirm={handleConfirmStateChange}
-        isLoading={changeStateMutation.isPending}
-      />
+      {selectedUserForToggle && (
+        <ChangeStateDialog
+          user={selectedUserForToggle}
+          isOpen={isStateChangeDialogOpen}
+          onClose={() => {
+            setIsStateChangeDialogOpen(false);
+            setSelectedUserForToggle(null);
+          }}
+          onConfirm={handleConfirmStateChange}
+          isLoading={changeStateMutation.isPending}
+        />
+      )}
     </div>
   );
 }

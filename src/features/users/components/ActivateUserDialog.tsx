@@ -3,7 +3,7 @@ import { ConfirmationDialog } from "@/shared/components/ConfirmationDialog";
 import type { User } from "../types/user.types";
 
 interface ApproveUserDialogProps {
-  user: User | null;
+  user: User;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
@@ -17,8 +17,6 @@ export function ApproveUserDialog({
   onConfirm,
   isLoading,
 }: ApproveUserDialogProps) {
-  if (!user) return null;
-
   return (
     <ConfirmationDialog
       open={open}
