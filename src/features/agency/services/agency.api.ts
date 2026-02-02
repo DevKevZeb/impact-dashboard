@@ -8,8 +8,8 @@ export async function getAgencies(): Promise<Agency[]> {
   return mapAgencies(data.data.agencies ?? data);
 }
 
-export async function getAgenciesPaginated(page: number, perPage: number) {
-  const { data } = await apiClient.get(`/agencies?page=${page}&per_page=${perPage}`);
+export async function getAgenciesPaginated(page: number, perPage: number, search: string) {
+  const { data } = await apiClient.get(`/agencies?page=${page}&per_page=${perPage}&search=${encodeURIComponent(search)}`);
   return {
     agencies: mapAgencies(data.data.agencies),
     pagination: {

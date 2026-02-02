@@ -4,8 +4,8 @@ import { toast } from "sonner";
 import { mapCountries, mapCountry } from "../mappers/countries.mapper";
 
 
-export async function getCountriesPaginated(page: number, perPage: number) {
-    const { data } = await apiClient.get(`/countries?page=${page}&per_page=${perPage}`);
+export async function getCountriesPaginated(page: number, perPage: number, search: string){
+    const { data } = await apiClient.get(`/countries?page=${page}&per_page=${perPage}&search=${encodeURIComponent(search)}`);
     return {
         countries: mapCountries(data.data.countries),
         pagination: {

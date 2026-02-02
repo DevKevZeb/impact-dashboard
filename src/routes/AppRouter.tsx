@@ -20,12 +20,10 @@ import { UsersPage } from "@/features/users/pages/UsersPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/RegisterPage";
 import { PrivateRoute } from "./PrivateRoute";
-
-
-import ListProjectsForProgramPage from "@/features/projects/pages/ListProjectsForProgramPage";
 import HomePage from "@/features/public/pages/HomePage";
 import PublicRoute from "./PublicRoute";
 import { PublicLayout } from "@/shared/components/layout/PublicLayout";
+import ListProjectsOfProgramPage from "@/features/projects/pages/ListProjectsOfProgramPage";
 
 export function AppRouter() {
     return (

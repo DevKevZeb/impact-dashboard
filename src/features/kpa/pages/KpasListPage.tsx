@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CreateKpaDto, Kpa } from "../types/KpaType";
 import KpaTable from "../components/KpaTable";
 import { useKpas } from "../hooks/useKpas";
@@ -10,6 +10,7 @@ import { Loader2, Plus, Search, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
+import { useDebounce } from "@/shared/hooks/useDebounce";
 
 export default function KpasListPage(){
   const canWrite = useHasScope("kpas:write");
@@ -19,7 +20,17 @@ export default function KpasListPage(){
   const [selectedKpa, setSelectedKpa] = useState<Kpa | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data, isLoading, error } = useKpas(page, perPage);
+  const prevSearch = useRef(searchTerm);
+  const prevPage = useRef(page);
+  
+  const searchChanged = prevSearch.current !== searchTerm;
+  const pageChanged = prevPage.current !== page;
+  
+  const debouncedSearch = useDebounce(searchTerm, 400);
+
+  const { data, isLoading, isFetching, error } = useKpas(page, perPage, debouncedSearch);
+
+  const showSkeleton = isFetching && (searchChanged || pageChanged);
 
   const {mutateAsync: createKpa } = useCreateKpa();
   const {mutateAsync: updateKpa} = useUpdateKpa();
@@ -48,6 +59,11 @@ export default function KpasListPage(){
     setPage(1);
   };
 
+  useEffect(() => {
+      prevSearch.current = searchTerm;
+      prevPage.current = page;
+  }, [searchTerm, page]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -59,10 +75,23 @@ export default function KpasListPage(){
     );
   }
 
-  return(
-  <div className="p-6 space-y-4">
+  if (error) {
+      return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center space-y-4 max-w-md">
+              <span className="text-2xl">⚠️</span>
+              <p className="text-red-600 font-medium">Error loading project states</p>
+              <p className="text-sm text-gray-600">
+                  {error instanceof Error ? error.message : "Unknown error"}
+              </p>
+          </div>
+      </div>
+      );
+  }
 
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  return(
+  <div className="page-container">
+    <div className="title-container">
        <div>
          <h1 className="page-title">KPAs</h1>   
           <p className="page-description">
@@ -75,23 +104,15 @@ export default function KpasListPage(){
         </Button>)}
       </div>
       
-      {/* Search */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Search by KPA name..."
-          value={searchTerm}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          className="search-default"
-        />
+        <input type="text" placeholder="Search by KPA name..." value={searchTerm} onChange={(e) => handleSearchChange(e.target.value)} className="search-default" />
       </div>
 
     <CreateKpaModal open={openModal} kpa={selectedKpa} onClose={() => setOpenModal(false)} onSubmit={handleSubmit} />
 
-    {isLoading && <TableSkeleton columns={3} rows={10}/>}
-    {error && <p>Error loading agencies</p>}
-    {data && data.kpas.length > 0 ? (
+    {showSkeleton ? <TableSkeleton columns={3} /> :
+    data && data.kpas.length > 0 ? (
       <KpaTable kpas={data?.kpas} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} onEdit={handleEdit} onDelete={(agency) => console.log("DELETE", agency)} setPerPage={setPerPage} canWrite={canWrite} />
     ): (
         <EmptyState

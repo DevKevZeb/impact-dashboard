@@ -1,4 +1,4 @@
-import { ArrowLeft, Percent } from "lucide-react";
+import {  Percent } from "lucide-react";
 import type { UseProjectFormReturn } from "../hooks/useProjectForm";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,7 @@ import { AgencySection } from "./AgencySection";
 import { fetchDonorsForSelect } from "@/features/donors/services/donor.api";
 import { fetchAgenciesForSelector } from "@/features/agency/services/agency.api";
 import { useState } from "react";
+import BackArrow from "@/shared/components/backArrow/BackArrow";
 
 interface Props {
     mode: "create" | "edit";
@@ -46,13 +47,11 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
     const [totalDonors, setTotalDonors] = useState<number | null>(null);
     const [totalAgencies, setTotalAgencies] = useState<number | null>(null);
 
-
     const kpa = useWatch({ control: form.form.control, name: "kpa" });
     const strategicOutput = useWatch({ control: form.form.control, name: "strategicOutput" });
     const measure = useWatch({ control: form.form.control, name: "measure" });
     const project_state = useWatch({ control: form.form.control, name: "project_state" });
     const beneficiary = useWatch({ control: form.form.control, name: "beneficiary" });
-    //const progress = useWatch({ control: form.form.control, name: "progress" });
 
     const fetchDonors = async (params: FetchParams) => {
         const res = await fetchDonorsForSelect(form.excludedDonorIds)(params);
@@ -74,9 +73,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                     <h1 className="page-title">{`${(mode as string) === "create" ? "Create" : "Edit"} a project for "${programName ?? ""}"`}</h1>
                     <p className="page-description">Use this form to {(mode as string) === "create" ? "create a new project" : "edit the project details"}.</p>
                 </div>
-                <div title="Back to Programs">
-                    <ArrowLeft className="w-6 h-6 text-gray-600 hover:cursor-pointer hover:text-gray-800 transition-colors" onClick={() => window.history.back()} />
-                </div>  
+                <BackArrow backTo="/projects" /> 
             </div>
             <form className="space-y-6" onSubmit={form.form.handleSubmit(onSubmit, onInvalid)}>
                 <div className="flex flex-col space-y-2">

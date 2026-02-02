@@ -68,11 +68,7 @@ export default function KpaTable({ kpas, pagination, page, perPage, setPage, set
 
                 <div className="flex items-center gap-2 text-xs text-gray-600">
                   <span>Rows per page:</span>
-                  <select
-                    className="table-perpage-select"
-                    value={perPage}
-                    onChange={handlePerPageChange}
-                  >
+                  <select className="table-perpage-select" value={perPage} onChange={handlePerPageChange} >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
                     <option value={50}>50</option>
