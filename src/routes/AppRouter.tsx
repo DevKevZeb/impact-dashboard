@@ -17,6 +17,7 @@ import BeneficiariesListPage from "@/features/beneficiaries/pages/BeneficiariesL
 import DonorsListPage from "@/features/donors/pages/DonorsListPage";
 import CreateProjectPage from "@/features/projects/pages/CreateProjectPage";
 import { UsersPage } from "@/features/users/pages/UsersPage";
+import { ActiveUsersPage } from "@/features/users/pages/ActiveUsersPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/RegisterPage";
 import { PrivateRoute } from "./PrivateRoute";
@@ -63,6 +64,7 @@ export function AppRouter() {
         {/* Administration Routes */}
         <Route path="admin">
             <Route path="users" element={<UsersPage />} />
+            <Route path="users/active" element={<ActiveUsersPage />} />
         </Route>
 
         {/* Reports Routes */}
