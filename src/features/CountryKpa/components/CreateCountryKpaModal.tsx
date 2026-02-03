@@ -6,10 +6,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
-import type { CreateCountryKpaDTO } from "../types/CountryKpaType";
+import type { CountryOption, CreateCountryKpaDTO, KpaOption } from "../types/CountryKpaType";
 import type { Kpa } from "@/features/kpa/types/KpaType";
-import { CountryComboboxSearchable } from "./CountryComboboxSearcheable";
-import { KpaComboboxSearchable } from "./KpaComboboxSearcheable";
+import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
+import { fetchKpasForSelect } from "@/features/kpa/services/kpa.api";
+import { fetchCountriesForSelect } from "@/features/country/services/country.api";
 
 const schema = z.object({
   country: z.object({
@@ -78,7 +79,7 @@ export default function CreateCountryKpaModal({ open, onClose, onSubmit, selecte
               control={control}
               name="country"
               render={({ field }) => (
-                <CountryComboboxSearchable value={field.value} onChange={field.onChange} />
+                <AsyncSearchSelect<CountryOption> value={field.value} onChange={field.onChange} placeholder="Search Countries..." fetchOptions={fetchCountriesForSelect} getOptionLabel={(k) => k.name} getOptionKey={(k) => k.id} />
               )}
             />
             {errors.country && <p className="error text-sm text-red-600">{errors.country.message as string}</p>}
@@ -87,7 +88,7 @@ export default function CreateCountryKpaModal({ open, onClose, onSubmit, selecte
           <div className="flex flex-col space-y-1">
             <Label>KPA</Label>
             <Controller control={control} name="kpa" render={({ field }) => (
-                <KpaComboboxSearchable value={field.value} onChange={field.onChange} />
+              <AsyncSearchSelect<KpaOption> value={field.value} onChange={field.onChange} placeholder="Search KPA..." fetchOptions={fetchKpasForSelect} getOptionLabel={(k) => k.name} getOptionKey={(k) => k.id} />
               )}
             />
             {errors.kpa && <p className="error text-sm text-red-600">{errors.kpa.message as string}</p>}

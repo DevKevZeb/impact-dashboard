@@ -18,9 +18,11 @@ interface Props {
 
   onEdit: (kpa: Kpa) => void;
   onDelete: (kpa: Kpa) => void;
+  
+  canWrite?: boolean;
 }
 
-export default function KpaTable({ kpas, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete }: Props) {
+export default function KpaTable({ kpas, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete, canWrite }: Props) {
   if (!pagination) return <div>Enter the pagination</div>;
 
   const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -37,7 +39,7 @@ export default function KpaTable({ kpas, pagination, page, perPage, setPage, set
             <th>#</th>
             <th>NAME</th>
             <th>IMPLEMENTATION</th>
-            <th>ACTIONS</th>
+            {canWrite && <th>ACTIONS</th>}
           </tr>
         </thead>
 
@@ -48,31 +50,25 @@ export default function KpaTable({ kpas, pagination, page, perPage, setPage, set
               <td className="table-cell">{kpa.name}</td>
               <td className="table-cell">{kpa.implementation}%</td>
 
-              <td className="table-cell space-x-2">
-                {/* Edit */}
+              {canWrite && (<td className="table-cell space-x-2">
                 <button className="btn-edit-table" onClick={() => onEdit(kpa)}>
                   <SquarePen className="w-4 h-4" />
                 </button>
-                {/* Delete */}
                 <button className="btn-delete-table" onClick={() => onDelete(kpa)}>
                   <Trash2 className="w-4 h-4" />
                 </button>
-              </td>
+              </td>)}
             </tr>
           ))}
 
           {/* Pagination */}
           <tr className="table-pagination-row">
-            <td colSpan={4} className="table-pagination-cell">
+            <td colSpan={canWrite ? 4 : 3} className="table-pagination-cell">
               <div className="table-pagination-container">
 
                 <div className="flex items-center gap-2 text-xs text-gray-600">
                   <span>Rows per page:</span>
-                  <select
-                    className="table-perpage-select"
-                    value={perPage}
-                    onChange={handlePerPageChange}
-                  >
+                  <select className="table-perpage-select" value={perPage} onChange={handlePerPageChange} >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
                     <option value={50}>50</option>

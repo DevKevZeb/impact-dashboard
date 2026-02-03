@@ -3,8 +3,8 @@ import { mapIndicatorType, mapIndicatorTypes } from "../mappers/indicatortype.ma
 import type { IndicatorType, IndicatorTypeDTO } from "../types/IndicatorTypeType";
 import { toast } from "sonner";
 
-export async function getIndicatorTypesPaginated(page: number, perPage: number){
-    const { data } = await apiClient.get(`/indicator-types?page=${page}&per_page=${perPage}`);
+export async function getIndicatorTypesPaginated(page: number, perPage: number, search: string): Promise<{ types: IndicatorType[]; pagination: { current_page: number; last_page: number; per_page: number; total: number; } }> {
+    const { data } = await apiClient.get(`/indicator-types?page=${page}&per_page=${perPage}&search=${search}`);
 
     return {
         types: mapIndicatorTypes(data.data.indicator_types),
@@ -72,4 +72,14 @@ export async function fetchSearchIndicatorTypes(search:string, page: number){
           total: data.data.total
         }
     }
+}
+
+export async function fetchIndicatorTypesForSelect(params: { query: string; page: number; limit: number; }) : Promise<{ items: IndicatorType[]; hasMore: boolean}>{
+  const { query, page } = params;
+  const res = await fetchSearchIndicatorTypes(query, page);
+
+  return {
+    items: res.types,
+    hasMore: res.pagination.current_page < res.pagination.last_page,
+  };
 }

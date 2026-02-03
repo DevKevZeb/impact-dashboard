@@ -3,8 +3,8 @@ import { mapProjectState, mapProjectStates } from "../mappers/projectstate.mappe
 import type { ProjectState, ProjectStateDTO } from "../types/projectstate.types";
 import { toast } from "sonner";
 
-export async function getProjectStatesPaginated(page: number, perPage: number) {
-  const { data } = await apiClient.get(`/project-states?page=${page}&per_page=${perPage}`);
+export async function getProjectStatesPaginated(page: number, perPage: number, search: string) {
+  const { data } = await apiClient.get(`/project-states?search=${encodeURIComponent(search)}&page=${page}&per_page=${perPage}`);
   return {
     project_states: mapProjectStates(data.data.project_states),
     pagination: {

@@ -24,11 +24,12 @@ export const queryClient = new QueryClient({
           const status = error.response?.status;
           const message = error.response?.data?.message;
 
+          // Skip 422 validation errors - let each API service handle them
           if (status === 422) {
-            toast.error("Validation error", {
-              description: "Please review the form fields",
-            });
-          } else if (status === 400) {
+            return;
+          }
+          
+          if (status === 400) {
             toast.error("Error", {
               description: message || "An error occurred while processing the request",
             });
@@ -36,7 +37,7 @@ export const queryClient = new QueryClient({
             toast.error("Server error", {
               description: "Please try again later",
             });
-          } else {
+          } else if (status && status >= 400) {
             toast.error("Error", {
               description: message || "An unexpected error occurred",
             });

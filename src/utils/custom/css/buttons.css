@@ -1,15 +1,15 @@
 @reference "tailwindcss";
 
 .btn-primary {
-  @apply cursor-pointer px-4 py-2 rounded-lg font-medium text-white bg-[#61C8E7] hover:bg-[#4ea4be] transition;
+  @apply cursor-pointer px-4 py-2 rounded-sm font-medium text-white bg-[#61C8E7] hover:bg-[#4ea4be] transition;
 }
 
 .btn-secondary {
-  @apply cursor-pointer px-4 py-2 rounded-lg font-medium text-white bg-[#1E3291] hover:bg-[#142161] transition;
+  @apply cursor-pointer px-4 py-2 rounded-sm font-medium text-white bg-[#1E3291] hover:bg-[#142161] transition;
 
 }
 .btn-tertiary{
-  @apply cursor-pointer px-4 py-2 rounded-lg font-medium text-white  bg-[#0082BE] hover:bg-[#016594] transition;
+  @apply cursor-pointer px-4 py-2 rounded-sm font-medium text-white  bg-[#0082BE] hover:bg-[#016594] transition;
 }
 
 .btn-danger{

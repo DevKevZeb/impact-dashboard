@@ -27,7 +27,7 @@ export function useAsyncSearch<T extends { id: number | string; name?: string }>
         setOptions((prev) => {
           const map = new Map<number | string, T>();
           prev.forEach((item) => map.set(item.id, item));
-          res.items.forEach((item) => map.set(item.id, item));
+          res.items?.forEach((item) => map.set(item.id, item));
           return Array.from(map.values());
         });
 

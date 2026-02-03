@@ -1,16 +1,26 @@
 import { useProgramsPaginated } from "@/features/programs/api/programQueries";
 import { BookOpenCheck, Loader2, Search } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ProgramsWithProjectsTable from "../components/ProgramsWithProjectsTable";
 import { EmptyState } from "@/shared/components/EmptyState";
+import { useDebounce } from "@/shared/hooks/useDebounce";
 
 export default function ListProgramsWithProjects(){
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
-    const [openModal, setOpenModal] = useState(false); 
 
     const [searchTerm, setSearchTerm] = useState("");
-    const { data, isLoading, error } = useProgramsPaginated(page, perPage);
+
+    const prevSearch = useRef(searchTerm);
+    const prevPage = useRef(page);
+    const searchChanged = prevSearch.current !== searchTerm;
+    const pageChanged = prevPage.current !== page;
+
+    const debouncedSearch = useDebounce(searchTerm, 400);
+
+    const { data, isLoading, isFetching, error } = useProgramsPaginated(page, perPage);
+
+    const showSkeleton = isFetching && (searchChanged || pageChanged);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);

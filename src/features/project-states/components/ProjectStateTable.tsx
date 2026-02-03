@@ -18,9 +18,11 @@ interface Props {
 
     onEdit: (projectState: ProjectState) => void;
     onDelete: (projectState: ProjectState) => void;
+
+    canWrite?: boolean;
 }
 
-export default function ProjectStateTable({ projectStates, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete}: Props){
+export default function ProjectStateTable({ projectStates, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete, canWrite }: Props){
     if (!pagination) return <div>Enter the pagination</div>;
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newPerPage = Number(e.target.value);
@@ -35,7 +37,7 @@ export default function ProjectStateTable({ projectStates, pagination, page, per
                         <tr>
                             <th>#</th>
                             <th>STATE</th>
-                            <th>ACTIONS</th>
+                            {canWrite && <th>ACTIONS</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -43,19 +45,19 @@ export default function ProjectStateTable({ projectStates, pagination, page, per
                             <tr key={projectState.id} className="table-row">
                                 <td className="table-cell">{index + 1}</td>
                                 <td className="table-cell">{projectState.state}</td>
-                                <td className="table-cell space-x-2">
+                                {canWrite && (<td className="table-cell space-x-2">
                                     <button className="btn-edit-table" onClick={() => onEdit(projectState)}>
                                         <SquarePen className="w-4 h-4" />
                                     </button>
                                     <button className="btn-delete-table" onClick={() => onDelete(projectState)}>
                                         <Trash2 className="w-4 h-4" />
                                     </button>
-                                </td>
+                                </td>)}
                             </tr>
                             
                         ))}
                         <tr className="table-pagination-row">
-                            <td colSpan={4} className="table-pagination-cell">
+                            <td colSpan={canWrite ? 4 : 3} className="table-pagination-cell">
                             <div className="table-pagination-container">
 
                                 <div className="flex items-center gap-2 text-xs text-gray-600">

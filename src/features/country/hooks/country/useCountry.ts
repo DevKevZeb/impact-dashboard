@@ -3,16 +3,16 @@ import { fetchSearchCountries, getCountry } from "../../services/country.api";
 
 export function useCountry(id: number){
     return useQuery({
-        queryKey: ["country", id],
+        queryKey: ["countries", "detail", id],
         queryFn: () => getCountry(id),
         enabled: !!id
     })
 
 }
 
-export function useSearchCountries(search: string, page: number){
+export function useSearchCountries(search: string, page: number, limit: number){
     return useQuery({
-        queryKey: ["search-countries", search, page],
-        queryFn: () => fetchSearchCountries(search, page)
+        queryKey: ["countries", "search", search, page, limit],
+        queryFn: () => fetchSearchCountries(search, page, limit)
     })
 }

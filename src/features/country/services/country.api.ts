@@ -4,9 +4,8 @@ import { toast } from "sonner";
 import { mapCountries, mapCountry } from "../mappers/countries.mapper";
 
 
-export async function getCountriesPaginated(page: number, perPage: number) {
-    const { data } = await apiClient.get(`/countries?page=${page}&per_page=${perPage}`);
-
+export async function getCountriesPaginated(page: number, perPage: number, search: string){
+    const { data } = await apiClient.get(`/countries?page=${page}&per_page=${perPage}&search=${encodeURIComponent(search)}`);
     return {
         countries: mapCountries(data.data.countries),
         pagination: {
@@ -64,8 +63,8 @@ export async function updateCountry(id: number, dto: UpdateCountryDTO): Promise<
   }
 }
 
-export async function fetchSearchCountries(search: string, page: number){
-  const { data } = await apiClient.get(`/countries?serch=${encodeURIComponent(search)}&page=${page}&per_page=${20}`);
+export async function fetchSearchCountries(search: string, page: number, limit: number){
+  const { data } = await apiClient.get(`/countries?search=${encodeURIComponent(search)}&page=${page}&per_page=${limit}`);
   return {
     countries: mapCountries(data.data.countries),
     pagination: {
@@ -76,3 +75,14 @@ export async function fetchSearchCountries(search: string, page: number){
     }
   }
 }
+
+export async function fetchCountriesForSelect(params: { query: string; page: number; limit: number; }) : Promise<{ items: Country[]; hasMore: boolean}>{
+  const { query, page, limit } = params;
+  const res = await fetchSearchCountries(query, page, limit);
+
+  return {
+    items: res.countries,
+    hasMore: res.pagination.current_page < res.pagination.last_page,
+  };
+}
+

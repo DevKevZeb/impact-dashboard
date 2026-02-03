@@ -98,21 +98,9 @@ export default function CreateCountryModal({ open, country, onClose, onSubmit, c
           {/* CURRENCY */}
           <div className="flex flex-col space-y-1">
             <Label className="text-gray-700">CURRENCY</Label>
-
-            <Controller
-              control={control}
-              name="currency"
-              render={({ field }) => (
-                <CurrencyComboboxCreateable
-                  options={currencies}
-                  value={field?.value}
-                  onChange={(v) =>
-                    field.onChange(
-                      typeof v === "string"
-                        ? { code: v }
-                        : { id: v?.id, code: v?.code } 
-                    )
-                  }
+            <Controller control={control} name="currency" render={({ field }) => (
+                <CurrencyComboboxCreateable options={currencies} value={field?.value}
+                  onChange={(v) => field.onChange(typeof v === "string" ? { code: v } : { id: v?.id, code: v?.code }  ) }
                 />
               )}
             />
@@ -124,22 +112,14 @@ export default function CreateCountryModal({ open, country, onClose, onSubmit, c
             )}
           </div>
 
-          {/* BOTONES */}
           <div className="mt-6 flex justify-end gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="btn-primary"
-            >
+            <Button type="button" variant="outline" onClick={onClose} className="btn-primary" >
               Cancel
             </Button>
-
             <Button type="submit" className="btn-secondary">
               {isEditing ? "Update" : "Create"}
             </Button>
           </div>
-
         </form>
       </DialogContent>
     </Dialog>

@@ -3,9 +3,9 @@ import { mapBeneficiaries, mapBeneficiary } from "../mappers/beneficiaries.mappe
 import type { Beneficiary, BeneficiaryDTO } from "../types/beneficiaries.types";
 import { toast } from "sonner";
 
-export async function getBeneficiariesPaginated(page: number, perPage: number) {
+export async function getBeneficiariesPaginated(page: number, perPage: number, search: string): Promise<{ beneficiaries: Beneficiary[]; pagination: { current_page: number; last_page: number; per_page: number; total: number; }; }> {
 
-  const { data } = await apiClient.get(`/beneficiaries?page=${page}&per_page=${perPage}`);
+  const { data } = await apiClient.get(`/beneficiaries?page=${page}&per_page=${perPage}&search=${encodeURIComponent(search)}`);
   
   return {
     beneficiaries: mapBeneficiaries(data.data.beneficiaries),

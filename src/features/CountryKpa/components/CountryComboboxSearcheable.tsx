@@ -35,49 +35,54 @@ export function CountryComboboxSearchable({ value, onChange, error, label = "Cou
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
+      if (wrapperRef.current &&!wrapperRef.current.contains(event.target as Node)) setOpen(false);
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-
   useEffect(() => {
     setPage(1);
   }, [search]);
 
   useEffect(() => {
-    if (value) {
-      setInputValue(value.name);
-    }
+    if (value) setInputValue(value.name);
   }, [value]);
+
+  useEffect(() => {
+    if (!listRef.current || isLoading) return;
+
+    const container = listRef.current;
+    const items = container.querySelectorAll("[data-country-item]");
+    const lastItem = items[items.length - 1] as Element | null;
+
+    if (!lastItem || page >= lastPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      {
+        root: container,
+        threshold: 1.0,
+      }
+    );
+
+    observer.observe(lastItem);
+    return () => observer.disconnect();
+  }, [countries, isLoading, page, lastPage]);
 
   const handleSearch = (val: string) => {
     setInputValue(val);
     setOpen(true);
 
-    if (value && val !== value.name) {
-      onChange(null);
-    }
-
+    if (value && val !== value.name) onChange(null);
+    
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => setSearch(val), 300);
-  };
-
-  const handleScroll = () => {
-    const el = listRef.current;
-    if (!el) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = el;
-    if (scrollTop + clientHeight >= scrollHeight - 5 && page < lastPage && !isLoading) {
-      setPage((p) => p + 1);
-    }
   };
 
   return (
@@ -86,13 +91,13 @@ export function CountryComboboxSearchable({ value, onChange, error, label = "Cou
         <Command>
           <CommandInput value={inputValue} placeholder="Search country..." onFocus={() => setOpen(true)} onValueChange={handleSearch} className={error ? "border-rose-500 focus:ring-rose-500" : ""} />
           {open && (
-            <CommandList ref={listRef} onScroll={handleScroll} className=" absolute left-0 top-full mt-1 w-full max-h-56 bg-white border shadow-lg overflow-auto z-50 rounded-md " >
+            <CommandList ref={listRef} className=" absolute left-0 top-full mt-1 w-full max-h-56 bg-white border shadow-lg overflow-auto z-50 rounded-md " >
               {isLoading && countries.length === 0 && (
                 <div className="p-2 text-xs text-gray-500">Loading...</div>
               )}
 
               {countries.map((c) => (
-                <CommandItem key={c.id} value={c.name} onSelect={() => { onChange(c); setInputValue(c.name); setOpen(false); }} >
+                <CommandItem key={c.id} data-country-item value={c.name} onSelect={() => { onChange(c); setInputValue(c.name); setOpen(false); }} >
                   {c.name}
                 </CommandItem>
               ))}

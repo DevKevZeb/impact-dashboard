@@ -6,6 +6,8 @@ import { ProgramTableRow } from "../components/ProgramTableRow";
 import { ProgramCreateDialog } from "../components/ProgramCreateDialog";
 import { ProgramEditDialog } from "../components/ProgramEditDialog";
 import { ProgramDetailDialog } from "../components/ProgramDetailDialog";
+import { Can } from "@/features/auth/components/Can";
+import { SCOPES } from "@/features/auth/utils/permissions";
 import {
   DataTable,
   DataTableHeader,
@@ -89,10 +91,12 @@ export function ProgramsPage() {
           </p>
         </div>
 
-        <Button onClick={() => setIsCreateDialogOpen(true)} size="lg" className="btn-secondary" >
-          <Plus className="w-5 h-5 mr-2" />
-          Create Program
-        </Button>
+        <Can scope={SCOPES.PROGRAMS_WRITE}>
+          <Button onClick={() => setIsCreateDialogOpen(true)} size="lg" className="btn-secondary" >
+            <Plus className="w-5 h-5 mr-2" />
+            Create Program
+          </Button>
+        </Can>
       </div>
 
       <div className="relative max-w-md">
@@ -123,7 +127,7 @@ export function ProgramsPage() {
             </DataTableHeader>
             <DataTableBody>
               {sortedData.map((program, index) => {
-                const rowIndex = (data.pagination.current_page - 1) * data.pagination.per_page + index + 1;
+                const rowIndex = data ? (data.pagination.current_page - 1) * data.pagination.per_page + index + 1 : index + 1;
                 return (
                   <ProgramTableRow
                     key={program.id}
@@ -157,10 +161,12 @@ export function ProgramsPage() {
               : "Get started by creating your first program"
           }
           action={
-            <Button onClick={() => setIsCreateDialogOpen(true)} className="btn-secondary">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Program
-            </Button>
+            <Can scope={SCOPES.PROGRAMS_WRITE}>
+              <Button onClick={() => setIsCreateDialogOpen(true)} className="btn-secondary">
+                <Plus className="w-4 h-4 mr-2" />
+                Create Program
+              </Button>
+            </Can>
           }
         />
       )}

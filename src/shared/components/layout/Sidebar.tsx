@@ -11,11 +11,14 @@ import {
     Link as LinkIcon,
     Wallet,
     FileText,
-    ChevronDown
+    ChevronDown,
+    ShieldCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuthStore } from "@/features/auth/store/authStore";
+import { SCOPES } from "@/features/auth/utils/permissions";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -23,9 +26,10 @@ interface SidebarProps {
 
 type MenuItem = {
     title: string;
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
     path?: string;
-    children?: { title: string; path: string; icon?: any }[];
+    requiredScopes?: string[]; // Scopes needed to see this item
+    children?: { title: string; path: string; icon?: React.ComponentType<{ className?: string }>; requiredScopes?: string[] }[];
 };
 
 const menuItems: MenuItem[] = [
@@ -33,22 +37,22 @@ const menuItems: MenuItem[] = [
     title: "Dashboard",
     icon: LayoutDashboard,
     children: [
-        { title: "Admin Dashboard", path: "/", icon: LinkIcon },
-        { title: "Project Dashboard", path: "/dashboard", icon: LinkIcon },
-        { title: "Country Dashboard", path: "/country-kpa", icon: LinkIcon },
+        { title: "Admin Dashboard", path: "/app", icon: LinkIcon },
+        { title: "Project Dashboard", path: "/app/dashboard", icon: LinkIcon },
+        { title: "Country Dashboard", path: "/app/country-kpa", icon: LinkIcon, requiredScopes: [SCOPES.COUNTRIES_READ, SCOPES.KPAS_READ] },
     ],
     },
     {
     title: "Configuration",
     icon: Settings,
     children: [
-        { title: "Agencies", path: "/config/agencies", icon: Building2 },
-        { title: "Countries", path: "/config/countries", icon: Globe },
-        { title: "Indicator Types", path: "/config/indicator-types", icon: LinkIcon },
-        { title: "KPAs", path: "/config/kpas", icon: Building2 },
-        { title: "Program States", path: "/config/program-states", icon: LinkIcon },
-        { title: "Project States", path: "/config/project-states", icon: LinkIcon },
-        { title: "SDGs", path: "/config/sdgs", icon: Flag },
+        { title: "Agencies", path: "/app/config/agencies", icon: Building2, requiredScopes: [SCOPES.AGENCIES_READ] },
+        { title: "Countries", path: "/app/config/countries", icon: Globe, requiredScopes: [SCOPES.COUNTRIES_READ] },
+        { title: "Indicator Types", path: "/app/config/indicator-types", icon: LinkIcon, requiredScopes: [SCOPES.INDICATOR_TYPES_READ] },
+        { title: "KPAs", path: "/app/config/kpas", icon: Building2, requiredScopes: [SCOPES.KPAS_READ] },
+        { title: "Program States", path: "/app/config/program-states", icon: LinkIcon, requiredScopes: [SCOPES.PROGRAM_STATES_READ] },
+        { title: "Project States", path: "/app/config/project-states", icon: LinkIcon, requiredScopes: [SCOPES.PROJECT_STATES_READ] },
+        { title: "SDGs", path: "/app/config/sdgs", icon: Flag, requiredScopes: [SCOPES.SDGS_READ] },
 
     ],
     },
@@ -56,26 +60,35 @@ const menuItems: MenuItem[] = [
     title: "Programs & Projects",
     icon: Briefcase,
     children: [
-        { title: "Programs", path: "/programs", icon: FolderKanban },
-        { title: "Projects", path: "/projects", icon: FolderKanban },
+        { title: "Programs", path: "/app/programs", icon: FolderKanban, requiredScopes: [SCOPES.PROGRAMS_READ] },
+        { title: "Projects", path: "/app/projects", icon: FolderKanban, requiredScopes: [SCOPES.PROJECTS_READ] },
     ],
 },
     {
     title: "Resources",
     icon: Users,
     children: [
-        { title: "Donors", path: "/resources/donors", icon: Wallet },
-        { title: "Beneficiaries", path: "/resources/beneficiaries", icon: Users },
+        { title: "Donors", path: "/app/resources/donors", icon: Wallet, requiredScopes: [SCOPES.DONORS_READ] },
+        { title: "Beneficiaries", path: "/app/resources/beneficiaries", icon: Users, requiredScopes: [SCOPES.BENEFICIARIES_READ] },
     //   { title: "Contacts", path: "/resources/contacts", icon: Contact },
+    ],
+    },
+    {
+    title: "Administration",
+    icon: ShieldCheck,
+    children: [
+        { title: "Users", path: "/app/admin/users", icon: Users, requiredScopes: [SCOPES.USERS_READ] },
+        { title: "Pending Approvals", path: "/app/admin/users", icon: Users, requiredScopes: [SCOPES.USERS_READ] },
+        { title: "User Management", path: "/app/admin/users/active", icon: Users, requiredScopes: [SCOPES.USERS_READ] },
     ],
     },
     {
     title: "Reports",
     icon: FileBarChart,
     children: [
-        { title: "Performance", path: "/reports/performance", icon: FileText },
-        { title: "Budget Analysis", path: "/reports/budget", icon: FileText },
-        { title: "Impact Report", path: "/reports/impact", icon: FileText },
+        { title: "Performance", path: "/app/reports/performance", icon: FileText },
+        { title: "Budget Analysis", path: "/app/reports/budget", icon: FileText },
+        { title: "Impact Report", path: "/app/reports/impact", icon: FileText },
     ],
     },
 ];
@@ -92,6 +105,42 @@ export function Sidebar({ isOpen }: SidebarProps) {
     );
     };
 
+    // Get hasScope function from auth store
+    const hasScope = useAuthStore((state) => state.hasScope);
+
+    // Filter menu items based on permissions
+    const filterMenuItem = (item: MenuItem): MenuItem | null => {
+        // If item has children, filter them
+        if (item.children) {
+            const filteredChildren = item.children
+                .filter(child => {
+                    // Check if user has required scopes for this child
+                    if (child.requiredScopes && child.requiredScopes.length > 0) {
+                        // Check if user has at least one of the required scopes
+                        return child.requiredScopes.some(scope => hasScope(scope));
+                    }
+                    return true; // No scopes required, show by default
+                });
+
+            // If no children remain after filtering, hide the parent
+            if (filteredChildren.length === 0) return null;
+
+            return { ...item, children: filteredChildren };
+        }
+
+        // If item has required scopes, check them
+        if (item.requiredScopes && item.requiredScopes.length > 0) {
+            // Check if user has at least one of the required scopes
+            return item.requiredScopes.some(scope => hasScope(scope)) ? item : null;
+        }
+
+        return item; // No scopes required, show by default
+    };
+
+    const filteredMenuItems = menuItems
+        .map(filterMenuItem)
+        .filter((item): item is NonNullable<typeof item> => item !== null);
+
     return (
     <aside
         className={cn(
@@ -100,7 +149,7 @@ export function Sidebar({ isOpen }: SidebarProps) {
         )}
     >
         <div className="py-4 flex flex-col gap-1">
-        {menuItems.map((item) => {
+        {filteredMenuItems.map((item) => {
             const isActive = item.path === location.pathname || item.children?.some(child => child.path === location.pathname);
             const isExpanded = expandedItems.includes(item.title);
             const Icon = item.icon;

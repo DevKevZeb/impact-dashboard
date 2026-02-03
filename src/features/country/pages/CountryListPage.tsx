@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCountries } from "../hooks/country/useCountries";
 import { useCreateCountry } from "../hooks/country/useCreateCountry.ts";
 
@@ -12,8 +12,11 @@ import { useUpdateCountry } from "../hooks/country/useUpdateCountry.ts";
 import { Loader2, Plus, Search, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
 import { EmptyState } from "@/shared/components/EmptyState.tsx";
+import { useHasScope } from "@/features/auth/hooks/useHasScope.ts";
+import { useDebounce } from "@/shared/hooks/useDebounce.ts";
 
 export default function CountryListPage() {
+  const canWrite = useHasScope("countries:write");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
@@ -21,9 +24,19 @@ export default function CountryListPage() {
   const [editingCountry, setEditingCountry] = useState<Country | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data, isLoading, error } = useCountries(page, perPage);
-  const { data: currencies, isLoading: loadingCurrencies, error: errorCurrencies } = useCurrencies();
+  const prevSearch = useRef(searchTerm);
+  const prevPage = useRef(page);
+  
+  const searchChanged = prevSearch.current !== searchTerm;
+  const pageChanged = prevPage.current !== page;
 
+  const debouncedSearch = useDebounce(searchTerm, 400);
+
+  const { data, isLoading, isFetching, error } = useCountries(page, perPage, debouncedSearch);
+
+  const showSkeleton = isFetching && (searchChanged || pageChanged);
+
+  const { data: currencies, isLoading: loadingCurrencies, error: errorCurrencies } = useCurrencies();
 
   const { mutateAsync: createCountry } = useCreateCountry();
   const { mutateAsync: updateCountry} = useUpdateCountry();
@@ -53,7 +66,12 @@ export default function CountryListPage() {
     setPage(1);
   };
 
-  if (isLoading) {
+  useEffect(() => {
+      prevSearch.current = searchTerm;
+      prevPage.current = page;
+  }, [searchTerm, page]);
+
+  if (isLoading || loadingCurrencies) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
@@ -64,40 +82,44 @@ export default function CountryListPage() {
     );
   }
 
+  if (error || errorCurrencies) {
+        return (
+        <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center space-y-4 max-w-md">
+                <span className="text-2xl">⚠️</span>
+                <p className="text-red-600 font-medium">Error loading countries</p>
+                <p className="text-sm text-gray-600">
+                    {error instanceof Error ? error.message : "Unknown error"}
+                </p>
+            </div>
+        </div>
+        );
+    }
+
   return (
     
-    <div className="p-6 space-y-4">
-      
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="page-container">
+      <div className="title-container">
        <div>
          <h1 className="page-title">Countries</h1>   
           <p className="page-description">
             Manage the Countries
           </p> 
        </div>
-        <Button className="btn-secondary" size="lg" onClick={handleCreate}>
+        {canWrite && (<Button className="btn-secondary" size="lg" onClick={handleCreate}>
           <Plus className="w-5 h-5 mr-2"/>
           New Country
-        </Button>
+        </Button>)}
       </div>
       
-      {/* Search */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Search by country name..."
-          value={searchTerm}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          className="search-default"
-        />
+        <input type="text" placeholder="Search by country name..." value={searchTerm} onChange={(e) => handleSearchChange(e.target.value)} className="search-default" />
       </div>
 
-      {isLoading && <TableSkeleton columns={3} rows={10} />}
-      {error && <p>Error loading countries</p>}
-
-      {data && data.countries.length > 0 ? (
-        <CountryTable countries={data?.countries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(country) => console.log("DELETE", country)} />
+      {showSkeleton ? <TableSkeleton columns={3}  /> : 
+      data && data.countries.length > 0 ? (
+        <CountryTable countries={data?.countries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(country) => console.log("DELETE", country)} canWrite={canWrite} />
       ): (
         <EmptyState
           icon={Tag}
