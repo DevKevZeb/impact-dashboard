@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import PublicNavbar from "./PublicNavbar";
+import Footer from "./Footer";
 
 export function PublicLayout() {
   return (
@@ -11,9 +12,7 @@ export function PublicLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t py-6 text-center text-sm text-slate-500">
-        © 2026 MyApp. All rights reserved.
-      </footer>
+      <Footer/>
     </div>
   );
 }

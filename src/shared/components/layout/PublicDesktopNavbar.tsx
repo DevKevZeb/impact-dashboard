@@ -17,7 +17,7 @@ export function PublicDesktopNavbar() {
                     "relative pb-2 text-md font-medium", 
                     isItemActive(item) ? "selected-nav-label-color" : "nav-label-color" )}>
                 <span className={cn(
-                    "absolute left-0 -bottom-1.5 h-[2px] w-full rounded-full transition",
+                    "absolute left-0 -top-5 h-[2px] w-full rounded-full transition",
                     isItemActive(item) ? "span-line-color opacity-100" : "span-line-color opacity-0 group-hover:opacity-40" )}
                 />
                 <span>{item.label}</span>
@@ -31,7 +31,7 @@ export function PublicDesktopNavbar() {
                     isItemActive(item) ? "selected-nav-label-color" : "nav-label-color" )}
                 >
                   <span className={cn(
-                      "absolute left-0 -bottom-1.5 h-[2px] w-full rounded-full transition",
+                      "absolute left-0 -top-5 h-[2px] w-full rounded-full transition",
                       isItemActive(item) ? "span-line-color opacity-100" : "span-line-color opacity-0 group-hover:opacity-40" )}
                   />
                   <span>{item.label}</span>

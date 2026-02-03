@@ -79,7 +79,7 @@ export default function ProjectsForProgramTable({projects, pagination, page, per
                         </td>
                         {canWrite && (
                         <td className="table-cell text-center">
-                            <button className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-sky-600 hover:text-sky-800 transition-colors" onClick={() => navigate(`/projects/edit/${project.program_id}/${project.id}`) } >
+                            <button className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-sky-600 hover:text-sky-800 transition-colors" onClick={() => navigate(`/app/projects/edit/${project.program_id}/${project.id}`) } >
                                 <Pencil className="w-4 h-4" />
                                 Edit
                             </button>

@@ -48,10 +48,10 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                             <td className="table-cell">{program.description}</td>
                             <td className="table-cell">{program.projects_count}</td>
                             <td className="table-cell ">
-                                {canWrite && (<Link to={`/projects/new/${program.id}`} onClick={(e) => e.stopPropagation()} className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-green-600 hover:bg-sky-50 transition-colors" title="Add Project" >
+                                {canWrite && (<Link to={`/app/projects/new/${program.id}`} onClick={(e) => e.stopPropagation()} className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-green-600 hover:bg-sky-50 transition-colors" title="Add Project" >
                                     <Plus className="w-4 h-4" />
                                 </Link>)}
-                                <Link to={`/projects/program/${program.id}`} className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-sky-600 hover:bg-sky-50 transition-colors" title="View Projects" >
+                                <Link to={`/app/projects/program/${program.id}`} className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-sky-600 hover:bg-sky-50 transition-colors" title="View Projects" >
                                     <Eye className="w-4 h-4" />
                                 </Link>
                             </td>

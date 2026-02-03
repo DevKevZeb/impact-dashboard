@@ -193,3 +193,7 @@
   -webkit-appearance: none;
   margin: 0;
 }
+
+.footer-color {
+  @apply bg-slate-100 dark:bg-slate-800;
+}

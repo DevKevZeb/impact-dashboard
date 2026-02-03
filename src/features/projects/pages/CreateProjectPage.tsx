@@ -39,7 +39,7 @@ export default function CreateProjectPage({mode}: Props) {
         } else {
             await createProject(data);
         }
-        navigate(`/projects/program/${programId}`);
+        navigate(`/app/projects/program/${programId}`);
     };
 
     const onInvalid = (errors: FieldErrors) => { toast.error("Please fix the highlighted errors before submitting."); console.log(errors)}
