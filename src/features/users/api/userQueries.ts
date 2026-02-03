@@ -55,3 +55,20 @@ export function useRejectUser() {
     },
   });
 }
+export function useChangeUserState() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, newState }: { userId: number; newState: "active" | "inactive" }) =>
+      userService.changeUserState(userId, newState),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      const action = variables.newState === "active" ? "activated" : "deactivated";
+      toast.success(`User ${data.name} ${action} successfully`);
+    },
+    onError: (error: Error) => {
+      const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to change user state";
+      toast.error(message);
+    },
+  });
+}

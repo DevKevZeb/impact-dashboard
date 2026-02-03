@@ -69,7 +69,7 @@ const menuItems: MenuItem[] = [
     icon: Users,
     children: [
         { title: "Donors", path: "/app/resources/donors", icon: Wallet, requiredScopes: [SCOPES.DONORS_READ] },
-        { title: "Beneficiaries", path: "/resources/beneficiaries", icon: Users, requiredScopes: [SCOPES.BENEFICIARIES_READ] },
+        { title: "Beneficiaries", path: "/app/resources/beneficiaries", icon: Users, requiredScopes: [SCOPES.BENEFICIARIES_READ] },
     //   { title: "Contacts", path: "/resources/contacts", icon: Contact },
     ],
     },
@@ -78,6 +78,8 @@ const menuItems: MenuItem[] = [
     icon: ShieldCheck,
     children: [
         { title: "Users", path: "/app/admin/users", icon: Users, requiredScopes: [SCOPES.USERS_READ] },
+        { title: "Pending Approvals", path: "/app/admin/users", icon: Users, requiredScopes: [SCOPES.USERS_READ] },
+        { title: "User Management", path: "/app/admin/users/active", icon: Users, requiredScopes: [SCOPES.USERS_READ] },
     ],
     },
     {

@@ -216,21 +216,25 @@ export function UsersPage() {
         />
       )}
 
-      <ApproveUserDialog
-        user={selectedUser}
-        open={isApproveDialogOpen}
-        onOpenChange={setIsApproveDialogOpen}
-        onConfirm={handleConfirmApprove}
-        isLoading={approveMutation.isPending}
-      />
+      {selectedUser && (
+        <>
+          <ApproveUserDialog
+            user={selectedUser}
+            open={isApproveDialogOpen}
+            onOpenChange={setIsApproveDialogOpen}
+            onConfirm={handleConfirmApprove}
+            isLoading={approveMutation.isPending}
+          />
 
-      <RejectUserDialog
-        user={selectedUser}
-        open={isRejectDialogOpen}
-        onOpenChange={setIsRejectDialogOpen}
-        onConfirm={handleConfirmReject}
-        isLoading={rejectMutation.isPending}
-      />
+          <RejectUserDialog
+            user={selectedUser}
+            open={isRejectDialogOpen}
+            onOpenChange={setIsRejectDialogOpen}
+            onConfirm={handleConfirmReject}
+            isLoading={rejectMutation.isPending}
+          />
+        </>
+      )}
     </div>
   );
 }
