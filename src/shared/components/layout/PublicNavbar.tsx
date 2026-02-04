@@ -3,6 +3,7 @@ import { PublicDesktopNavbar } from "./PublicDesktopNavbar";
 import { NavLink } from "react-router-dom";
 import { PublicMobileNavbar } from "./PublicMobileNavbar";
 import { CircleUserRound, Menu, Plus } from "lucide-react";
+import logoSrc from "@/assets/Pacific-Ecommerce-Initiative.webp";
 
 export default function PublicNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -11,7 +12,7 @@ export default function PublicNavbar() {
   return (
     <div className="relative h-auto bg-white shadow-md">
       <div className="container mx-auto h-20 flex items-center justify-between px-6">
-        <span className="font-bold text-lg">Pacific E-commerce</span>
+        <img src={logoSrc} alt="Pacific E-commerce Initiative Logo" className="h-16 w-auto" />
 
         <PublicDesktopNavbar />
 

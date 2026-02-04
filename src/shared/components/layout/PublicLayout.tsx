@@ -5,13 +5,12 @@ import Footer from "./Footer";
 export function PublicLayout() {
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="fixed top-0 w-full h-16 border-b bg-white z-50">
+      <header className="fixed top-0 w-full h-20 border-b bg-white z-50">
         <PublicNavbar/>
       </header>
-      <main className="pt-16">
+      <main className="pt-20 min-h-screen">
         <Outlet />
       </main>
-
       <Footer/>
     </div>
   );

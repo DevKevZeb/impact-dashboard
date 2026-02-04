@@ -58,7 +58,6 @@
          disabled:opacity-40;
 }
 
-/* Pagination page number buttons */
 .pagination-page-active {
   @apply bg-sky-500 text-white hover:bg-sky-600 border-sky-500;
 }
