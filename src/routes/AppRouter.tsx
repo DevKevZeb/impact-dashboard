@@ -21,13 +21,13 @@ import { ActiveUsersPage } from "@/features/users/pages/ActiveUsersPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/RegisterPage";
 import { PrivateRoute } from "./PrivateRoute";
-import HomePage from "@/features/public/pages/HomePage";
+import HomePage from "@/features/public/Home/page/HomePage";
 import PublicRoute from "./PublicRoute";
 import { PublicLayout } from "@/shared/components/layout/PublicLayout";
 import ListProjectsOfProgramPage from "@/features/projects/pages/ListProjectsOfProgramPage";
-import ProgramsPublicPage from "@/features/public/pages/ProgramsPublicPage";
-import ProjectsPublicPage from "@/features/public/pages/ProjectsPublicPage";
-import ProgressPublicPage from "@/features/public/pages/ProgressPublicPage";
+import ProgramsPublicPage from "@/features/public/programs/page/ProgramsPublicPage";
+import ProjectsPublicPage from "@/features/public/projects/page/ProjectsPublicPage";
+import ProgressPublicPage from "@/features/public/progress/page/ProgressPublicPage";
 
 export function AppRouter() {
     return (

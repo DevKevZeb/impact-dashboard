@@ -21,7 +21,7 @@ export function useAsyncSearch<T extends { id: number | string; name?: string }>
     const currentRequestId = ++requestIdRef.current;
     setLoading(true);
 
-    fetchOptions({ query: normalizedQuery, page, limit: 5 })
+    fetchOptions({ query: normalizedQuery, page, limit: 10 })
       .then((res) => {
         if (currentRequestId !== requestIdRef.current) return;
         setOptions((prev) => {

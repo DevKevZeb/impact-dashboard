@@ -13,5 +13,6 @@ export interface AsyncSearchSelectProps<T>{
     getOptionKey: (option: T) => string | number;
     placeholder?: string;
     emptyMessage?: string;
+    disable?: boolean;
 }
 

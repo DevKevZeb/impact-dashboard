@@ -62,7 +62,7 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
                 
                 <td className="table-cell text-left">
                   {(country.kpas_count ?? 0) > 0 && 
-                  <button title="More info" className="btn-warning-table" onClick={(e) => { e.stopPropagation(); navigate(`/country-kpa//${country.id}`, { state: {country}}); }} >
+                  <button title="More info" className="btn-warning-table" onClick={(e) => { e.stopPropagation(); navigate(`/app/country-kpa//${country.id}`, { state: {country}}); }} >
                     <Info className="w-4 h-4" />
                   </button>}
                 </td>

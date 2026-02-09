@@ -1,13 +1,14 @@
 import { useRef } from "react";
 import Hero from "../components/Hero";
 import { ChartPie, FileSearch, FolderKey, GraduationCap, Newspaper, NotebookText } from "lucide-react";
-import NavCard from "../components/NavCard";
+import NavCard from "../../components/NavCard";
 
 export default function HomePage() {
 
     const contentRef = useRef<HTMLDivElement>(null);
 
-    const images = [
+    const images = 
+    [
         'https://pacificecommerce.org/wp-content/uploads/2023/05/PIFS-Banner-1-scaled.jpg',
         'https://pacificecommerce.org/wp-content/uploads/2024/07/BSP-ATM-Machine_Mele-Kolo-2-scaled.jpg',
         'https://pacificecommerce.org/wp-content/uploads/2024/07/Eikosan-Boutqie_Eiko-Ahokava-10-scaled.jpg',
