@@ -7,8 +7,9 @@ export function useUpdateProject(){
 
     return useMutation({
         mutationFn: ({id, dto}: {id: number, dto: ProjectDTO}) => updateProject(id, dto),
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["projects"] });
+        onSuccess: () => (_data: any, variables: {id: number} ) => {
+          queryClient.invalidateQueries({ queryKey: ["projects"], exact: false});
+          queryClient.invalidateQueries({queryKey: ["project", variables.id]})
         },
         onError: (err: any) => {
           const message = err?.response?.data?.message ?? err?.message ?? "Error updating project";

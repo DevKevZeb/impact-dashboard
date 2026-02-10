@@ -1,4 +1,3 @@
-// projects/hooks/useProjectPageData.ts
 import { useParams } from "react-router-dom";
 import { useProgram } from "@/features/programs/api/programQueries";
 import { useProject } from "../hooks/useProjects";
@@ -12,10 +11,7 @@ export function useProjectPageData(mode: Mode) {
   const parsedProjectId = projectId ? Number(projectId) : undefined;
 
   const isValidProgramId = !Number.isNaN(parsedProgramId);
-  const isValidProjectId =
-    mode === "edit" &&
-    parsedProjectId !== undefined &&
-    !Number.isNaN(parsedProjectId);
+  const isValidProjectId = mode === "edit" && parsedProjectId !== undefined && !Number.isNaN(parsedProjectId);
 
   const programQuery = useProgram(isValidProgramId ? parsedProgramId : 0);
 

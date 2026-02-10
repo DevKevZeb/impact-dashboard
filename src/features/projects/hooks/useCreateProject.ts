@@ -7,8 +7,7 @@ export function useCreateProject(){
 
     return useMutation({
         mutationFn: createProject,
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["projects"] });
+        onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["projects"] });
         },
         onError: (err: any) => {
           const message = err?.response?.data?.message ?? err?.message ?? "Error updating project";

@@ -97,19 +97,19 @@ export default function ProjectsPublicPage(){
 
                         <Controller control={control} name="kpa"
                             render={({field})=>(
-                                <AsyncSearchSelect<KPA> key={country?.id ?? "no-country"} value={field.value} onChange={field.onChange} placeholder={`Search by KPA ${ !country ? " (Country first)" : ""}`} fetchOptions={fetchKPAsForSelect(country ? country.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disable={!country}/>
+                                <AsyncSearchSelect<KPA> key={country?.id ?? "no-country"} value={field.value} onChange={field.onChange} placeholder={`Search by KPA ${ !country ? " (Country first)" : ""}`} fetchOptions={fetchKPAsForSelect(country ? country.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!country}/>
                             )}
                         />
 
                         <Controller control={control} name="strategic_output"
                             render={({field}) => (
-                                <AsyncSearchSelect<StrategicOutput> key={kpa?.id ?? "no-kpa"} value={field.value} onChange={field.onChange} placeholder={`Search by Strategic Output ${ !kpa ? " (KPA first)" : ""}`} fetchOptions={fetchStrategicOutputsForSelect(kpa ? kpa.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disable={!kpa}/>
+                                <AsyncSearchSelect<StrategicOutput> key={kpa?.id ?? "no-kpa"} value={field.value} onChange={field.onChange} placeholder={`Search by Strategic Output ${ !kpa ? " (KPA first)" : ""}`} fetchOptions={fetchStrategicOutputsForSelect(kpa ? kpa.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!kpa}/>
                             )}
                         />
 
                         <Controller control={control} name="measure"
                             render={({field}) => (
-                                <AsyncSearchSelect<Measure> key={strategicOutput?.id ?? "no-strategic-output"} value={field.value} onChange={field.onChange} placeholder={`Search by Measure ${ !strategicOutput ? " (Strategic Output first)" : ""}`} fetchOptions={fetchMeasuresForSelect(strategicOutput ? strategicOutput.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disable={!strategicOutput}/>
+                                <AsyncSearchSelect<Measure> key={strategicOutput?.id ?? "no-strategic-output"} value={field.value} onChange={field.onChange} placeholder={`Search by Measure ${ !strategicOutput ? " (Strategic Output first)" : ""}`} fetchOptions={fetchMeasuresForSelect(strategicOutput ? strategicOutput.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!strategicOutput}/>
                             )}
                         />
 
