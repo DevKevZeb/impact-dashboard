@@ -1,7 +1,6 @@
 import { SquarePen, Trash2 } from "lucide-react";
 import type { Country } from "../types/CountryType";
 
-
 interface Pagination {
   total: number;
   per_page: number;
