@@ -1,5 +1,4 @@
-import { id } from "date-fns/locale";
-import z from "zod";
+import { z } from "zod";
 
 export const projectSchema = z.object({
     name: z.string().min(3, "The project name must have at least 3 characters").max(255, "The project name must not exceed 255 characters"),
@@ -52,8 +51,8 @@ export const projectSchema = z.object({
         }, "An agency is required")
     ).min(1, "At least one agency is required"),
 
-    project_url: z.preprocess(v => v === "" ? undefined : v,z.url({ message: "Invalid URL" }).optional()),
-    budget: z.number("Budget is required").min(0, "Contribution must be ≥ 0").optional(),
+    project_url: z.preprocess(v => v === "" ? undefined : v,z.url({ message: "Invalid URL" })),
+    budget: z.number("Budget is required").min(0, "Contribution must be ≥ 0"),
 
 
     beneficiary: z.object({
@@ -94,3 +93,5 @@ export const projectSchema = z.object({
     path: ["end_date"],
   }
 );
+
+export type ProjectFormValues = z.infer<typeof projectSchema>;

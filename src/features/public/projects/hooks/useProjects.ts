@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { getPaginatedProjects } from "../services/projects.api";
-import type { findDTO } from "../types/findDTO";
 
 export function useProjects( page: number, per_page: number, filters: any ) {
   return useQuery({

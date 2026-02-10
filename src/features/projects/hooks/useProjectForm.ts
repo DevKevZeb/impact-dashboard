@@ -1,5 +1,3 @@
-// projects/hooks/useProjectForm.ts
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { useEffect } from "react";
@@ -21,10 +19,10 @@ export function getDefaultProjectValues(programId: number) {
     end_date: null,
     donors: [],
     agencies: [],
-    project_url: undefined,
+    project_url: "",
     budget: 0,
     contact: {
-        id: null,
+        id: undefined,
       first_name: "",
       last_name: "",
       title: "",
@@ -40,6 +38,7 @@ export function getDefaultProjectValues(programId: number) {
 }
 
 export function useProjectForm( mode: Mode, programId: number, project?: Project ) {
+    
     const form = useForm({
         resolver: zodResolver(projectSchema),
         defaultValues: getDefaultProjectValues(programId),

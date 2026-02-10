@@ -1,6 +1,5 @@
 import { CheckCheck, SquarePen, Trash2 } from "lucide-react";
 import type { Agency } from "../types/agency.types";
-import { ca } from "date-fns/locale";
 
 interface Pagination {
   total: number;

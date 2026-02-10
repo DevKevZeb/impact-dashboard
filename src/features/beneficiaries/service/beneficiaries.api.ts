@@ -55,8 +55,8 @@ function showErrors(error: any){
     }
 }
 
-export async function fetchSearchBeneficiaries(search: string, page: number){
-  const { data } = await apiClient.get(`/beneficiaries?search=${encodeURIComponent(search)}&page=${page}&per_page=${5}`);
+export async function fetchSearchBeneficiaries(search: string, page: number, limit: number){
+  const { data } = await apiClient.get(`/beneficiaries?search=${encodeURIComponent(search)}&page=${page}&per_page=${limit}`);
   return {
     beneficiaries: mapBeneficiaries(data.data.beneficiaries),
     pagination: {
@@ -72,7 +72,7 @@ export async function fetchSearchBeneficiaries(search: string, page: number){
 
 export async function fetchBeneficiariesForSelector(params: { query: string; page: number; limit: number; }){
   const { query, page, limit } = params;
-  const data = await fetchSearchBeneficiaries(query, page);
+  const data = await fetchSearchBeneficiaries(query, page, limit);
 
   return {
     items: mapBeneficiaries(data.beneficiaries),

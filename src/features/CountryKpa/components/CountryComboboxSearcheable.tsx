@@ -19,7 +19,7 @@ interface Props {
   label?: string;
 }
 
-export function CountryComboboxSearchable({ value, onChange, error, label = "Country", }: Props) {
+export function CountryComboboxSearchable({ value, onChange, error }: Props) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -29,7 +29,7 @@ export function CountryComboboxSearchable({ value, onChange, error, label = "Cou
   const listRef = useRef<HTMLDivElement | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { data, isLoading } = useSearchCountries(search, page);
+  const { data, isLoading } = useSearchCountries(search, page, 10);
   const countries: CountryOption[] = data?.countries ?? [];
   const lastPage: number = data?.pagination?.last_page ?? 1;
 

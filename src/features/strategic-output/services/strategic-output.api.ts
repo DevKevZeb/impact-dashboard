@@ -1,6 +1,6 @@
 import { apiClient } from "@/shared/lib/axios";
 import { mapStrategicOutput, mapStrategicOutputs, mapStrategicOutputsWithCountry } from "../mappers/strategic-output.mapper";
-import type { CreateStrategicOutputDTO, StrategicOutput, StrategicOutputCountry, UpdateStrategicOutputDTO } from "../types/StrategicOutput";
+import type { CreateStrategicOutputDTO, StrategicOutput, UpdateStrategicOutputDTO } from "../types/StrategicOutput";
 import { toast } from "sonner";
 
 export async function getStrategicOutputsByCountryKpaId(id_ck: number) {

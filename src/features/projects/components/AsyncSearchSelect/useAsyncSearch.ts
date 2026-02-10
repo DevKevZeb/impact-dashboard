@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { FetchOptions } from "./asyncSearch.type";
 
-export function useAsyncSearch<T extends { id: number | string; name?: string }>(query: string,fetchOptions: FetchOptions<T>) {
+export function useAsyncSearch<T>( query: string, fetchOptions: FetchOptions<T>, getKey: (item: T) => string | number, getLabel?: (item: T) => string) {
+
   const normalizedQuery = query.trim();
   const requestIdRef = useRef(0);
 
@@ -26,8 +27,8 @@ export function useAsyncSearch<T extends { id: number | string; name?: string }>
         if (currentRequestId !== requestIdRef.current) return;
         setOptions((prev) => {
           const map = new Map<number | string, T>();
-          prev.forEach((item) => map.set(item.id, item));
-          res.items?.forEach((item) => map.set(item.id, item));
+          prev.forEach((item) => map.set(getKey(item), item));
+          res.items?.forEach((item) => map.set(getKey(item), item));
           return Array.from(map.values());
         });
 
@@ -40,17 +41,17 @@ export function useAsyncSearch<T extends { id: number | string; name?: string }>
       });
   }, [normalizedQuery, page, fetchOptions, hasMore]);
 
-  const sortedOptions = sortByRelevance(options, normalizedQuery);
+  const sortedOptions = getLabel ? sortByRelevance(options, normalizedQuery, getLabel) : options;
   return { options: sortedOptions, loading, hasMore, loadMore: () => {if (!loading && hasMore) setPage((p) => p + 1);}};
 }
 
-function sortByRelevance<T extends { name?: string }>( items: T[], query: string ): T[] {
+function sortByRelevance<T>( items: T[], query: string, getLabel: (item: T) => string ): T[] {
   if (!query) return items;
   const q = query.toLowerCase();
 
   return [...items].sort((a, b) => {
-    const aName = (a.name ?? "").toLowerCase();
-    const bName = (b.name ?? "").toLowerCase();
+    const aName = getLabel(a).toLowerCase();
+    const bName = getLabel(b).toLowerCase();
     const aStarts = aName.startsWith(q);
     const bStarts = bName.startsWith(q);
 

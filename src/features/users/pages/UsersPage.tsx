@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Users as UsersIcon, Search, UserPlus } from "lucide-react";
+import { Loader2, Users as UsersIcon, Search } from "lucide-react";
 import { usePendingUsers, useApproveUser, useRejectUser } from "../api/userQueries";
 import { UserTableRow } from "../components/UserTableRow";
 import { ApproveUserDialog } from "../components/ActivateUserDialog";
