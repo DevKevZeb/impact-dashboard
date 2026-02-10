@@ -23,7 +23,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
   /* #61C8E7 */
-  --primary: oklch(0.82 0.10 220);
+  --primary: oklch(78.074% 0.11395 221.307);
   --primary-foreground: oklch(0.985 0 0);
   /* #1E3291 */
   --secondary: oklch(0.39 0.16 260);
@@ -38,7 +38,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.82 0.10 220);/* Emerald 500 */
+  --ring: oklch(85.317% 0.10567 220.543);/* Emerald 500 */
   --chart-1: oklch(0.55 0.18 230);/* Emerald */
   --chart-2: oklch(0.704 0.14 235.07); /* Sky */
   --chart-3: oklch(0.769 0.188 70.08); /* Amber */
@@ -157,7 +157,7 @@
 }
 
 .input-default {
-    @apply w-full px-3 py-2 rounded-lg border border-gray-200 text-gray-900
+    @apply w-full px-3 py-2 text-sm rounded-sm border border-gray-200 text-gray-900
            focus:outline-none focus:ring-2 focus:ring-sky-600
            placeholder:text-gray-500 transition;
 }
@@ -192,4 +192,37 @@
 .no-spinner::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.footer-color {
+  @apply bg-[#1E3291] dark:bg-slate-800;
+}
+
+.select-wrapper {
+  @apply relative w-full;
+}
+
+.select-icon-right {
+  @apply absolute right-3 top-1/2 -translate-y-1/2
+         text-gray-400 pointer-events-none;
+}
+
+.select-dropdown {
+  @apply absolute z-20 mt-1 w-full
+         max-h-56 overflow-y-auto
+         rounded-md border border-gray-200
+         bg-white shadow-lg;
+}
+
+.select-option {
+  @apply px-3 py-2 text-sm text-gray-900 cursor-pointer
+         hover:bg-sky-50 transition;
+}
+
+.select-option-selected {
+  @apply bg-sky-50 ;
+}
+
+.select-empty {
+  @apply px-3 py-2 text-sm text-gray-500;
 }

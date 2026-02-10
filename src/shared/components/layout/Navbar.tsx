@@ -9,12 +9,8 @@ export function Navbar({ onMenuClick }: NavbarProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-gradient-to-r from-sky-500 to-emerald-500 shadow-lg text-white">
       <div className="flex items-center justify-between h-full px-4 lg:px-6">
-        {/* Left Section: Logo & Search */}
         <div className="flex items-center gap-4 lg:gap-8">
-          <button 
-            onClick={onMenuClick}
-            className="lg:hidden p-1 hover:bg-white/20 rounded-md transition-colors"
-          >
+          <button onClick={onMenuClick} className="lg:hidden p-1 hover:bg-white/20 rounded-md transition-colors" >
             <Menu className="w-6 h-6 text-white/90" />
           </button>
           
@@ -37,7 +33,6 @@ export function Navbar({ onMenuClick }: NavbarProps) {
           </div>
         </div>
 
-        {/* Right Section: Actions */}
         <div className="flex items-center gap-2 lg:gap-4">
           <button className="p-2 hover:bg-white/20 rounded-full transition-colors relative group">
             <Bell className="w-5 h-5 text-white/90 group-hover:text-white" />

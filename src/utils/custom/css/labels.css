@@ -11,3 +11,7 @@
 .span-line-color{
     @apply bg-[#1e3291];
 }
+
+.head-label {
+    @apply lg:text-6xl md:text-4xl text-3xl text-[#1e3291] font-semibold;
+}

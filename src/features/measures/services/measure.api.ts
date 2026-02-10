@@ -57,7 +57,7 @@ export async function fetchSearchMeasuresByStrategicOutputId(search: string, pag
   const { data } = await apiClient.get(`/measures/get/strategic-output/${id}?search=${encodeURIComponent(search)}&page=${page}&per_page=${5}`);
 
   return {
-      strategic_outputs: mapMeasures(data.data.measures),
+      measures: mapMeasures(data.data.measures),
       pagination: {
         current_page: data.data.current_page,
         last_page: data.data.last_page,

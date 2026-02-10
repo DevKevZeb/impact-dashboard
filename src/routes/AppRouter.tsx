@@ -21,10 +21,13 @@ import { ActiveUsersPage } from "@/features/users/pages/ActiveUsersPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/RegisterPage";
 import { PrivateRoute } from "./PrivateRoute";
-import HomePage from "@/features/public/pages/HomePage";
+import HomePage from "@/features/public/Home/page/HomePage";
 import PublicRoute from "./PublicRoute";
 import { PublicLayout } from "@/shared/components/layout/PublicLayout";
 import ListProjectsOfProgramPage from "@/features/projects/pages/ListProjectsOfProgramPage";
+import ProgramsPublicPage from "@/features/public/programs/page/ProgramsPublicPage";
+import ProjectsPublicPage from "@/features/public/projects/page/ProjectsPublicPage";
+import ProgressPublicPage from "@/features/public/progress/page/ProgressPublicPage";
 
 export function AppRouter() {
     return (
@@ -32,21 +35,30 @@ export function AppRouter() {
         {/* Public Routes - Login & Register */}
         <Route path="/" element={<PublicRoute><PublicLayout/></PublicRoute>}>
             <Route index element={<HomePage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
-            <Route path="resources" element={<PlaceholderPage title="Resources Page" />} />
-            <Route path="library" element={<PlaceholderPage title="Library Page" />} />
+
+            <Route path="development">
+                <Route path="programs" element={<ProgramsPublicPage/>} />
+                <Route path="projects" element={<ProjectsPublicPage/>} />
+                <Route path="progress" element={<ProgressPublicPage/>} />
+            </Route>
+
+            <Route path="resources">
+                <Route path="ecove-community" element={<PlaceholderPage title="eCove Community" />} />
+                <Route path="training" element={<PlaceholderPage title="Training Resources" />} />
+            </Route>
+
+            <Route path="library">
+                <Route path="toolkit-library" element={<PlaceholderPage title="E-Biz ToolKits Library" />} />
+                <Route path="reports" element={<PlaceholderPage title="Library Reports" />} />
+            </Route>
+
             <Route path="statistics" element={<PlaceholderPage title="Statistics Page" />} />
             <Route path="news" element={<PlaceholderPage title="News Page" />} />
             <Route path="about" element={<PlaceholderPage title="About Page" />} />
             <Route path="team" element={<PlaceholderPage title="Team Page" />} />
-
-            <Route path="development">
-                <Route path="programs" element={<PlaceholderPage title="Programs List" />} />
-                <Route path="projects" element={<PlaceholderPage title="Projects List" />} />
-                <Route path="progress" element={<PlaceholderPage title="Progress Tracking" />} />
-            </Route>
-        
+            
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
         </Route>
 
         {/* Protected Routes - Require Authentication */}
@@ -74,7 +86,7 @@ export function AppRouter() {
             <Route path="projects" element={<ListProgramsWithProjects />}/>
             <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
             <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
-            <Route path="projects/program/:programId" element={<ListProjectsForProgramPage/>}/>
+            <Route path="projects/program/:programId" element={<ListProjectsOfProgramPage/>}/>
             <Route path="country-kpa" element={<CountryKpaListPage/>} />
             <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
             

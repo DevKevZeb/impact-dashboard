@@ -73,7 +73,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                     <h1 className="page-title">{`${(mode as string) === "create" ? "Create" : "Edit"} a project for "${programName ?? ""}"`}</h1>
                     <p className="page-description">Use this form to {(mode as string) === "create" ? "create a new project" : "edit the project details"}.</p>
                 </div>
-                <BackArrow backTo="/projects" /> 
+                <BackArrow backTo="/app/projects" /> 
             </div>
             <form className="space-y-6" onSubmit={form.form.handleSubmit(onSubmit, onInvalid)}>
                 <div className="flex flex-col space-y-2">

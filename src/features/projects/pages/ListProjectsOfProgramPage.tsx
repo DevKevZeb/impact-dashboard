@@ -74,7 +74,7 @@ export default function ListProjectsOfProgramPage(){
                     <h1 className="page-title">Projects of "{programData?.name}" program </h1>
                     <p className="page-description">Use this page to view and manage information about projects assigned to a specific program.</p>
                 </div>
-                <BackArrow backTo="/projects"/>
+                <BackArrow backTo="/app/projects"/>
             </div>
             
             <div className="relative max-w-md">

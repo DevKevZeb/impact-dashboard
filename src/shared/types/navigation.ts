@@ -23,11 +23,17 @@ export const publicNavigation: NavItem[] = [
   },
   {
     label: "RESOURCES",
-    to: "/resources",
+    children: [
+      { label: "eCove Community", to: "/resources/ecove-community" },
+      { label: "Training", to: "/resources/training" },
+    ],
   },
   {
     label: "LIBRARY",
-    to: "/library",
+    children: [
+      { label: "E-Biz ToolKits", to: "/library/toolkit-library" },
+      { label: "Reports", to: "/library/reports" },
+    ],
   },
   {
     label: "STATISTICS",
