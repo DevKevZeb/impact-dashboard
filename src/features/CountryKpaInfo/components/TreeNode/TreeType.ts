@@ -1,8 +1,11 @@
 import type React from "react";
 export interface IndicatorMeta {
-  indicatorType?: string;
-  target?: number | string;
-  implementation?: number | string;
+  type?: string;
+  type_id?: number;
+  target?: number| string;
+  //id?: number;
+  //indicatorType?: string;
+  //implementation?: number | string;
 }
 
 export interface TreeNode<T = unknown> {

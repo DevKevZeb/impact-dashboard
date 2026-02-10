@@ -12,7 +12,7 @@ interface Props {
 
 export function AgencySection({ form, totalAgencies, fetchAgencies }: Props) {
   const { form: rhf, agenciesFA, agencies, getMaxForAgency, } = form;
-  const hasUnselected = agencies?.some((a) => !a?.id);
+  const hasUnselected = agencies?.some((a: any) => !a?.id);
   const reachedLimit = totalAgencies !== null && agenciesFA.fields.length >= totalAgencies;
 
   return (

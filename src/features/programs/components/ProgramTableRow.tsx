@@ -1,4 +1,4 @@
-import { ChartNoAxesCombined, Eye, FolderKey, SquarePen, Trash2 } from "lucide-react";
+import { Eye, SquarePen, Trash2 } from "lucide-react";
 import type { Program } from "../types/program.types";
 import { DataTableRow, DataTableCell } from "@/shared/components/table";
 import { toast } from "sonner";

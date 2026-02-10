@@ -19,7 +19,7 @@ interface Props {
   label?: string;
 }
 
-export function KpaComboboxSearchable({ value, onChange, error, label = "KPA", }: Props) {
+export function KpaComboboxSearchable({ value, onChange, error }: Props) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -29,7 +29,7 @@ export function KpaComboboxSearchable({ value, onChange, error, label = "KPA", }
   const listRef = useRef<HTMLDivElement | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { data, isLoading } = useSearchKpas(search, page);
+  const { data, isLoading } = useSearchKpas(search, page, 10);
   const kpas: KpaOption[] = data?.kpas ?? [];
   const lastPage = data?.pagination?.last_page ?? 1;
 

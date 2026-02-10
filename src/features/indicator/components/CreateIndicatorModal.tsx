@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 
-import type { CreateIndicatorDTO, Indicator, UpdateIndicatorDTO } from "../types/indicatorTypes";
+import type { CreateIndicatorDTO, Indicator } from "../types/indicatorTypes";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";

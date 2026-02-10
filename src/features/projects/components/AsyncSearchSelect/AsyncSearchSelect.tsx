@@ -32,7 +32,7 @@ export function AsyncSearchSelect<T>({ value, onChange, fetchOptions, getOptionL
     }
   }, [value, getOptionLabel]);
 
-  const { options, loading, hasMore, loadMore } = useAsyncSearch( query, fetchOptions );
+  const { options, loading, hasMore, loadMore } = useAsyncSearch( query, fetchOptions, getOptionKey, getOptionLabel );
 
   const handleScroll = () => {
     if (!listRef.current || !hasMore || loading) return;

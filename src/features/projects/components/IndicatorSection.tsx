@@ -16,7 +16,7 @@ interface IndicatorSectionProps {
 export function IndicatorSection({ form, measure }: IndicatorSectionProps) {
   const { form: rhf, indicatorsFA, indicators } = form;
 
-  const hasUnselected = indicators?.some((i) => !i?.id);
+  const hasUnselected = indicators?.some((i: any) => !i?.id);
   const reachedLimit =
     indicatorsFA.fields.length >= measure.indicators_count;
 

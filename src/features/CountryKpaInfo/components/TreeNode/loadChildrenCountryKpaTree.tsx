@@ -46,7 +46,8 @@ export async function loadChildrenCountryKpaTree(nodeKey: string): Promise<TreeN
       const indicators = await getIndicatorsByMeasureId(numericId);
       return [
         { key: `title-in-${numericId}`, label: "Indicators", isTitle: true, selectable: false },
-        ...indicators.map((i) => ({
+        ...indicators
+        .map((i) => (  {
           key: `i-${i.id}`,
           label: i.name,
           icon: <Dot className="w-4 h-4 text-gray-400" />,
@@ -55,7 +56,7 @@ export async function loadChildrenCountryKpaTree(nodeKey: string): Promise<TreeN
           meta: {
             type: i.type?.name,
             type_id: i.type?.id,
-            target: i.target as number,
+            target: i.target,
           },
           parent_id: numericId
         })),

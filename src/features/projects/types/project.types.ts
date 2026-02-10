@@ -4,7 +4,6 @@ import type { Measure } from "@/features/measures/types/measureTypes";
 import type { Contact } from "@/features/programs/types/program.types";
 import type { ProjectState } from "@/features/project-states/types/projectstate.types";
 import type { StrategicOutputCountry } from "@/features/strategic-output/types/StrategicOutput";
-
 export interface Beneficiary {
     id: number;
     name: string;

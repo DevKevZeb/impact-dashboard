@@ -13,7 +13,7 @@ interface Props {
 export function DonorSection({ form, totalDonors, fetchDonors }: Props) {
   const { form: rhf, donorsFA, donors, getMaxForDonor } = form;
 
-  const hasUnselected = donors?.some((d) => !d?.id);
+  const hasUnselected = donors?.some((d: any) => !d?.id);
   const reachedLimit = totalDonors !== null && donorsFA.fields.length >= totalDonors;
 
   return (
