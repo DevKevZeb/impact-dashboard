@@ -3,23 +3,17 @@ import type { AsyncSearchSelectProps } from "./asyncSearch.type";
 import { useAsyncSearch } from "./useAsyncSearch";
 import { Input } from "@/components/ui/input";
 
-export function AsyncSearchSelect<T>({ value, onChange, fetchOptions, getOptionLabel, getOptionKey, placeholder = "Select an option", emptyMessage = "No results found" }: AsyncSearchSelectProps<T>) {
+export function AsyncSearchSelect<T>({ value, onChange, fetchOptions, getOptionLabel, getOptionKey, placeholder = "Select an option", emptyMessage = "No results found", enab = false, disabled = false }: AsyncSearchSelectProps<T>) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const [enabled, setEnabled] = useState(enab);
 
   const listRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    }
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) { if (containerRef.current &&!containerRef.current.contains(event.target as Node)) setOpen(false) }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -32,7 +26,7 @@ export function AsyncSearchSelect<T>({ value, onChange, fetchOptions, getOptionL
     }
   }, [value, getOptionLabel]);
 
-  const { options, loading, hasMore, loadMore } = useAsyncSearch( query, fetchOptions, getOptionKey, getOptionLabel );
+  const { options, loading, hasMore, loadMore } = useAsyncSearch( query, fetchOptions, getOptionKey, getOptionLabel, enabled );
 
   const handleScroll = () => {
     if (!listRef.current || !hasMore || loading) return;
@@ -43,9 +37,15 @@ export function AsyncSearchSelect<T>({ value, onChange, fetchOptions, getOptionL
     }
   };
 
+  const handleOpen = () => {
+    setOpen(true);
+    setEnabled(true);
+  };
+
+
   return (
     <div ref={containerRef} className="relative w-full">
-      <Input value={query} placeholder={placeholder} className="input-default" onChange={(e) => { const newValue = e.target.value; setQuery(newValue); setOpen(true); if (value && newValue !== getOptionLabel(value)) onChange(null);}} onFocus={() => setOpen(true)} />
+      <Input value={query} disabled={disabled} placeholder={placeholder} onClick={handleOpen} className="input-default" onChange={(e) => { const newValue = e.target.value; setQuery(newValue); setOpen(true); if (value && newValue !== getOptionLabel(value)) onChange(null);}} onFocus={handleOpen} />
 
       {open && (
         <div ref={listRef} onScroll={handleScroll} className="absolute z-10 mt-1 w-full max-h-40 overflow-y-auto border bg-white" >

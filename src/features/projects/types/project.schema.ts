@@ -51,8 +51,8 @@ export const projectSchema = z.object({
         }, "An agency is required")
     ).min(1, "At least one agency is required"),
 
-    project_url: z.preprocess(v => v === "" ? undefined : v,z.url({ message: "Invalid URL" })),
-    budget: z.number("Budget is required").min(0, "Contribution must be ≥ 0"),
+    project_url: z.preprocess(v => v === undefined ? "" : v, z.string()),
+    budget: z.preprocess((v) => {   if (v === undefined || v === "" || Number.isNaN(Number(v)))return 0; return Number(v);}, z.number().min(0, "Contribution must be ≥ 0")),
 
 
     beneficiary: z.object({

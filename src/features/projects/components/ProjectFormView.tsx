@@ -3,7 +3,7 @@ import type { UseProjectFormReturn } from "../hooks/useProjectForm";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { AsyncSearchSelect } from "./AsyncSearchSelect/AsyncSearchSelect";
+import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
 import type {  KpaProject } from "@/features/kpa/types/KpaType";
 import { fetchKpasForSelect } from "@/features/kpa/services/kpa.api";
 import type { StrategicOutputCountry } from "@/features/strategic-output/types/StrategicOutput";
@@ -24,25 +24,19 @@ import { DonorSection } from "./DonorSection";
 import { AgencySection } from "./AgencySection";
 import { fetchDonorsForSelect } from "@/features/donors/services/donor.api";
 import { fetchAgenciesForSelector } from "@/features/agency/services/agency.api";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import BackArrow from "@/shared/components/backArrow/BackArrow";
 
 interface Props {
     mode: "create" | "edit";
     programName?: string;
+    programId?: number;
     form: UseProjectFormReturn;
     onSubmit: (data: any) => void;
     onInvalid: (errors: any) => void;
 }
-
-interface FetchParams {
-  query: string;
-  page: number;
-  limit: number;
-}
-
  
-export default function ProjectFormView({ mode, programName, form, onSubmit, onInvalid }: Props) {
+export default function ProjectFormView({ mode, programName, form, onSubmit, onInvalid, programId }: Props) {
 
     const [totalDonors, setTotalDonors] = useState<number | null>(null);
     const [totalAgencies, setTotalAgencies] = useState<number | null>(null);
@@ -53,18 +47,28 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
     const project_state = useWatch({ control: form.form.control, name: "project_state" });
     const beneficiary = useWatch({ control: form.form.control, name: "beneficiary" });
 
-    const fetchDonors = async (params: FetchParams) => {
-        const res = await fetchDonorsForSelect(form.excludedDonorIds)(params);
-        if (totalDonors === null) setTotalDonors(res.total);
-        return res;
-    };
+    const fetchKpas = useCallback(fetchKpasForSelect, []);
+
+    useEffect(() => {
+        fetchDonorsForSelect([])({ query: "", page: 1, limit: 1 })
+        .then(res => {setTotalDonors(res.total)});
+    }, []);
+
+    useEffect(() => {
+        fetchAgenciesForSelector([])({ query: "",page: 1,limit: 1 })
+        .then(res => {setTotalAgencies(res.total)});
+    }, []);
 
 
-    const fetchAgencies = async (params: FetchParams) => {
-        const res = await fetchAgenciesForSelector(form.excludedAgencyIds)(params);
-        if (totalAgencies === null) setTotalAgencies(res.total);
-        return res;
-    };
+    const fetchDonors = useCallback(
+        fetchDonorsForSelect(form.excludedDonorIds),
+        [form.excludedDonorIds]
+    );
+    
+    const fetchAgencies = useCallback(
+        fetchAgenciesForSelector(form.excludedAgencyIds),
+        [form.excludedAgencyIds]
+    );
 
     return (
         <div className="page-container">
@@ -73,7 +77,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                     <h1 className="page-title">{`${(mode as string) === "create" ? "Create" : "Edit"} a project for "${programName ?? ""}"`}</h1>
                     <p className="page-description">Use this form to {(mode as string) === "create" ? "create a new project" : "edit the project details"}.</p>
                 </div>
-                <BackArrow backTo="/app/projects" /> 
+                <BackArrow backTo={mode === 'edit' ? `/app/projects/program/${programId}` :"/app/projects"} /> 
             </div>
             <form className="space-y-6" onSubmit={form.form.handleSubmit(onSubmit, onInvalid)}>
                 <div className="flex flex-col space-y-2">
@@ -92,7 +96,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 </div>
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A KPA</Label>
-                    <AsyncSearchSelect<KpaProject> value={kpa} onChange={(v) => { form.form.setValue("kpa", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("strategicOutput", null); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchKpasForSelect} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a KPA" emptyMessage="No KPAs found"/>
+                    <AsyncSearchSelect<KpaProject> enab={false} value={kpa} onChange={(v) => { form.form.setValue("kpa", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("strategicOutput", null); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchKpas} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a KPA" emptyMessage="No KPAs found"/>
                         {form.form.formState.errors.kpa && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.kpa.message === 'string' ? form.form.formState.errors.kpa.message : 'Invalid input'}</p>
                     )}
@@ -101,7 +105,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 {kpa && kpa !==null && kpa.strategic_outputs_count > 0 ? 
                 (<div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A STRATEGIC OUTPUT</Label>
-                    <AsyncSearchSelect<StrategicOutputCountry> value={strategicOutput} onChange={(v) => { form.form.setValue("strategicOutput", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchStrategicOutputsForSelect(kpa.id)} getOptionLabel={(k) => `${k?.name ?? ""} - ${k?.country?.name ?? ""}`} getOptionKey={(k)=> k.id} placeholder="Select a Strategic Output" emptyMessage="No Strategic Outputs found"/>
+                    <AsyncSearchSelect<StrategicOutputCountry> enab={false} value={strategicOutput} onChange={(v) => { form.form.setValue("strategicOutput", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchStrategicOutputsForSelect(kpa.id)} getOptionLabel={(k) => `${k?.name ?? ""} - ${k?.country?.name ?? ""}`} getOptionKey={(k)=> k.id} placeholder="Select a Strategic Output" emptyMessage="No Strategic Outputs found"/>
                     {form.form.formState.errors.strategicOutput && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.strategicOutput.message === 'string' ? form.form.formState.errors.strategicOutput.message : 'Invalid input'}</p>
                     )}
@@ -112,7 +116,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 {strategicOutput && (strategicOutput.measures_count > 0 ? 
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A MEASURE</Label>
-                    <AsyncSearchSelect<Measure> value={measure} onChange={(v) => { form.form.setValue("measure", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("indicators", []); }} fetchOptions={fetchMeasuresForSelect(strategicOutput!.id)} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a Measure" emptyMessage="No Measure found"/>
+                    <AsyncSearchSelect<Measure> enab={false} value={measure} onChange={(v) => { form.form.setValue("measure", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("indicators", []); }} fetchOptions={fetchMeasuresForSelect(strategicOutput!.id)} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a Measure" emptyMessage="No Measure found"/>
                     {form.form.formState.errors.measure && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.measure.message === 'string' ? form.form.formState.errors.measure.message : 'Invalid input'}</p>
                     )}
@@ -166,7 +170,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
 
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A BENEFICIARY</Label>
-                    <AsyncSearchSelect<Beneficiary> value={beneficiary} onChange={(v) => { form.form.setValue("beneficiary", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchBeneficiariesForSelector} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k: any)=> k.id} placeholder="Select a Beneficiary" emptyMessage="No Beneficiaries found"/>
+                    <AsyncSearchSelect<Beneficiary>  enab={false}  value={beneficiary} onChange={(v) => { form.form.setValue("beneficiary", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchBeneficiariesForSelector} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k: any)=> k.id} placeholder="Select a Beneficiary" emptyMessage="No Beneficiaries found"/>
                     {form.form.formState.errors.beneficiary && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.beneficiary.message === 'string' ? form.form.formState.errors.beneficiary.message : 'Invalid input'}</p>
                     )}
@@ -221,7 +225,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
 
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">PROGRESS</Label>
-                    <Controller control={form.form.control} name="progress" defaultValue={50}
+                    <Controller control={form.form.control} name="progress"
                         render={({ field }) => (
                             <div className="flex items-center gap-4">
                                 <Slider value={[field.value ?? 0]} max={100} step={1} onValueChange={(value) => field.onChange(value[0])} className="flex-1" />
@@ -239,7 +243,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
 
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT THE PROJECT STATE</Label>
-                    <AsyncSearchSelect<ProjectState> value={project_state} onChange={(v) => { form.form.setValue("project_state", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchProjectStatesForSelector} getOptionLabel={(k) => k.state ?? ""} getOptionKey={(k: any)=> k.id} placeholder="Select the project state" emptyMessage="No project state found"/>
+                    <AsyncSearchSelect<ProjectState>  enab={false} value={project_state} onChange={(v) => { form.form.setValue("project_state", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchProjectStatesForSelector} getOptionLabel={(k) => k.state ?? ""} getOptionKey={(k: any)=> k.id} placeholder="Select the project state" emptyMessage="No project state found"/>
                     {form.form.formState.errors.project_state && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.project_state.message === 'string' ? form.form.formState.errors.project_state.message : 'Invalid input'}</p>
                     )}

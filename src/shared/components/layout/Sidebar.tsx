@@ -189,11 +189,11 @@ export function Sidebar({ isOpen }: SidebarProps) {
                         isExpanded && isOpen ? "max-h-[500px] mt-1 opacity-100" : "max-h-0 opacity-0"
                     )}
                     >
-                    {item.children.map((child) => {
+                    {item.children.map((child, index) => {
                         const isChildActive = location.pathname === child.path;
                         return (
                         <Link
-                            key={child.path}
+                            key={index}
                             to={child.path}
                             className={cn(
                             "flex items-center gap-3 pl-10 pr-3 py-2 rounded-lg text-sm transition-colors",

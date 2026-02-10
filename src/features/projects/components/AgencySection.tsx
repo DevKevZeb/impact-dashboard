@@ -13,7 +13,7 @@ interface Props {
 export function AgencySection({ form, totalAgencies, fetchAgencies }: Props) {
   const { form: rhf, agenciesFA, agencies, getMaxForAgency, } = form;
   const hasUnselected = agencies?.some((a: any) => !a?.id);
-  const reachedLimit = totalAgencies !== null && agenciesFA.fields.length >= totalAgencies;
+  const reachedLimit = typeof totalAgencies === "number" && agenciesFA.fields.length >= totalAgencies;
 
   return (
     <div className="flex flex-col space-y-4">
@@ -45,15 +45,17 @@ export function AgencySection({ form, totalAgencies, fetchAgencies }: Props) {
         </p>
       )}
 
-      {reachedLimit && (
+      {reachedLimit ? (
         <p className="text-sm text-gray-500">
           All agencies have been selected.
         </p>
-      )}
-
-      <Button type="button" className="btn-tertiary w-fit" disabled={hasUnselected || reachedLimit} onClick={() => agenciesFA.append({ id: 0, name: "", url: "", contribution: 0 })} >
-        + Add agency
-      </Button>
+      ) : totalAgencies === null ? (
+        <p className="text-sm text-gray-400">Loading agencies info…</p>
+      ) : 
+        <Button type="button" className="btn-tertiary w-fit" disabled={hasUnselected || reachedLimit} onClick={() => agenciesFA.append({ id: 0, name: "", url: "", contribution: 0 })} >
+          + Add agency
+        </Button>
+      }
     </div>
   );
 }
