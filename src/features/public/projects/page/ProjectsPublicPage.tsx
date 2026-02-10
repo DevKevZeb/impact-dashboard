@@ -23,12 +23,10 @@ export default function ProjectsPublicPage(){
     const [filters, setFilters] = useState<any>(null);
     const [projects, setProjects] = useState<any[]>([]);
 
-
     const form = useForm<any>({
         resolver: zodResolver(projectSchema),
         defaultValues: {country: null, kpa: null, strategic_output: null, measure: null, project_state: null, search: ''}
     });
-
 
     const country = useWatch({ control: form.control, name: "country" });
     const kpa = useWatch({ control: form.control, name: "kpa" });
@@ -65,7 +63,6 @@ export default function ProjectsPublicPage(){
             });
         }
     }, [data]);
-
 
     const onsubmit = (data: any) => {
         setPage(1); 
