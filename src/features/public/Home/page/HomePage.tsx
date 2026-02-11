@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import Hero from "../components/Hero";
 import { ChartPie, FileSearch, FolderKey, GraduationCap, Newspaper, NotebookText } from "lucide-react";
-import NavCard from "../../components/NavCard";
+import NavCard from "../components/NavCard";
 
 export default function HomePage() {
 

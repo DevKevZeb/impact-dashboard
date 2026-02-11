@@ -1,11 +1,11 @@
 @reference "tailwindcss";
 
 .nav-label-color{
-    @apply text-slate-500 hover:text-[#1e3291];
+    @apply text-slate-500 hover:text-[#1e3291] font-extrabold;
 }
 
 .selected-nav-label-color{
-    @apply text-[#1e3291] ;
+    @apply text-[#1e3291] font-extrabold;
 }
 
 .span-line-color{
@@ -13,5 +13,17 @@
 }
 
 .head-label {
-    @apply lg:text-6xl md:text-4xl text-3xl text-[#1e3291] font-semibold;
+    @apply lg:text-7xl md:text-5xl text-4xl text-[#1e3291];
+}
+
+.previous-message {
+    @apply text-xs mt-2 px-3 py-1 w-full  rounded-lg  bg-amber-50  text-amber-700  border border-amber-200 flex items-center gap-2;
+}
+
+.nav-label-color-sub{
+    @apply text-slate-500 hover:text-[#1e3291];
+}
+
+.selected-nav-label-color-sub{
+    @apply text-[#1e3291];   
 }

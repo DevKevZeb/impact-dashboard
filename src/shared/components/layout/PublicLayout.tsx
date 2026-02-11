@@ -7,7 +7,7 @@ export function PublicLayout() {
   return (
     <div className="min-h-screen bg-slate-50">
       <ScrollToTop/>
-      <header className="fixed top-0 w-full h-20 border-b bg-white z-50">
+      <header className="fixed top-0 w-full h-28 border-b bg-white z-50">
         <PublicNavbar/>
       </header>
       <main className="pt-20 min-h-screen">

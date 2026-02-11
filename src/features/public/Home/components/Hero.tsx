@@ -44,7 +44,7 @@ const Hero: React.FC<HeroProps> = ({ title, subtitle, images, scrollToRef, trans
   };
 
   return (
-    <div className="relative h-[95vh] w-full overflow-hidden">
+    <div className="relative h-[92vh] w-full overflow-hidden">
       {images.map((image, index) => (
         <div key={index} className={`absolute inset-0 bg-cover bg-center transition-opacity duration-2000 ease-in-out ${index === currentImageIndex && !isTransitioning ? 'opacity-100' : 'opacity-0'} `} style={{ backgroundImage: `url('${image}')` }} >
   <div
