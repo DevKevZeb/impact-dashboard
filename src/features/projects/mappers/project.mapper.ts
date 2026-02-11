@@ -73,7 +73,7 @@ export function mapProjectToForm(project: Project) {
       contribution: Number(a.contribution),
     })) ?? [],
 
-    project_url: project.project_url || undefined,
+    project_url: project.project_url || "",
     budget: Number(project.budget) || 0,
 
     beneficiary: project.beneficiary ?? null,

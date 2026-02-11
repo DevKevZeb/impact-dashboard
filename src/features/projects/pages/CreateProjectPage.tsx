@@ -24,17 +24,20 @@ export default function CreateProjectPage({mode}: Props) {
     if (!isValidProgramId) return <div>Invalid program</div>;
     if (mode === "edit" && !isValidProjectId) return <div>Invalid project</div>;
 
-    if (programQuery.isLoading || projectQuery.isLoading) {
+    if (programQuery.isLoading || programQuery.isFetching ||projectQuery.isLoading || projectQuery.isFetching ) {
         return (
-        <div className="flex justify-center items-center min-h-[60vh]">
-            <Loader2 className="animate-spin" />
+        <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center space-y-4">
+                <Loader2 className="loader-default" />
+                <p className="text-gray-500">Loading...</p>
+            </div>
         </div>
         );
     }
 
     const onSubmit = async (data: any) => {
-        console.log("Submitting data:", data);
         if(mode === "edit" && projectId !== undefined) {
+            form.form.reset(data, { keepDirty: true });
             await updateProject({ id: projectId, dto: data });
         } else {
             await createProject(data);
@@ -48,12 +51,6 @@ export default function CreateProjectPage({mode}: Props) {
     if (mode === "edit" && projectQuery.error) return <div>Error loading project</div>;
     
     return (
-        <ProjectFormView
-            mode={mode}
-            programName={programQuery.data?.name}
-            form={form}
-            onSubmit={onSubmit}
-            onInvalid={onInvalid}
-        />
+        <ProjectFormView mode={mode} programName={programQuery.data?.name} programId={programQuery.data?.id} form={form} onSubmit={onSubmit} onInvalid={onInvalid} />
     );
 }

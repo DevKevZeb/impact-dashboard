@@ -14,7 +14,8 @@ export function DonorSection({ form, totalDonors, fetchDonors }: Props) {
   const { form: rhf, donorsFA, donors, getMaxForDonor } = form;
 
   const hasUnselected = donors?.some((d: any) => !d?.id);
-  const reachedLimit = totalDonors !== null && donorsFA.fields.length >= totalDonors;
+  const reachedLimit = typeof totalDonors === "number" && donorsFA.fields.length >= totalDonors;
+
 
   return (
     <div className="flex flex-col space-y-4">
@@ -39,22 +40,19 @@ export function DonorSection({ form, totalDonors, fetchDonors }: Props) {
         </p>
       )}
 
-      {reachedLimit && (
-        <p className="text-sm text-gray-500">
+      {reachedLimit ? (
+        <p className="text-sm py-2 text-gray-500">
           All donors have been selected.
         </p>
-      )}
+      ) : totalDonors === null ? (
+        <p className="text-sm text-gray-400">Loading donors info…</p>
+      ) : 
+        <Button type="button" className="btn-tertiary w-fit" disabled={hasUnselected || reachedLimit} onClick={() =>donorsFA.append({ id: 0, name: "", contribution: 0 })}>
+          + Add donor
+        </Button>
+      }
 
-      <Button
-        type="button"
-        className="btn-tertiary w-fit"
-        disabled={hasUnselected || reachedLimit}
-        onClick={() =>
-          donorsFA.append({ id: 0, name: "", contribution: 0 })
-        }
-      >
-        + Add donor
-      </Button>
+      
     </div>
   );
 }

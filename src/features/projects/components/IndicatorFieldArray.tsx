@@ -1,6 +1,6 @@
 // projects/components/IndicatorFieldArray.tsx
 import { Button } from "@/components/ui/button";
-import { AsyncSearchSelect } from "../components/AsyncSearchSelect/AsyncSearchSelect";
+import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
 import type { UseFieldArrayReturn, UseFormReturn } from "react-hook-form";
 
 interface Props {
@@ -27,6 +27,7 @@ export function IndicatorFieldArray({ form, fieldArray, measureId, fetchOptions,
         <div key={field.id}>
           <div className="flex items-center gap-2">
             <AsyncSearchSelect
+              enab={false} 
               value={indicators?.[index] ?? null}
               onChange={(v) =>
               setValue(`indicators.${index}`, v, {

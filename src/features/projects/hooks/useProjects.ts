@@ -15,5 +15,7 @@ export function useProject(projectId?: number) {
     queryKey: ["project", projectId],
     queryFn: () => getProjectsByProjectId(projectId!),
     enabled: !!projectId, 
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 }

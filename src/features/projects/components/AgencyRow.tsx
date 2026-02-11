@@ -1,5 +1,5 @@
 import React from "react";
-import { AsyncSearchSelect } from "./AsyncSearchSelect/AsyncSearchSelect";
+import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
@@ -40,6 +40,7 @@ export const AgencyRow = React.memo(
       <div className="grid lg:grid-cols-2 gap-3">
         <div>
           <AsyncSearchSelect
+            enab={false} 
             value={agency.id ? agency : null}
             onChange={(v) => {
               setValue(

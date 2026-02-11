@@ -1,5 +1,5 @@
 import React from "react";
-import { AsyncSearchSelect } from "./AsyncSearchSelect/AsyncSearchSelect";
+import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,7 @@ export const DonorRow = React.memo(
     return (
       <div className="grid lg:grid-cols-2 gap-3">
         <AsyncSearchSelect
+         enab={false} 
           value={donor.id ? donor : null}
           onChange={(v) => {
             setValue(
