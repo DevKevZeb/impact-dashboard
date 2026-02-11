@@ -2,7 +2,7 @@ import logoSrc from "@/assets/Pacific-Ecommerce-Initiative-white.webp";
 
 export default function Footer() {
   return (
-    <footer className="w-full text-white footer-color flex flex-col justify-center items-center py-6 text-md">
+    <footer className="w-full text-white footer-color bg-[#1E3291] flex flex-col justify-center items-center py-6 text-md">
       <div className="w-5/7">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 py-8 justify-center items-start mb-4">
         <div className="col-span-2 md:col-span-1 flex md:justify-center">
