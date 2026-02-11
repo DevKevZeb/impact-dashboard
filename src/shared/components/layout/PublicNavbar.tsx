@@ -11,7 +11,7 @@ export default function PublicNavbar() {
 
   return (
     <div className="relative h-auto bg-white shadow-md">
-      <div className="container mx-auto h-20 flex items-center justify-between px-6">
+      <div className="container mx-auto h-28 flex items-center justify-between px-6">
         <img src={logoSrc} alt="Pacific E-commerce Initiative Logo" className="h-16 w-auto" />
 
         <PublicDesktopNavbar />

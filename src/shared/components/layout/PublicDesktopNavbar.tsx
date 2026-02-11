@@ -41,7 +41,7 @@ export function PublicDesktopNavbar() {
                       return (<NavLink key={child.to} to={child.to} className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" >
                         <span className={cn(
                             "relative pb-2 text-sm font-medium cursor-pointer",
-                            isPathActive(child.to) ? "selected-nav-label-color" : "nav-label-color" )}
+                            isPathActive(child.to) ? "selected-nav-label-color-sub" : "nav-label-color-sub" )}
                         >
                           {child.label}
                         </span>

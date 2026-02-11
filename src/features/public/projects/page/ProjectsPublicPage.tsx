@@ -79,14 +79,14 @@ export default function ProjectsPublicPage(){
     return(
         <div>
             <Banner title="E-commerce Projects" description="Search and find information on development partner projects which support e-commerce in the Pacific" image="https://pacificecommerce.org/wp-content/uploads/2022/04/banner-450.png"/>
-            <div className="flex flex-col items-center justify-center py-8">
-                <form className="w-5/7 flex flex-col" onSubmit={handleSubmit(onsubmit)}>
+            <div className="flex flex-col items-center justify-center pb-20">
+                <form className="w-5/7 flex flex-col py-20" onSubmit={handleSubmit(onsubmit)}>
                     <div className="flex h-auto w-full mb-4 gap-4">
                         <div className="relative w-full">
-                            <Search className="absolute right-4  top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                            <Input placeholder="Search projects by name..." className="pl-2 input-default" {...form.register("search")}/>
+                            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                            <Input placeholder="Search by name..." className="pl-2 input-default" {...form.register("search")}/>
                         </div>
-                        <Button type="submit" className="btn-secondary">Search</Button>
+                        <Button type="submit" className="btn-secondary text-base">Search</Button>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         <Controller control={control} name="country"
@@ -97,19 +97,28 @@ export default function ProjectsPublicPage(){
 
                         <Controller control={control} name="kpa"
                             render={({field})=>(
-                                <AsyncSearchSelect<KPA> key={country?.id ?? "no-country"} value={field.value} onChange={field.onChange} placeholder={`Search by KPA ${ !country ? " (Country first)" : ""}`} fetchOptions={fetchKPAsForSelect(country ? country.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!country}/>
+                                <div>
+                                    <AsyncSearchSelect<KPA> key={country?.id ?? "no-country"} value={field.value} onChange={field.onChange} placeholder={"Search by KPA"} fetchOptions={fetchKPAsForSelect(country ? country.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!country}/>
+                                    {!country && <p className="previous-message">Select a Country first</p>}
+                                </div>
                             )}
                         />
 
                         <Controller control={control} name="strategic_output"
                             render={({field}) => (
-                                <AsyncSearchSelect<StrategicOutput> key={kpa?.id ?? "no-kpa"} value={field.value} onChange={field.onChange} placeholder={`Search by Strategic Output ${ !kpa ? " (KPA first)" : ""}`} fetchOptions={fetchStrategicOutputsForSelect(kpa ? kpa.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!kpa}/>
+                                <div>
+                                    <AsyncSearchSelect<StrategicOutput> key={kpa?.id ?? "no-kpa"} value={field.value} onChange={field.onChange} placeholder={"Search by Strategic Output"} fetchOptions={fetchStrategicOutputsForSelect(kpa ? kpa.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!kpa}/>
+                                    {!kpa && <p className="previous-message">Select a KPA first</p>}
+                                </div>
                             )}
                         />
 
                         <Controller control={control} name="measure"
                             render={({field}) => (
-                                <AsyncSearchSelect<Measure> key={strategicOutput?.id ?? "no-strategic-output"} value={field.value} onChange={field.onChange} placeholder={`Search by Measure ${ !strategicOutput ? " (Strategic Output first)" : ""}`} fetchOptions={fetchMeasuresForSelect(strategicOutput ? strategicOutput.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!strategicOutput}/>
+                                <div>
+                                    <AsyncSearchSelect<Measure> key={strategicOutput?.id ?? "no-strategic-output"} value={field.value} onChange={field.onChange} placeholder={"Search by Measure"} fetchOptions={fetchMeasuresForSelect(strategicOutput ? strategicOutput.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!strategicOutput}/>
+                                    {!strategicOutput && <p className="previous-message">Select a Strategic Output first</p>}
+                                </div>
                             )}
                         />
 
@@ -119,9 +128,13 @@ export default function ProjectsPublicPage(){
                             )}
                         />
                     </div>
+                    <span className="block w-full h-px bg-slate-300 my-14"></span>
+                    <div>
+                        
+                    </div>
                 </form>
                 <div className="w-5/7 my-6">
-                    {isLoading && page === 1 && (
+                    {isLoading || isFetching && (
                         <div className="flex justify-center py-8">
                             <Loader className="animate-spin loader-default" />
                         </div>
@@ -129,22 +142,22 @@ export default function ProjectsPublicPage(){
 
                     {error && (<p className="text-center text-red-500">Error loading projects</p>)}
 
-                    {!isLoading && !error && projects.length > 0 && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-3">
+                    {!isLoading && !isFetching && !error && projects.length > 0 && (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 mt-3">
                             {projects.map((project) => (
                                 <ProjectCard key={project.id} id={project.id} name={project.name} description={project.description} />
                             ))}
                         </div>
                     )}
 
-                    {!isLoading && !error && projects.length === 0 && (
+                    {!isLoading && !isFetching && !error && projects.length === 0 && (
                         <EmptyState icon={FolderX} title={ filters ? "No projects match your filters" : "No projects available" } description={ filters ? "Try adjusting your filters or search terms." : "There are no projects to display at the moment." } />
                     )}
                     </div>
 
                     {hasMore && (
                     <div className="flex justify-center mt-8">
-                        <Button onClick={() => setPage((prev) => prev + 1)} disabled={isFetching} className="btn-secondary flex items-center gap-2" >
+                        <Button onClick={() => setPage((prev) => prev + 1)} disabled={isFetching} className="btn-secondary text-base flex items-center gap-2" >
                             {isFetching && page > 1 ? (<><Loader className="h-4 w-4 animate-spin loader-default"/>Loading more...</>) : ("Load more projects")}
                         </Button>
                     </div>
