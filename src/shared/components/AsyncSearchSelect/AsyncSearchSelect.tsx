@@ -45,27 +45,38 @@ export function AsyncSearchSelect<T>({ value, onChange, fetchOptions, getOptionL
 
   return (
     <div ref={containerRef} className="relative w-full">
-      <Input value={query} disabled={disabled} placeholder={placeholder} onClick={handleOpen} className="input-default" onChange={(e) => { const newValue = e.target.value; setQuery(newValue); setOpen(true); if (value && newValue !== getOptionLabel(value)) onChange(null);}} onFocus={handleOpen} />
+      <div className="relative">
+        <Input value={query} disabled={disabled} placeholder={placeholder} onClick={handleOpen} onFocus={handleOpen} className="input-default pr-12 cursor-pointer"
+          onChange={(e) => { const newValue = e.target.value; setQuery(newValue); setOpen(true); if (value && newValue !== getOptionLabel(value)) onChange(null); }}
+        />
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-3 pointer-events-none">
+          <div className="h-5 w-px bg-gray-300" />
+          <svg className={`w-6 h-6 text-gray-600 transition-transform duration-200 ${open ? "rotate-180 text-blue-600" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
 
       {open && (
-        <div ref={listRef} onScroll={handleScroll} className="absolute z-10 mt-1 w-full max-h-40 overflow-y-auto border bg-white" >
+        <div ref={listRef} onScroll={handleScroll} className="absolute z-20 mt-2 w-full max-h-44 overflow-y-auto  rounded-md border border-gray-200  bg-white shadow-md" >
           {!loading && options.length === 0 && (
-            <div className="p-2 text-sm text-gray-500">
+            <div className="p-3 text-gray-500 text-sm">
               {emptyMessage}
             </div>
           )}
 
           {options.map((option) => (
-            <div key={getOptionKey(option)} className="cursor-pointer p-2 hover:bg-gray-100" onClick={() => { onChange(option); setOpen(false); }} >
+            <div key={getOptionKey(option)} className="px-4 py-2 text-sm cursor-pointer  hover:bg-blue-50 hover:text-blue-600  transition-colors" onClick={() => { onChange(option); setOpen(false); }} >
               {getOptionLabel(option)}
             </div>
           ))}
 
           {loading && (
-            <div className="p-2 text-sm text-gray-500">Loading...</div>
+            <div className="p-3 text-gray-500 text-sm">Loading...</div>
           )}
         </div>
       )}
     </div>
+
   );
 }

@@ -10,8 +10,19 @@ export async function getPaginatedProjects( page: number, per_page: number, filt
 
   if (filters?.search) params.append("search", filters.search);
   
-  const payload = filters ? { country: filters.country ?? null, kpa: filters.kpa ?? null, strategic_output: filters.strategic_output ?? null, measure: filters.measure ?? null, project_state: filters.project_state ?? null } : undefined;
-  const { data } = await publicApiClient.post( `/projects?${params.toString()}`, payload );
+  const payload: any = {};
+
+  if (filters?.country) payload.country = filters.country;
+  if (filters?.kpa) payload.kpa = filters.kpa;
+  if (filters?.strategic_output) payload.strategic_output = filters.strategic_output;
+  if (filters?.measure) payload.measure = filters.measure;
+  if (filters?.project_state) payload.project_state = filters.project_state;
+
+  const finalPayload = Object.keys(payload).length > 0 ? payload : null;
+
+  const { data } = await publicApiClient.post( `/projects?${params.toString()}`, finalPayload );
+
+  console.log(data);
 
   return {
     projects: mapProjectCards(data.data.projects),

@@ -7,14 +7,14 @@ interface ProjectCardProps {
 export default function ProjectCard({ id, name, description }: ProjectCardProps) {
   return (
     <div key={id} className="flex flex-col overflow-hidden rounded-md bg-white shadow-md transition hover:shadow-lg">
-      <div className="h-48 w-full overflow-hidden">
+      <div className="h-78 w-full overflow-hidden">
         <img src="https://orchid-alligator-247477.hostingersite.com/wp-content/uploads/2022/04/grid-item-image.png" alt={name} className="h-full w-full object-cover"/>
       </div>
-      <div className="flex flex-1 flex-col p-5">
-        <h3 className="mb-2 line-clamp-2 text-lg font-bold text-[#003A8F]">
+      <div className="flex flex-1 flex-col p-5 px-10">
+        <h3 className="mb-2 line-clamp-2 text-xl font-bold text-secondary hover:text-primary">
           {name}
         </h3>
-        <p className="mb-6 line-clamp-3 text-sm text-gray-600">
+        <p className="mb-6 line-clamp-5 text-gray-600">
           {description}
         </p>
         <div className="mt-auto">
