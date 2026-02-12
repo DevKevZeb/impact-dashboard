@@ -15,6 +15,8 @@ import { useTableSort } from "@/shared/hooks/useTableSort";
 import { Button } from "@/components/ui/button";
 import { Plus, Loader2, FolderOpen, Search } from "lucide-react";
 import type { Sdg } from "../types/sdg.types";
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
+import { SCOPES } from "@/features/auth/utils/permissions";
 
 export function SdgsPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,6 +26,7 @@ export function SdgsPage() {
   const [selectedSdg, setSelectedSdg] = useState<Sdg | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const canWrite = useHasScope(SCOPES.SDGS_WRITE);
   const { data, isLoading, error } = useSdgsPaginated(currentPage, perPage);
 
   const handleEdit = (sdg: Sdg) => {
@@ -83,14 +86,16 @@ export function SdgsPage() {
           </p>
         </div>
 
-        <Button
-          onClick={() => setUploadDialogOpen(true)}
-          size="lg"
-          className="btn-secondary"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Upload SDG
-        </Button>
+        {canWrite && (
+          <Button
+            onClick={() => setUploadDialogOpen(true)}
+            size="lg"
+            className="btn-secondary"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Upload SDG
+          </Button>
+        )}
       </div>
 
       {/* Search */}
@@ -131,7 +136,7 @@ export function SdgsPage() {
               {sortedData.map((sdg, index) => {
                 const rowIndex = (data.pagination.current_page - 1) * data.pagination.per_page + index + 1;
                 return (
-                  <SdgTableRow key={sdg.id} sdg={sdg} index={rowIndex} onEdit={handleEdit} />
+                  <SdgTableRow key={sdg.id} sdg={sdg} index={rowIndex} onEdit={handleEdit} canWrite={canWrite} />
                 );
               })}
             </DataTableBody>
@@ -158,7 +163,7 @@ export function SdgsPage() {
               : "Start by uploading Sustainable Development Goal images"
           }
           action={
-            !searchTerm ? (
+            !searchTerm && canWrite ? (
               <Button
                 onClick={() => setUploadDialogOpen(true)}
                 className="mt-6 bg-linear-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600"
