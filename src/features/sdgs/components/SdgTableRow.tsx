@@ -6,9 +6,10 @@ interface SdgTableRowProps {
   sdg: Sdg;
   index: number;
   onEdit: (sdg: Sdg) => void;
+  canWrite: boolean;
 }
 
-export function SdgTableRow({ sdg, index, onEdit }: SdgTableRowProps) {
+export function SdgTableRow({ sdg, index, onEdit, canWrite }: SdgTableRowProps) {
   const imageUrl = sdg.image_url || `${import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '')}/storage/${sdg.image}`;
 
   const handleEdit = (e: React.MouseEvent) => {
@@ -51,20 +52,26 @@ export function SdgTableRow({ sdg, index, onEdit }: SdgTableRowProps) {
 
       {/* Actions */}
       <td className="px-4 py-3 text-sm text-gray-700 space-x-2">
-        <button
-          onClick={handleEdit}
-          className="btn-edit-table"
-          title="Edit SDG"
-        >
-          <SquarePen className="w-4 h-4" />
-        </button>
-        <button
-          onClick={handleDelete}
-          className="btn-delete-table"
-          title="Delete SDG (not implemented)"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
+        {canWrite ? (
+          <>
+            <button
+              onClick={handleEdit}
+              className="btn-edit-table"
+              title="Edit SDG"
+            >
+              <SquarePen className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleDelete}
+              className="btn-delete-table"
+              title="Delete SDG (not implemented)"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </>
+        ) : (
+          <span className="text-gray-400 text-xs">No actions</span>
+        )}
       </td>
     </tr>
   );

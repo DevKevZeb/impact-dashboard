@@ -5,6 +5,7 @@ import './utils/custom/css/modal.css';
 import './utils/custom/css/slider.css';
 import './utils/custom/css/labels.css';
 import './utils/custom/css/select.css';
+import './index.css';
 
 function App() {
   return <AppRouter />
