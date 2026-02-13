@@ -1,7 +1,6 @@
-import { Eye, SquarePen, Trash2 } from "lucide-react";
+import { Eye, SquarePen } from "lucide-react";
 import type { Program } from "../types/program.types";
 import { DataTableRow, DataTableCell } from "@/shared/components/table";
-import { toast } from "sonner";
 import { Can } from "@/features/auth/components/Can";
 import { SCOPES } from "@/features/auth/utils/permissions";
 
@@ -25,13 +24,6 @@ export function ProgramTableRow({ program, index, onEdit, onView }: ProgramTable
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(program);
-  };
-
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    toast.info("Manage projects", {
-      description: "Manage projects feature is not yet implemented in the backend",
-    });
   };
 
   return (
@@ -117,13 +109,6 @@ export function ProgramTableRow({ program, index, onEdit, onView }: ProgramTable
               title="Edit Program"
             >
               <SquarePen className="w-4 h-4" />
-            </button>
-            <button
-              onClick={handleDelete}
-              className="btn-delete-table"
-              title="Delete Program (not implemented)"
-            >
-              <Trash2 className="w-4 h-4"/>
             </button>
           </Can>
         </div>
