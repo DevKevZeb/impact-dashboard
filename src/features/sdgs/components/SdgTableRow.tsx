@@ -1,6 +1,5 @@
-import { SquarePen, Trash2 } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import type { Sdg } from "../types/sdg.types";
-import { toast } from "sonner";
 
 interface SdgTableRowProps {
   sdg: Sdg;
@@ -15,13 +14,6 @@ export function SdgTableRow({ sdg, index, onEdit, canWrite }: SdgTableRowProps) 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(sdg);
-  };
-
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    toast.info("Delete functionality", {
-      description: "Delete feature is not yet implemented in the backend",
-    });
   };
 
   return (
@@ -51,24 +43,15 @@ export function SdgTableRow({ sdg, index, onEdit, canWrite }: SdgTableRowProps) 
       </td>
 
       {/* Actions */}
-      <td className="px-4 py-3 text-sm text-gray-700 space-x-2">
+      <td className="px-4 py-3 text-sm text-gray-700">
         {canWrite ? (
-          <>
-            <button
-              onClick={handleEdit}
-              className="btn-edit-table"
-              title="Edit SDG"
-            >
-              <SquarePen className="w-4 h-4" />
-            </button>
-            <button
-              onClick={handleDelete}
-              className="btn-delete-table"
-              title="Delete SDG (not implemented)"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </>
+          <button
+            onClick={handleEdit}
+            className="btn-edit-table"
+            title="Edit SDG"
+          >
+            <SquarePen className="w-4 h-4" />
+          </button>
         ) : (
           <span className="text-gray-400 text-xs">No actions</span>
         )}
