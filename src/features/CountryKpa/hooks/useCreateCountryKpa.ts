@@ -7,7 +7,7 @@ export function useCreateCountryKpa(){
     return useMutation({
         mutationFn: createCountryKpa,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["country-kpas"]});
+            queryClient.invalidateQueries({ queryKey: ["country_kpas"]});
 
         },
     });

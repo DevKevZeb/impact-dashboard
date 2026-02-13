@@ -4,7 +4,7 @@ import './utils/custom/css/tables.css';
 import './utils/custom/css/modal.css';
 import './utils/custom/css/slider.css';
 import './utils/custom/css/labels.css';
-import './index.css';
+import './utils/custom/css/select.css';
 
 function App() {
   return <AppRouter />

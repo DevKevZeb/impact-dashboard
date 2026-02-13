@@ -9,7 +9,7 @@ export async function createCountryKpa(dto: CreateCountryKpaDTO) {
       id_kpa: dto.id_kpa,
     };
 
-    const { data } = await apiClient.post("/country-kpas", payload);
+    const { data } = await apiClient.post("/country_kpas", payload);
 
     console.log(data)
 
@@ -27,7 +27,7 @@ export async function updateCountryKpa(id: number, dto: UpdateCountryKpaDTO) {
       country_id: dto.country_id,
     };
 
-    const { data } = await apiClient.put(`/country-kpas/${id}`, payload);
+    const { data } = await apiClient.put(`/country_kpas/${id}`, payload);
 
     toast.success(data.message);
     return data;

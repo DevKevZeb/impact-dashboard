@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getPaginatedProjects } from "../services/projects.api";
+import { getPaginatedProjects, getProjectsByProjectId } from "../services/projects.api";
 
 export function useProjects( page: number, per_page: number, filters: any ) {
   return useQuery({
@@ -7,5 +7,15 @@ export function useProjects( page: number, per_page: number, filters: any ) {
     queryFn: () => getPaginatedProjects(page, per_page, filters),
     placeholderData: (prev) => prev,
     staleTime: 1000 * 10,
+  });
+}
+
+export function useProject(id?: number) {
+  return useQuery({
+    queryKey: ["project", id],
+    queryFn: () => getProjectsByProjectId(id!),
+    enabled: !!id, 
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 }

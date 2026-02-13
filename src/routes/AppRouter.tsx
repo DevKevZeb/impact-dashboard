@@ -28,6 +28,7 @@ import ListProjectsOfProgramPage from "@/features/projects/pages/ListProjectsOfP
 import ProgramsPublicPage from "@/features/public/programs/page/ProgramsPublicPage";
 import ProjectsPublicPage from "@/features/public/projects/page/ProjectsPublicPage";
 import ProgressPublicPage from "@/features/public/progress/page/ProgressPublicPage";
+import PublicProjectDetailsPage from "@/features/public/projects/page/PublicProjectDetailsPage";
 
 export function AppRouter() {
     return (
@@ -38,7 +39,8 @@ export function AppRouter() {
 
             <Route path="development">
                 <Route path="programs" element={<ProgramsPublicPage/>} />
-                <Route path="projects" element={<ProjectsPublicPage/>} />
+                <Route path="projects" element={<ProjectsPublicPage/>}/>
+                <Route path="projects/:id" element={<PublicProjectDetailsPage />} />
                 <Route path="progress" element={<ProgressPublicPage/>} />
             </Route>
 

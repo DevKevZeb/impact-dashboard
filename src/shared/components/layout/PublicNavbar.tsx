@@ -16,7 +16,7 @@ export default function PublicNavbar() {
 
         <PublicDesktopNavbar />
 
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden min-[1290px]:flex items-center gap-3">
           <NavLink to="/register" className="btn-primary flex space-x-2 items-center">
             <Plus className="w-5 h-5"/>
             <span>Register</span>
@@ -27,7 +27,7 @@ export default function PublicNavbar() {
           </NavLink>
         </div>
 
-        <button className="lg:hidden" ref={buttonRef} onClick={() => setMobileOpen(!mobileOpen)}>
+        <button className=" min-[1290px]:hidden" ref={buttonRef} onClick={() => setMobileOpen(!mobileOpen)}>
           <Menu className="w-6 h-6"/>
         </button>
       </div>
