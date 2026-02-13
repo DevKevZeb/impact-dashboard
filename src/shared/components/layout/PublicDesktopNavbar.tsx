@@ -7,7 +7,7 @@ export function PublicDesktopNavbar() {
   const { isItemActive, isPathActive } = useNavActive();
 
   return (
-    <nav className="hidden lg:flex items-center h-full gap-8">
+    <nav className="hidden  min-[1290px]:flex items-center h-full gap-8">
       {publicNavigation.map((item) => {
         
         return (

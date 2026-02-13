@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useProjects } from "../hooks/useProjects";
 import { EmptyState } from "@/shared/components/EmptyState";
 import ProjectCard from "../components/ProjectCard";
+import SortSelect from "../../components/SortSelect";
 
 export default function ProjectsPublicPage(){
     const [page, setPage] = useState(1);
@@ -80,8 +81,8 @@ export default function ProjectsPublicPage(){
         <div>
             <Banner title="E-commerce Projects" description="Search and find information on development partner projects which support e-commerce in the Pacific" image="https://pacificecommerce.org/wp-content/uploads/2022/04/banner-450.png"/>
             <div className="flex flex-col items-center justify-center pb-20">
-                <form className="w-5/7 flex flex-col py-20" onSubmit={handleSubmit(onsubmit)}>
-                    <div className="flex h-auto w-full mb-4 gap-4">
+                <form className="w-5/7 flex flex-col py-14" onSubmit={handleSubmit(onsubmit)}>
+                    <div className="flex h-auto mb-6 w-full gap-4">
                         <div className="relative w-full">
                             <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                             <Input placeholder="Search by name..." className="pl-2 input-default" {...form.register("search")}/>
@@ -129,11 +130,14 @@ export default function ProjectsPublicPage(){
                         />
                     </div>
                     <span className="block w-full h-px bg-slate-300 my-14"></span>
-                    <div>
-                        
+                    <div className="w-1/3">
+                        <div className="flex justify-baseline space-x-3 items-center">
+                            <p>Sort by</p> 
+                            <SortSelect/>
+                        </div>
                     </div>
                 </form>
-                <div className="w-5/7 my-6">
+                <div className="w-5/7 my-4">
                     {isLoading || isFetching && (
                         <div className="flex justify-center py-8">
                             <Loader className="animate-spin loader-default" />

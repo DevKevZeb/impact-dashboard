@@ -3,7 +3,7 @@ import { apiClient } from "@/shared/lib/axios";
 
 async function fetchCountryKpas(countryId: number) {
   try {
-    const res = await apiClient.get(`/country-kpas/country/${countryId}`);
+    const res = await apiClient.get(`/country_kpas/country/${countryId}`);
     const kpas = res.data?.data?.kpas;
     const country = res.data?.data?.country;
 
@@ -30,7 +30,7 @@ async function fetchCountryKpas(countryId: number) {
 
 export function useCountryKpas(countryId: number, enabled: boolean) {
   return useQuery({
-    queryKey: ["country-kpas", countryId],
+    queryKey: ["country_kpas", countryId],
     queryFn: () => fetchCountryKpas(countryId),
     enabled,
     staleTime: 0,

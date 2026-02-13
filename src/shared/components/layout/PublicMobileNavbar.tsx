@@ -16,7 +16,7 @@ export function PublicMobileNavbar({ onNavigate, ignoreRef, }: { onNavigate: () 
 
 
   return (
-    <div ref={ref} className="absolute top-full left-0 w-full bg-white border-t shadow-lg lg:hidden z-50" >
+    <div ref={ref} className="absolute top-full left-0 w-full bg-white border-t shadow-lg  min-[1290px]:hidden z-50" >
       <div className="divide-y">
         {publicNavigation.map((item) => {
           const isActive = isItemActive(item);

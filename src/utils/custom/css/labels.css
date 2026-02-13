@@ -27,3 +27,11 @@
 .selected-nav-label-color-sub{
     @apply text-[#1e3291];   
 }
+
+.label-bold{
+    @apply text-[#1e3291] font-bold;
+}
+
+.subtitle-label{
+    @apply text-[#1e3291] font-bold;
+}
