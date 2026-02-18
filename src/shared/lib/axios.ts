@@ -61,8 +61,8 @@ apiClient.interceptors.response.use(
       // Don't redirect if we're already trying to login or register
       if (!requestUrl.includes("/auth/login") && !requestUrl.includes("/auth/register")) {
         // Show user-friendly notification
-        toast.error("Sesión Expirada", {
-          description: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
+        toast.error("Session Expired", {
+          description: "Your session has expired. Please log in again.",
           duration: 4000,
         });
         
