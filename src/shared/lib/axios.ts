@@ -1,4 +1,6 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { handleUnauthorized } from "@/features/auth/utils/logout";
+import { toast } from "sonner";
 
 
 // API Response Types
@@ -52,14 +54,20 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error: AxiosError<ValidationErrorResponse | BusinessErrorResponse>) => {
-    // Handle 401 Unauthorized - Redirect to login (except for login endpoint itself)
+    // Handle 401 Unauthorized - Token expired or invalid
     if (error.response?.status === 401) {
       const requestUrl = error.config?.url || "";
       
-      // Don't redirect if we're already trying to login
+      // Don't redirect if we're already trying to login or register
       if (!requestUrl.includes("/auth/login") && !requestUrl.includes("/auth/register")) {
-        localStorage.removeItem("auth_token");
-        window.location.href = "/login";
+        // Show user-friendly notification
+        toast.error("Session Expired", {
+          description: "Your session has expired. Please log in again.",
+          duration: 4000,
+        });
+        
+        // Clear auth state - PrivateRoute will handle redirect automatically
+        handleUnauthorized();
       }
       
       return Promise.reject(error);
