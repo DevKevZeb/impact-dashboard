@@ -10,9 +10,6 @@ export async function createCountryKpa(dto: CreateCountryKpaDTO) {
     };
 
     const { data } = await apiClient.post("/country_kpas", payload);
-
-    console.log(data)
-
     toast.success(data.message);
     return data;
   } catch (error: any) {

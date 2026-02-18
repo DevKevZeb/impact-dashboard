@@ -1,336 +1,372 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { ChevronRight, ChevronDown, Edit2, Trash2 } from "lucide-react";
-import type { TreeNode } from "./TreeType";
+  import React, { useState, useCallback, useEffect } from "react";
+  import { ChevronRight, ChevronDown, Edit2, Trash2 } from "lucide-react";
+  import type { TreeNode } from "./TreeType";
 
-interface LazyTreeProps {
-  value: TreeNode[];
-  selectionKey?: string | null;
-  onSelectionChange?: (key: string | null, node: TreeNode | null) => void;
-  loadChildren?: (nodeKey: string) => Promise<TreeNode[]>;
-  onAddStrategicOutput?: (node: TreeNode) => void;
-  onEditStrategicOutput?: (node: TreeNode) => void;
-  onDeleteStrategicOutput?: (node: TreeNode) => void;
-  onAddMeasure?: (node: TreeNode) => void;
-  onEditMeasure?: (node: TreeNode) => void;
-  onDeleteMeasure?: (node: TreeNode) => void;
-  onAddIndicator?: (node: TreeNode) => void;
-  onEditIndicator?: (node: TreeNode) => void;
-  onDeleteIndicator?: (node: TreeNode) => void;
+  interface LazyTreeProps {
+    value: TreeNode[];
+    selectionKey?: string | null;
+    onSelectionChange?: (key: string | null, node: TreeNode | null) => void;
+    loadChildren?: (nodeKey: string) => Promise<TreeNode[]>;
+    onAddStrategicOutput?: (node: TreeNode) => void;
+    onEditStrategicOutput?: (node: TreeNode) => void;
+    onDeleteStrategicOutput?: (node: TreeNode) => void;
+    onAddMeasure?: (node: TreeNode) => void;
+    onEditMeasure?: (node: TreeNode) => void;
+    onDeleteMeasure?: (node: TreeNode) => void;
+    onAddIndicator?: (node: TreeNode) => void;
+    onEditIndicator?: (node: TreeNode) => void;
+    onDeleteIndicator?: (node: TreeNode) => void;
 
-  onRefreshNode?: (refreshFn: (key: string) => Promise<void>) => void;
-}
-
-export const LazyTree: React.FC<LazyTreeProps> = ({ value, selectionKey, onSelectionChange, loadChildren, onAddStrategicOutput, onEditStrategicOutput, onAddMeasure, onEditMeasure, onRefreshNode, onAddIndicator, onEditIndicator, onDeleteIndicator, onDeleteMeasure, onDeleteStrategicOutput }) => {
-
-  const [internalValue, setInternalValue] = useState<TreeNode[]>(value);
-
-  useEffect(() => {
-    setInternalValue(value);
-  }, [value]);
-
-  function updateNodeByKey(
-    nodes: TreeNode[],
-    key: string,
-    updater: (node: TreeNode) => TreeNode
-  ): TreeNode[] {
-    return nodes.map(node => {
-      if (node.key === key) {
-        return updater(node);
-      }
-
-      if (node.children) {
-        return {
-          ...node,
-          children: updateNodeByKey(node.children, key, updater),
-        };
-      }
-
-      return node;
-    });
+    onRefreshNode?: (refreshFn: (key: string) => Promise<void>) => void;
   }
 
+  export const LazyTree: React.FC<LazyTreeProps> = ({ value, selectionKey, onSelectionChange, loadChildren, onAddStrategicOutput, onEditStrategicOutput, onAddMeasure, onEditMeasure, onRefreshNode, onAddIndicator, onEditIndicator, onDeleteIndicator, onDeleteMeasure, onDeleteStrategicOutput }) => {
 
-  const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
+    const [internalValue, setInternalValue] = useState<TreeNode[]>(value);
 
-  const findNode = useCallback(
-    (key: string | null): TreeNode | null => {
-      if (!key) return null;
+    useEffect(() => {
+      setInternalValue(value);
+    }, [value]);
 
-      const stack = [...internalValue];
-      while (stack.length) {
-        const n = stack.pop()!;
-        if (n.key === key) return n;
-        if (n.children) stack.push(...n.children);
-      }
-      return null;
-    },
-    [internalValue]
-  );
+    function updateNodeByKey(
+      nodes: TreeNode[],
+      key: string,
+      updater: (node: TreeNode) => TreeNode
+    ): TreeNode[] {
+      return nodes.map(node => {
+        if (node.key === key) {
+          return updater(node);
+        }
 
-  const toggle = async (key: string) => {
-    const node = findNode(key);
-    if (!node) return;
-    if (node.lazy && node.children === undefined && loadChildren) {
-      node.loading = true;
-      setExpandedKeys({ ...expandedKeys });
-      try {
-        node.children = await loadChildren(node.key);
+        if (node.children) {
+          return {
+            ...node,
+            children: updateNodeByKey(node.children, key, updater),
+          };
+        }
 
-        setInternalValue([...internalValue]);
-      } finally {
-        node.loading = false;
-      }
+        return node;
+      });
     }
 
-    setExpandedKeys(prev => ({ ...prev, [key]: !prev[key] }));
-  };
 
+    const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
 
-  const select = (node: TreeNode) => {
-    if (!onSelectionChange || node.isTitle) return;
-    onSelectionChange(node.key, node);
-  };
+    const findNode = useCallback(
+      (key: string | null): TreeNode | null => {
+        if (!key) return null;
 
-  const collapseChildren = (children: TreeNode[], expanded: Record<string, boolean>) => {
-    const newKeys = { ...expanded };
-
-    for (const child of children) {
-      if (newKeys[child.key] !== undefined) delete newKeys[child.key];
-      if (child.children) Object.assign(newKeys, collapseChildren(child.children, newKeys));
-    }
-    return newKeys;
-  };
-
-  const refreshNode = async (key: string) => {
-    if (!loadChildren) return;
-
-    setInternalValue(prev =>
-      updateNodeByKey(prev, key, node => ({
-        ...node,
-        loading: true,
-        children: undefined,
-      }))
+        const stack = [...internalValue];
+        while (stack.length) {
+          const n = stack.pop()!;
+          if (n.key === key) return n;
+          if (n.children) stack.push(...n.children);
+        }
+        return null;
+      },
+      [internalValue]
     );
 
-    const children = await loadChildren(key);
-    const realChildren = children.filter(c => !c.isTitle);
+    const toggle = async (key: string) => {
+      const node = findNode(key);
+      if (!node) return;
+      if (node.lazy && node.children === undefined && loadChildren) {
+        node.loading = true;
+        setExpandedKeys({ ...expandedKeys });
+        try {
+          node.children = await loadChildren(node.key);
 
-    setInternalValue(prev =>
-      updateNodeByKey(prev, key, node => ({
-        ...node,
-        loading: false,
-        lazy: true,
-        leaf: realChildren.length === 0,
-        data: node.data
-          ? { ...node.data, count: realChildren.length }
-          : node.data,
-        children,
-      }))
+          setInternalValue([...internalValue]);
+        } finally {
+          node.loading = false;
+        }
+      }
+
+      setExpandedKeys(prev => ({ ...prev, [key]: !prev[key] }));
+    };
+
+
+    const select = (node: TreeNode) => {
+      if (!onSelectionChange || node.isTitle) return;
+      onSelectionChange(node.key, node);
+    };
+
+    const collapseChildren = (children: TreeNode[], expanded: Record<string, boolean>) => {
+      const newKeys = { ...expanded };
+
+      for (const child of children) {
+        if (newKeys[child.key] !== undefined) delete newKeys[child.key];
+        if (child.children) Object.assign(newKeys, collapseChildren(child.children, newKeys));
+      }
+      return newKeys;
+    };
+
+    const refreshNode = async (key: string) => {
+      if (!loadChildren) return;
+
+      setInternalValue(prev =>
+        updateNodeByKey(prev, key, node => ({
+          ...node,
+          loading: true,
+          children: undefined,
+        }))
+      );
+
+      const children = await loadChildren(key);
+      const realChildren = children.filter(c => !c.isTitle);
+
+      setInternalValue(prev =>
+        updateNodeByKey(prev, key, node => ({
+          ...node,
+          loading: false,
+          lazy: true,
+          leaf: realChildren.length === 0,
+          data: node.data
+            ? { ...node.data, count: realChildren.length }
+            : node.data,
+          children,
+        }))
+      );
+
+      setExpandedKeys(prev => ({ ...prev, [key]: true }));
+    };
+
+
+    useEffect(() => {
+      if (onRefreshNode) onRefreshNode(refreshNode);
+    }, [onRefreshNode, refreshNode]);
+
+
+    return (
+      <ul className="tree-root">
+        {internalValue.map((n, i) => (
+          <Item key={n.key} 
+            node={n} 
+            level={0} 
+            index={i}
+            path={n.data?.type === "country" ? [] : [i + 1]}
+            expandedKeys={expandedKeys} 
+            onToggle={toggle} 
+            onSelect={select} 
+            selectedKey={selectionKey ?? null}
+            onAddStrategicOutput={onAddStrategicOutput}
+            onEditStrategicOutput={onEditStrategicOutput}
+            onAddMeasure={onAddMeasure}
+            onEditMeasure={onEditMeasure}
+            onEditIndicator={onEditIndicator}
+            onAddIndicator={onAddIndicator}
+            onDeleteIndicator={onDeleteIndicator}
+            onDeleteMeasure={onDeleteMeasure}
+            onDeleteStrategicOutput={onDeleteStrategicOutput}
+          />
+        ))}
+      </ul>
     );
-
-    setExpandedKeys(prev => ({ ...prev, [key]: true }));
   };
 
+  interface ItemProps {
+    node: TreeNode;
+    level: number;
+    expandedKeys: Record<string, boolean>;
+    onToggle: (key: string) => void;
+    onSelect: (node: TreeNode) => void;
+    index: number;
+    path: number[];
+    selectedKey: string | null;
 
-  useEffect(() => {
-    if (onRefreshNode) onRefreshNode(refreshNode);
-  }, [onRefreshNode, refreshNode]);
+    onAddStrategicOutput?:(node: TreeNode) => void;
+    onEditStrategicOutput?: (node: TreeNode) => void;
+    onAddMeasure?: (node: TreeNode) => void;
+    onEditMeasure?: (node: TreeNode) => void;
+    onAddIndicator?: (node: TreeNode) => void;
+    onEditIndicator?: (node: TreeNode) => void;
+    onDeleteStrategicOutput?: (node: TreeNode) => void;
+    onDeleteMeasure?: (node: TreeNode) => void;
+    onDeleteIndicator?: (node: TreeNode) => void;
+  }
 
+  const Item: React.FC<ItemProps> = ({ node, level, path, index, expandedKeys, onToggle, onSelect, selectedKey, onAddStrategicOutput, onEditStrategicOutput, onAddMeasure, onEditMeasure, onAddIndicator, onEditIndicator, onDeleteMeasure, onDeleteIndicator, onDeleteStrategicOutput }) => {
 
-  return (
-    <ul className="tree-root">
-      {internalValue.map(n => (
-        <Item key={n.key} node={n} level={0} expandedKeys={expandedKeys} onToggle={toggle} onSelect={select} selectedKey={selectionKey ?? null}
-          onAddStrategicOutput={onAddStrategicOutput}
-          onEditStrategicOutput={onEditStrategicOutput}
-          onAddMeasure={onAddMeasure}
-          onEditMeasure={onEditMeasure}
-          onEditIndicator={onEditIndicator}
-          onAddIndicator={onAddIndicator}
+    const isStructural = !node.isTitle && node.data?.type !== "i" && node.data?.type !== "country";
+    const isNumbered = isStructural;
+    const numbering = path.join(".");
 
-          onDeleteIndicator={onDeleteIndicator}
-          onDeleteMeasure={onDeleteMeasure}
-          onDeleteStrategicOutput={onDeleteStrategicOutput}
-        />
-      ))}
-    </ul>
-  );
-};
-
-interface ItemProps {
-  node: TreeNode;
-  level: number;
-  expandedKeys: Record<string, boolean>;
-  onToggle: (key: string) => void;
-  onSelect: (node: TreeNode) => void;
-  selectedKey: string | null;
-
-  onAddStrategicOutput?:(node: TreeNode) => void;
-  onEditStrategicOutput?: (node: TreeNode) => void;
-  onAddMeasure?: (node: TreeNode) => void;
-  onEditMeasure?: (node: TreeNode) => void;
-  onAddIndicator?: (node: TreeNode) => void;
-  onEditIndicator?: (node: TreeNode) => void;
-  onDeleteStrategicOutput?: (node: TreeNode) => void;
-  onDeleteMeasure?: (node: TreeNode) => void;
-  onDeleteIndicator?: (node: TreeNode) => void;
-}
-
-const Item: React.FC<ItemProps> = ({ node, level, expandedKeys, onToggle, onSelect, selectedKey, onAddStrategicOutput, onEditStrategicOutput, onAddMeasure, onEditMeasure, onAddIndicator, onEditIndicator, onDeleteMeasure, onDeleteIndicator, onDeleteStrategicOutput }) => {
-
-  const expanded = !!expandedKeys[node.key];
-  const isLeaf = node.leaf ?? false;
-  const indent = (level * 1.75) + .5 + "rem";
-  const isSelected = selectedKey === node.key;
+    const expanded = !!expandedKeys[node.key];
+    const isLeaf = node.leaf ?? false;
+    const indent = (level * 1.75) + .5 + "rem";
+    const isSelected = selectedKey === node.key;
 
 
-  const getActionButtons = (node: TreeNode) => {
-    const type = node.data?.type;
-    if (!type || type === "country" || node.isTitle) return null;
-    if (type === "ck") {
+    const getActionButtons = (node: TreeNode) => {
+      const type = node.data?.type;
+      if (!type || type === "country" || node.isTitle) return null;
+      if (type === "ck") {
+        return (
+          <button type="button" className="btn-tree" onClick={(e) => { e.stopPropagation(); onAddStrategicOutput?.(node); }} >
+            + Strategic Output
+          </button>
+        );
+      }
+
+      const handleEdit = () => {
+        switch (type) {
+          case "so":
+            onEditStrategicOutput?.(node);
+            break;
+          case "m":
+            onEditMeasure?.(node);
+            break;
+          case "i":
+            onEditIndicator?.(node);
+            break;
+        }
+      };
+
+      const handleDelete = () => {
+        switch (type) {
+          case "so":
+            onDeleteStrategicOutput?.(node);
+            break;
+          case "m":
+            onDeleteMeasure?.(node);
+            break;
+          case "i":
+            onDeleteIndicator?.(node);
+            break;  
+        }
+      };
+
+      const extraAction = (() => {
+        switch (type) {
+          case "so":
+            return (
+              <button type="button" className="btn-tree" onClick={(e) => { e.stopPropagation(); onAddMeasure?.(node); }} >
+                + Measure
+              </button>
+            );
+
+          case "m":
+            return (
+              <button type="button" className="btn-tree" onClick={(e) => { e.stopPropagation(); onAddIndicator?.(node); }} >
+                + Indicator
+              </button>
+            );
+
+          default:
+            return null;
+        }
+      })();
+
       return (
-        <button type="button" className="btn-tree" onClick={(e) => { e.stopPropagation(); onAddStrategicOutput?.(node); }} >
-          + Strategic Output
-        </button>
+        <>
+          <button type="button" className="btn-edit-tree cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEdit(); }} >
+            <Edit2 className="w-4" />
+          </button>
+          <button type="button" className="btn-delete-tree cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDelete(); }} >
+            <Trash2 className="w-4" />
+          </button>
+          {extraAction}
+        </>
+      );
+    };
+
+    if (node.isTitle) {
+      return (
+        <></>
       );
     }
 
-    const handleEdit = () => {
-      switch (type) {
-        case "so":
-          onEditStrategicOutput?.(node);
-          break;
-        case "m":
-          onEditMeasure?.(node);
-          break;
-        case "i":
-          onEditIndicator?.(node);
-          break;
-      }
-    };
-
-    const handleDelete = () => {
-      switch (type) {
-        case "so":
-          onDeleteStrategicOutput?.(node);
-          break;
-        case "m":
-          onDeleteMeasure?.(node);
-          break;
-        case "i":
-          onDeleteIndicator?.(node);
-          break;  
-      }
-    };
-
-    const extraAction = (() => {
-      switch (type) {
-        case "so":
-          return (
-            <button type="button" className="btn-tree" onClick={(e) => { e.stopPropagation(); onAddMeasure?.(node); }} >
-              + Measure
-            </button>
-          );
-
-        case "m":
-          return (
-            <button type="button" className="btn-tree" onClick={(e) => { e.stopPropagation(); onAddIndicator?.(node); }} >
-              + Indicator
-            </button>
-          );
-
-        default:
-          return null;
-      }
-    })();
 
     return (
-      <>
-        <button type="button" className="btn-edit-tree cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEdit(); }} >
-          <Edit2 className="w-4" />
-        </button>
-        <button type="button" className="btn-delete-tree cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDelete(); }} >
-          <Trash2 className="w-4" />
-        </button>
+      <li key={index} className={`tree-node-group level-${node.data?.type}`}>
+        <div className={`flex items-center gap-2 py-1 rounded-md ${ isSelected ? "bg-blue-50" : "hover:bg-slate-50" }`} style={{ paddingLeft: indent }} onClick={() => onSelect(node)} >
+          {node.data?.type !== "i" && (
+            <button type="button" onClick={(e) => { e.stopPropagation(); onToggle(node.key);}} disabled={node.data?.count === 0} className={`p-1 rounded ${node.data?.count === 0 ? "opacity-0 cursor-default" : "hover:bg-slate-200"}`}>
+              {expanded ? (<ChevronDown className="w-4" />) : (<ChevronRight className="w-4" />)}
+            </button>
+          )}
+          {node.icon}
+            <span className="flex items-center gap-2 text-sm font-medium">
+              <span className="flex items-center gap-2 text-sm">
+                {node.data?.type === "i" ? (
+                  <span className="flex flex-col space-y-1">
+                    <span className="flex items-center gap-2 text-slate-700">
+                      {isNumbered && (
+                        <span className="text-slate-400 text-xs font-semibold">
+                          {numbering}
+                        </span>
+                      )}
+                      <span>{node.label}</span>
+                    </span>
 
-        {extraAction}
-      </>
-    );
-  };
-
-  if (node.isTitle) {
-    return (
-      <li>
-        <div className="pl-2 pt-3 pb-1 text-md font-semibold text-slate-500 uppercase select-none" style={{ paddingLeft: indent }} >
-          {node.label}
+                    <span className="flex space-x-2">
+                      <span className="flex items-center gap-1 text-slate-600">
+                        target:
+                        <span className="rounded-md bg-[#61C8E7]/20 px-2 py-0.5 text-xs font-semibold text-[#1E3291]">
+                          {node.meta?.target}
+                        </span>
+                      </span>
+                      <span key={node.meta?.type_id} className="rounded-md bg-[#0082BE] px-2 py-0.5 text-xs font-semibold text-white" >
+                        {node.meta?.type}
+                      </span>
+                    </span>
+                    <span className="flex items-center gap-1 text-slate-600">
+                        implementation:
+                        <span className="rounded-md bg-[#61C8E7]/20 px-2 py-0.5 text-xs font-semibold text-[#1E3291]">
+                          100%
+                        </span>
+                      </span>
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2 text-slate-700">
+                    {isStructural && (
+                      <span className="font-semibold">
+                        {numbering+"."}
+                      </span>
+                    )}
+                    <span>{node.label}</span>
+                  </span>
+                )}
+              </span> 
+              {typeof node.data?.count === "number" && (
+                <span className="text-slate-400">({node.data.count})</span>
+              )}
+            </span>
+          <div className="flex gap-1">
+            {getActionButtons(node)}
+          </div>
         </div>
+        {!isLeaf && expanded && node.children && (
+          <ul className={`tree-branch level-${node.data?.type}`}>
+            {(node.children ?? []).map((c, i) => {
+              const previousStructuralSiblings = (node.children ?? []).slice(0, i).filter(x =>!x.isTitle &&x.data?.type !== "i" &&x.data?.type !== "country");
+              const structuralIndex = previousStructuralSiblings.length + 1;
+              const isStructuralChild = !c.isTitle && c.data?.type !== "i" && c.data?.type !== "country";
+              const nextPath = isStructuralChild ? [...path, structuralIndex] : path;
+
+              return (
+                <Item
+                  key={c.key}
+                  node={c}
+                  level={level + 1}
+                  index={i}
+                  path={nextPath}
+                  expandedKeys={expandedKeys}
+                  onToggle={onToggle}
+                  onSelect={onSelect}
+                  selectedKey={selectedKey}
+                  onAddStrategicOutput={onAddStrategicOutput}
+                  onEditStrategicOutput={onEditStrategicOutput}
+                  onEditMeasure={onEditMeasure}
+                  onAddMeasure={onAddMeasure}
+                  onAddIndicator={onAddIndicator}
+                  onEditIndicator={onEditIndicator}
+                />
+              );
+          })}
+
+          </ul>
+        )}
       </li>
     );
-  }
-
-
-  return (
-    <li className={`tree-node-group level-${node.data?.type}`}>
-      <div className={`flex items-center gap-2 py-1 rounded-md ${ isSelected ? "bg-blue-50" : "hover:bg-slate-50" }`} style={{ paddingLeft: indent }} onClick={() => onSelect(node)} >
-        {node.data?.type !== "i" && (
-          <button type="button" onClick={(e) => { e.stopPropagation(); onToggle(node.key);}} disabled={node.data?.count === 0} className={`p-1 rounded ${node.data?.count === 0 ? "opacity-0 cursor-default" : "hover:bg-slate-200"}`}>
-            {expanded ? (<ChevronDown className="w-4" />) : (<ChevronRight className="w-4" />)}
-          </button>
-        )}
-        {node.icon}
-          <span className="flex items-center gap-2 text-sm font-medium">
-            <span className="flex items-center gap-2 text-sm">
-              {node.data?.type === "i" ? (
-                <span className="flex flex-col space-y-1">
-                  <span className="font-medium text-[#1E3291]">
-                    {node.label}
-                  </span>
-                  <span className="flex space-x-2">
-                    <span className="flex items-center gap-1 text-slate-600">
-                      target:
-                      <span className="rounded-md bg-[#61C8E7]/20 px-2 py-0.5 text-xs font-semibold text-[#1E3291]">
-                        {node.meta?.target}
-                      </span>
-                    </span>
-                    <span key={node.meta?.type_id} className="rounded-md bg-[#0082BE] px-2 py-0.5 text-xs font-semibold text-white" >
-                      {node.meta?.type}
-                    </span>
-                  </span>
-                  <span className="flex items-center gap-1 text-slate-600">
-                      implementation:
-                      <span className="rounded-md bg-[#61C8E7]/20 px-2 py-0.5 text-xs font-semibold text-[#1E3291]">
-                        100%
-                      </span>
-                    </span>
-                </span>
-              ) : (
-                <span className="text-slate-700">
-                  {node.label}
-                </span>
-              )}
-            </span> 
-            {typeof node.data?.count === "number" && (
-              <span className="text-slate-400">({node.data.count})</span>
-            )}
-          </span>
-        <div className="flex gap-1">
-          {getActionButtons(node)}
-        </div>
-      </div>
-      {!isLeaf && expanded && node.children && (
-        <ul className={`tree-branch level-${node.data?.type}`}>
-          {node.children.map(c => (
-            <Item key={c.key} node={c} level={level + 1} expandedKeys={expandedKeys} onToggle={onToggle} onSelect={onSelect} selectedKey={selectedKey}
-              onAddStrategicOutput={onAddStrategicOutput}
-              onEditStrategicOutput={onEditStrategicOutput}
-              onEditMeasure={onEditMeasure}
-              onAddMeasure={onAddMeasure}
-              onAddIndicator={onAddIndicator}
-              onEditIndicator={onEditIndicator}
-            />
-          ))}
-        </ul>
-      )}
-    </li>
-  );
-};
+  };
