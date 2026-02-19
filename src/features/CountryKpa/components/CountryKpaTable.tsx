@@ -23,7 +23,7 @@ interface Props {
 }
 
 export default function CountryKpaTable({ countries, pagination, page, perPage, setPage, setPerPage, onEdit }: Props) {
-  const [expanded, setExpanded] = useState<number[]>([]);
+  const [expanded, setExpanded] = useState<number[]>([]);  
   const navigate = useNavigate();
 
   const toggleExpand = (countryId: number) => {
@@ -46,23 +46,36 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
           <tr>
             <th>#</th>
             <th>COUNTRY</th>
+            <th className="text-center!">KPAs</th>
+            <th className="text-center!">STRATEGIC OUTPUTS</th>
+            <th className="text-center!">MEASURES</th>
+            <th className="text-center!">INDICATORS</th>
             <th>ACTIONS</th>
           </tr>
         </thead>
-
         <tbody>
           {countries.map((country, index) => (
             <Fragment key={country.id}>
-
               <tr className="table-row cursor-pointer hover:bg-gray-50" onClick={() => toggleExpand(country.id)} >
                 <td className="table-cell">{index + 1}</td>
                 <td className="table-cell font-medium">
                   {country.name}
                 </td>
-                
+                <td className="table-cell text-center font-medium">
+                  {country.kpas_count}
+                </td>
+                <td className="table-cell text-center font-medium">
+                  {country.strategic_outputs_count}
+                </td>
+                <td className="table-cell text-center font-medium">
+                  {country.measures_count}
+                </td>
+                <td className="table-cell text-center font-medium">
+                  {country.indicators_count}
+                </td>
                 <td className="table-cell text-left">
                   {(country.kpas_count ?? 0) > 0 && 
-                  <button title="More info" className="btn-warning-table" onClick={(e) => { e.stopPropagation(); navigate(`/app/country-kpa//${country.id}`, { state: {country}}); }} >
+                  <button title="More info" className="btn-warning-table" onClick={(e) => { e.stopPropagation(); navigate(`/app/country-kpa/${country.id}`, { state: {country}}); }} >
                     <Info className="w-4 h-4" />
                   </button>}
                 </td>
@@ -70,7 +83,7 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
 
               {expanded.includes(country.id) && (
                 <tr className="bg-gray-50/50">
-                  <td colSpan={4}>
+                  <td colSpan={7}>
                     <SubKpaTable countryId={country.id} onEdit={onEdit} />
                   </td>
                 </tr>
@@ -79,7 +92,7 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
           ))}
 
           <tr className="table-pagination-row">
-            <td colSpan={3} className="table-pagination-cell">
+            <td colSpan={7} className="table-pagination-cell">
               <div className="table-pagination-container">
                 <div className="flex items-center gap-2 text-xs text-gray-600">
                   <span>Rows per page:</span>
@@ -115,7 +128,15 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
 import { Fragment } from "react";
 
 function SubKpaTable({ countryId }: { countryId: number; onEdit: (kpa: Kpa, relationId: number) => void; }) {
-  const { data, isLoading } = useCountryKpas(countryId, true);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+    
+  const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPerPage(Number(e.target.value));
+    setPage(1);
+  };
+
+  const { data, isLoading } = useCountryKpas(countryId, page, perPage, true);
   const kpas = !Array.isArray(data) && data?.kpas ? data.kpas : [];
 
   if (isLoading) {
@@ -163,6 +184,34 @@ function SubKpaTable({ countryId }: { countryId: number; onEdit: (kpa: Kpa, rela
           </tr>
         )}
 
+        <tr className="table-pagination-row">
+            <td colSpan={7} className="table-pagination-cell">
+              <div className="table-pagination-container">
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  <span>Rows per page:</span>
+                  <select className="table-perpage-select" value={perPage} onChange={handlePerPageChange} >
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                  </select>
+                </div>
+
+                 {!Array.isArray(data) && (
+                <div className="table-pagination-actions">
+                  <button className="table-pagination-btn" onClick={() => setPage(page - 1)} disabled={page === 1} >
+                    ← Prev
+                  </button>
+                    <span className="text-gray-600 text-xs">
+                      Page {data?.pagination?.current_page} of {data?.pagination?.last_page}
+                    </span>
+                  <button className="table-pagination-btn" onClick={() => setPage(page + 1)} disabled={page === data?.pagination.last_page} >
+                    Next →
+                  </button>
+                </div>
+                  )}
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
   );

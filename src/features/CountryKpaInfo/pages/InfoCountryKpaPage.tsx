@@ -17,13 +17,16 @@ import type { Indicator } from "@/features/indicator/types/indicatorTypes";
 import CreateIndicatorModal from "@/features/indicator/components/CreateIndicatorModal";
 import { useCreateIndicator } from "@/features/indicator/hooks/useCreateIndicator";
 import { useUpdateIndicator } from "@/features/indicator/hooks/useUpdateIndicator";
-
+import CountryKpasTable from "../components/CountryKpasTable";
 
 export default function InfoCountryKpaPage() {
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+
   const { countryId } = useParams();
   const id = Number(countryId);
 
-  const { data, isLoading } = useCountryKpas(id, true);
+  const { data, isLoading } = useCountryKpas(id, page, perPage, true);
 
   const kpas = !Array.isArray(data) && data?.kpas ? data.kpas : [];
   const country = Array.isArray(data) ? undefined : data?.country;
@@ -155,7 +158,6 @@ export default function InfoCountryKpaPage() {
   const handleEditIndicator = (node: TreeNode) => {
     setOpenIndicatorModal(true);
     setParentMeasureId(node.parent_id ?? null);
-    console.log(node)
     const indicator = {
       id: node.data!.id!,
       name: node.label,
@@ -179,22 +181,41 @@ export default function InfoCountryKpaPage() {
     setOpenIndicatorModal(false);
     setEditIndicator(null);
     setParentMeasureId(null);
-
     refreshNode?.(parentKey);
   }
 
 
   return (
     <div className="p-6 space-y-4">
-      <h1 className="label-default">KPAs of {country?.name}</h1>
+      <h1 className="label-default">Information about {country?.name}</h1>
 
       {!isLoading && (
-        <LazyTree value={initial} onRefreshNode={(fn) => setRefreshNode(() => fn)} selectionKey={selected} onSelectionChange={(key) => setSelected(key)} loadChildren={loadChildrenCountryKpaTree} 
-          onAddStrategicOutput={handleCreateStrategicOutput} onEditStrategicOutput={handleEditStrategicOutput} 
-          onAddMeasure={handleCreateMeasure} onEditMeasure={handleEditMeasure}
-          onAddIndicator={handleCreateIndicator} onEditIndicator={handleEditIndicator}
+        <>
+          <LazyTree 
+            value={initial} 
+            onRefreshNode={(fn) => setRefreshNode(() => fn)} 
+            selectionKey={selected} 
+            onSelectionChange={(key) => setSelected(key)} 
+            loadChildren={loadChildrenCountryKpaTree} 
+            onAddStrategicOutput={handleCreateStrategicOutput} 
+            onEditStrategicOutput={handleEditStrategicOutput} 
+            onAddMeasure={handleCreateMeasure} 
+            onEditMeasure={handleEditMeasure}
+            onAddIndicator={handleCreateIndicator} 
+            onEditIndicator={handleEditIndicator}
+          />
 
-        />
+          {data && !Array.isArray(data) && kpas.length > 0 && (
+            <CountryKpasTable
+              kpas={kpas}
+              page={page}
+              setPage={setPage}
+              perPage={perPage}
+              setPerPage={setPerPage}
+              pagination={data.pagination}
+            />
+          )}
+        </>
       )}
 
       {parentKpaId !== null && (

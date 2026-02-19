@@ -6,6 +6,9 @@ export interface Country {
         code: string
     },
     kpas_count?: number
+    strategic_outputs_count?: number
+    measures_count?: number
+    indicators_count?: number
 }
 
 export interface  CreateCountryDTO {
