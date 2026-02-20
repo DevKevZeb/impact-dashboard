@@ -3,9 +3,17 @@ import { mapStrategicOutput, mapStrategicOutputs, mapStrategicOutputsWithCountry
 import type { CreateStrategicOutputDTO, StrategicOutput, UpdateStrategicOutputDTO } from "../types/StrategicOutput";
 import { toast } from "sonner";
 
-export async function getStrategicOutputsByCountryKpaId(id_ck: number) {
-  const { data } = await apiClient.get(`/strategic-outputs/country-kpa/${id_ck}`);
-  return mapStrategicOutputs(data.data);
+export async function getStrategicOutputsByCountryKpaId(id_ck: number, page: number = 1, perPage: number = 20) {
+  const { data } = await apiClient.get(`/strategic-outputs/country-kpa/${id_ck}?page=${page}&per_page=${perPage}`);
+  return {
+    strategic_outputs: mapStrategicOutputs(data.data.strategic_outputs),
+    pagination: {
+      current_page: data.data.current_page,
+      last_page: data.data.last_page,
+      per_page: data.data.per_page,
+      total: data.data.total
+    }
+  };
 }
 
 

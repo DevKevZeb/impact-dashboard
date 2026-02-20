@@ -4,9 +4,17 @@ import type { CreateMeasureDTO, Measure, UpdateMeasureDTO } from "../types/measu
 import { toast } from "sonner";
 
 
-export async function getMeasuresByStrategicOutputId(id_so: number) {
-  const { data } = await apiClient.get(`/measures/strategic-output/${id_so}`);
-  return mapMeasures(data.data);
+export async function getMeasuresByStrategicOutputId(id_so: number, page: number = 1, perPage: number = 20) {
+  const { data } = await apiClient.get(`/measures/strategic-output/${id_so}?page=${page}&per_page=${perPage}`);
+  return {
+    measures: mapMeasures(data.data.measures),
+    pagination: {
+      current_page: data.data.current_page,
+      last_page: data.data.last_page,
+      per_page: data.data.per_page,
+      total: data.data.total
+    }
+  };
 }
 
 export async function updateMeasure(id: number, dto: UpdateMeasureDTO): Promise<Measure>{

@@ -7,8 +7,6 @@ async function fetchCountryKpas(countryId: number, page: number, perPage: number
     const kpas = res.data?.data?.kpas;
     const country = res.data?.data?.country;
 
-    console.log(res);
-
     if (!Array.isArray(kpas)) return [];
 
     return {

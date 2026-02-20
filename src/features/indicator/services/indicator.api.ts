@@ -3,9 +3,13 @@ import { mapIndicators, mapIndicator } from "../mappers/indicator.mapper";
 import type { CreateIndicatorDTO, Indicator, UpdateIndicatorDTO } from "../types/indicatorTypes";
 import { toast } from "sonner";
 
-export async function getIndicatorsByMeasureId(id_measure: number) {
-  const { data } = await apiClient.get(`/measures-indicators/${id_measure}`);
-  return mapIndicators(data.data.indicators);
+export async function getIndicatorsByMeasureId(id_measure: number, page: number = 1, perPage: number = 20) {
+  const { data } = await apiClient.get(`/measures-indicators/${id_measure}?page=${page}&per_page=${perPage}`);
+
+  return {
+    indicators: mapIndicators(data.data.indicators),
+    pagination: data.data.pagination
+  };
 }
 
 

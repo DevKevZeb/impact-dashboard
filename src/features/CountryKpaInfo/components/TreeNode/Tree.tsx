@@ -1,12 +1,12 @@
   import React, { useState, useCallback, useEffect } from "react";
-  import { ChevronRight, ChevronDown, Edit2, Trash2 } from "lucide-react";
+  import { ChevronRight, ChevronDown, Edit2, Trash2, Eye } from "lucide-react";
   import type { TreeNode } from "./TreeType";
 
   interface LazyTreeProps {
     value: TreeNode[];
     selectionKey?: string | null;
     onSelectionChange?: (key: string | null, node: TreeNode | null) => void;
-    loadChildren?: (nodeKey: string) => Promise<TreeNode[]>;
+    loadChildren?: (nodeKey: string,  page?: number) => Promise<TreeNode[]>;
     onAddStrategicOutput?: (node: TreeNode) => void;
     onEditStrategicOutput?: (node: TreeNode) => void;
     onDeleteStrategicOutput?: (node: TreeNode) => void;
@@ -70,11 +70,31 @@
     const toggle = async (key: string) => {
       const node = findNode(key);
       if (!node) return;
+      if (node.data?.type === "load-more" && loadChildren) {
+        const { parentType, parentId, nextPage } = node.data;
+        const parentKey = `${parentType}-${parentId}`;
+
+        setInternalValue(prev =>updateNodeByKey(prev, key, n => ({...n,loading: true,})));
+        const newChildren = await loadChildren(parentKey, nextPage);
+
+        setInternalValue(prev =>
+          updateNodeByKey(prev, parentKey, p => {
+            const existing = (p.children ?? []).filter(
+              c => c.data?.type !== "load-more"
+            );
+
+            return {...p, children: [...existing, ...newChildren], };
+          })
+        );
+
+        return;
+      }
+
       if (node.lazy && node.children === undefined && loadChildren) {
         node.loading = true;
         setExpandedKeys({ ...expandedKeys });
         try {
-          node.children = await loadChildren(node.key);
+          node.children = await loadChildren(node.key, 1);
 
           setInternalValue([...internalValue]);
         } finally {
@@ -270,12 +290,22 @@
       );
     };
 
-    if (node.isTitle) {
+    if (node.data?.type === "load-more") {
       return (
-        <></>
+        <li style={{ paddingLeft: indent }}>
+          <div className="flex items-center gap-2">
+            <span className="w-4" /> 
+            <button disabled={node.loading} className={`text-sm ${node.loading ? "text-slate-400" : "text-sky-600 hover:text-sky-700 cursor-pointer"}`} onClick={(e) => { e.stopPropagation(); if (!node.loading) onToggle(node.key); }}>
+              {node.loading ? "Loading..." : 
+              <span className="flex items-center justify-center gap-1">
+                <Eye className="w-5 h-5"/>
+                {node.label}
+              </span>}
+            </button>
+          </div>
+        </li>
       );
     }
-
 
     return (
       <li key={index} className={`tree-node-group level-${node.data?.type}`}>
@@ -285,8 +315,10 @@
               {expanded ? (<ChevronDown className="w-4" />) : (<ChevronRight className="w-4" />)}
             </button>
           )}
-          {node.icon}
-            <span className="flex items-center gap-2 text-sm font-medium">
+          <span className="hidden md:inline-flex">
+            {node.icon}
+          </span>
+            <span   className="flex items-center gap-2 text-sm font-medium">
               <span className="flex items-center gap-2 text-sm">
                 {node.data?.type === "i" ? (
                   <span className="flex flex-col space-y-1">
