@@ -18,16 +18,21 @@ import CreateIndicatorModal from "@/features/indicator/components/CreateIndicato
 import { useCreateIndicator } from "@/features/indicator/hooks/useCreateIndicator";
 import { useUpdateIndicator } from "@/features/indicator/hooks/useUpdateIndicator";
 import CountryKpasTable from "../components/CountryKpasTable";
+import TableSkeleton from "@/components/ui/TableSkeleton";
+import { handleExportExcel } from "../utils/csvKPAsSaver";
 
 export default function InfoCountryKpaPage() {
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+
+  const [tablePage, setTablePage] = useState(1);
+  const [tablePerPage, setTablePerPage] = useState(10);
 
   const { countryId } = useParams();
   const id = Number(countryId);
 
-  const { data, isLoading } = useCountryKpas(id, page, perPage, true);
+  const { data, isLoading, refetch: refetchTree } = useCountryKpas(id, 1, -1, true);
+  const { data: dataTable, isLoading: isLoadingTable, refetch } = useCountryKpas(id, tablePage, tablePerPage, true);
 
+  const kpasTable = !Array.isArray(dataTable) && dataTable?.kpas ? dataTable.kpas : [];
   const kpas = !Array.isArray(data) && data?.kpas ? data.kpas : [];
   const country = Array.isArray(data) ? undefined : data?.country;
 
@@ -52,8 +57,6 @@ export default function InfoCountryKpaPage() {
   const {mutateAsync: createIndicator } = useCreateIndicator();
   const {mutateAsync: updateIndicator } = useUpdateIndicator(); 
 
-
-
   const initial = useMemo<TreeNode[]>(() => [
     {
       key: `country-${id}`,
@@ -62,13 +65,6 @@ export default function InfoCountryKpaPage() {
       lazy: false,
       data: { type: "country", id, count: kpas.length },
       children: [
-        {
-          key: `title-kpa-${id}`,
-          label: "KPAs",
-          isTitle: true,
-          selectable: false,
-        },
-
         ...kpas.map((k) => ({
           key: `ck-${k.id_ck}`,
           label: k.name,
@@ -88,7 +84,7 @@ export default function InfoCountryKpaPage() {
 
   const handleCreateStrategicOutput = async (node: TreeNode) => {
     setEditStrategicOutput(null);
-    setParentKpaId(node.data?.id ?? null);
+    setParentKpaId((node.data as any)?.id ?? null);
     setOpenStrategicOutputModal(true);
   }
 
@@ -96,7 +92,7 @@ export default function InfoCountryKpaPage() {
     setOpenStrategicOutputModal(true);
     setParentKpaId(node.parent_id ?? null);
     const strategicOut = {
-      id:node.data!.id!,
+      id: (node.data as any)?.id!,
       name: node.label,
       country_kpa_id: node.parent_id!
     }
@@ -115,12 +111,13 @@ export default function InfoCountryKpaPage() {
     setParentKpaId(null);
 
     refreshNode?.(parentKey);
+    await refetch();
 
   }
 
   const handleCreateMeasure = async (node: TreeNode) => {
     setEditMeasure(null);
-    setParentStrategicOutputId(node.data?.id ?? null);
+    setParentStrategicOutputId((node.data as any)?.id ?? null);
     setOpenMeasureModal(true);
   }
 
@@ -128,7 +125,7 @@ export default function InfoCountryKpaPage() {
     setOpenMeasureModal(true);
     setParentStrategicOutputId(node.parent_id ?? null);
     const measure = {
-      id: node.data!.id!,
+      id: (node.data as any)?.id!,
       name: node.label,
       strategic_output_id: node.parent_id!
     }
@@ -147,11 +144,12 @@ export default function InfoCountryKpaPage() {
     setParentStrategicOutputId(null);
 
     refreshNode?.(parentKey);
+    await refetch();
   }
 
   const handleCreateIndicator = async (node: TreeNode) => {
     setEditIndicator(null);
-    setParentMeasureId(node?.data?.id ?? null);
+    setParentMeasureId((node.data as any)?.id ?? null);
     setOpenIndicatorModal(true);
   }
 
@@ -159,7 +157,7 @@ export default function InfoCountryKpaPage() {
     setOpenIndicatorModal(true);
     setParentMeasureId(node.parent_id ?? null);
     const indicator = {
-      id: node.data!.id!,
+      id: (node.data as any)?.id!,
       name: node.label,
       target: Number(node.meta!.target!),
       measure_id: node.parent_id!,
@@ -182,12 +180,31 @@ export default function InfoCountryKpaPage() {
     setEditIndicator(null);
     setParentMeasureId(null);
     refreshNode?.(parentKey);
+    await refetch();
   }
 
 
   return (
     <div className="p-6 space-y-4">
-      <h1 className="label-default">Information about {country?.name}</h1>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="label-default">
+            Information about {country?.name}
+          </h1>
+
+          <p className="text-sm text-slate-500">
+            This view allows you to manage KPAs, Strategic Outputs,
+            Measures and Indicators of {country?.name}.
+          </p>
+        </div>
+        <button onClick={async () => { await refetchTree(); handleExportExcel(data, country);}} className="bg-emerald-600 hover:bg-emerald-700 cursor-pointer text-white px-4 py-2 rounded-md text-sm font-medium transition" >
+          <div className="flex items-center space-x-2">
+            <span>Export KPAs</span>
+          <span>(CSV detail)</span>
+          </div>
+        </button>
+      </div>
+
 
       {!isLoading && (
         <>
@@ -204,19 +221,19 @@ export default function InfoCountryKpaPage() {
             onAddIndicator={handleCreateIndicator} 
             onEditIndicator={handleEditIndicator}
           />
-
-          {data && !Array.isArray(data) && kpas.length > 0 && (
-            <CountryKpasTable
-              kpas={kpas}
-              page={page}
-              setPage={setPage}
-              perPage={perPage}
-              setPerPage={setPerPage}
-              pagination={data.pagination}
-            />
-          )}
         </>
       )}
+
+      {!isLoadingTable ? dataTable && !Array.isArray(dataTable) && kpasTable.length > 0 && (
+        <CountryKpasTable
+          kpas={kpasTable}
+          page={tablePage}
+          setPage={setTablePage}
+          perPage={tablePerPage}
+          setPerPage={setTablePerPage}
+          pagination={dataTable?.pagination}
+        />
+      ) : <TableSkeleton columns={7}/>}
 
       {parentKpaId !== null && (
         <CreateStrategicOutputModal open={openStrategicOutputModal} strategicOutput={editStrategicOutput} parentCountryKpaId={parentKpaId} onClose={()=> setOpenStrategicOutputModal(false)} onSubmit={handleSubmitStrategicOutput} />

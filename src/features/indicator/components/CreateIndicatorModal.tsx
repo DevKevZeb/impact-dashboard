@@ -53,7 +53,6 @@ export default function CreateIndicatorModal({ open, indicator, parentMeasureId,
 
   useEffect(() => {
     if (open) {
-      console.log(indicator)
       reset(
         indicator ? {
               name: indicator.name,
