@@ -1,4 +1,4 @@
-import logoSrc from "@/assets/Pacific-Ecommerce-Initiative-white.webp";
+import logoSrc from "@/assets/PEI ePulse Logo for WebApp.png";
 
 export default function Footer() {
   return (
@@ -6,14 +6,14 @@ export default function Footer() {
       <div className="w-5/7">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 py-8 justify-center items-start mb-4">
         <div className="col-span-2 md:col-span-1 flex md:justify-center">
-          <img src={logoSrc} alt="Pacific E-commerce Initiative Logo" className="h-18 w-auto" />
+          <img src={logoSrc} alt="Pacific E-commerce Initiative Logo" className="h-34 w-auto"/>
         </div>
         <div>
           <label className="font-bold text-lg block mb-2">Our Location</label>
           <p className="md:text-md text-sm leading-relaxed">
-            Pacific Islands Forum Secretariat<br />
-            Ratu Sukuna Road,<br />
-            Suva<br />
+            Pacific Islands Forum Secretariat<br/>
+            Ratu Sukuna Road,<br/>
+            Suva<br/>
             Fiji
           </p>
         </div>
