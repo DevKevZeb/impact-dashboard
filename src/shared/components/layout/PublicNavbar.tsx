@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import { PublicDesktopNavbar } from "./PublicDesktopNavbar";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { PublicMobileNavbar } from "./PublicMobileNavbar";
 import { CircleUserRound, Menu, Plus } from "lucide-react";
-import logoSrc from "@/assets/Pacific-Ecommerce-Initiative.webp";
+import logoSrc from "@/assets/PEI ePulse Logo for WebApp.png";
 
 export default function PublicNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -12,7 +12,9 @@ export default function PublicNavbar() {
   return (
     <div className="relative h-auto bg-white shadow-md">
       <div className="container mx-auto h-28 flex items-center justify-between px-6">
-        <img src={logoSrc} alt="Pacific E-commerce Initiative Logo" className="h-16 w-auto" />
+        <Link to="/" className="h-full items-center">
+          <img src={logoSrc} alt="PEI ePulse Logo" className="h-26 w-auto"/>
+        </Link>
 
         <PublicDesktopNavbar />
 
