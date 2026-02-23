@@ -44,8 +44,8 @@ export function UserMenu() {
             {initials}
           </div>
           <div className="hidden lg:block text-sm">
-            <p className="font-medium leading-none text-white">{user.name}</p>
-            <p className="text-xs text-white/80 opacity-90">{roleDisplayName}</p>
+            <p className="font-medium leading-none ">{user.name}</p>
+            <p className="text-xs  opacity-90">{roleDisplayName}</p>
           </div>
         </div>
       </DropdownMenuTrigger>
