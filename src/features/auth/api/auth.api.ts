@@ -30,6 +30,10 @@ export async function login(credentials: LoginInput): Promise<AuthResponse> {
       toast.error("Authentication failed", {
         description: message || "Invalid email or password",
       });
+    } else if (status === 403) {
+      // Email not verified or account pending/inactive
+      // Don't show toast - let component handle the specific message
+      throw error;
     } else if (status === 400 || status === 422) {
       toast.error("Authentication error", {
         description: message || "Invalid credentials",
