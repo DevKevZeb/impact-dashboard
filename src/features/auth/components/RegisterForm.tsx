@@ -52,10 +52,10 @@ export function RegisterForm() {
   const onSubmit = (data: RegisterFormData) => {
     register(data, {
       onSuccess: () => {
-        // Redirect to login after successful registration
-        setTimeout(() => {
-          navigate("/login");
-        }, 3000);
+        // Redirect to email verification pending page
+        navigate("/email-verification-pending", {
+          state: { email: data.email },
+        });
       },
     });
   };
