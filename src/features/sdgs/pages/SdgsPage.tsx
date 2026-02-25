@@ -166,7 +166,7 @@ export function SdgsPage() {
             !searchTerm && canWrite ? (
               <Button
                 onClick={() => setUploadDialogOpen(true)}
-                className="mt-6 bg-linear-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600"
+                className="btn-secondary"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Upload First SDG

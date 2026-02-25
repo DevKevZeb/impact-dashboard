@@ -1,0 +1,93 @@
+@reference "tailwindcss";
+
+@layer components {
+
+  .navbar-container {
+    @apply fixed top-0 left-0 right-0 z-50 h-16
+           border-b
+           shadow-md;
+
+    background-color: white;
+    border-color: var(--color-border);
+  }
+
+  .navbar-wrapper {
+    @apply flex items-center justify-between h-full px-4 lg:px-6;
+  }
+
+  .navbar-left-group {
+    @apply flex items-center gap-4 lg:gap-8;
+  }
+
+  .navbar-menu-btn {
+    @apply lg:hidden p-2 rounded-md transition-colors;
+
+    color: var(--color-secondary);
+  }
+
+  .navbar-menu-btn:hover {
+    background-color: var(--color-muted);
+  }
+
+  .navbar-search-wrapper {
+    @apply hidden md:flex relative;
+  }
+
+  .navbar-search-icon {
+    @apply absolute inset-y-0 left-0 pl-3 flex items-center
+           pointer-events-none
+           transition-colors;
+
+    color: var(--color-secondary);
+  }
+
+  .navbar-search-wrapper:focus-within .navbar-search-icon {
+    color: var(--color-primary);
+  }
+
+  .navbar-search-input {
+    @apply pl-10 pr-4 py-1.5 rounded-full text-sm w-64 transition-all duration-200;
+
+    background-color: var(--color-muted);
+    border: 1px solid var(--color-border);
+    color: var(--color-secondary);
+  }
+
+  .navbar-search-input::placeholder {
+    color: var(--color-muted-foreground);
+  }
+
+  .navbar-search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-primary);
+    background-color: white;
+  }
+
+  .navbar-right-group {
+    @apply flex items-center gap-2 lg:gap-4;
+  }
+
+  .navbar-icon-btn {
+    @apply p-2 rounded-full transition-colors relative;
+
+    color: var(--color-secondary);
+  }
+
+  .navbar-icon-btn:hover {
+    background-color: var(--color-muted);
+  }
+
+  .navbar-badge {
+    @apply absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full;
+
+    background-color: var(--color-destructive);
+    border: 2px solid white;
+  }
+
+  .navbar-divider {
+    @apply h-8 w-px mx-1 hidden sm:block;
+
+    background-color: var(--color-border);
+  }
+
+}
