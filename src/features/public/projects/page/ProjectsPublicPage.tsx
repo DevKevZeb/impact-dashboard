@@ -1,6 +1,6 @@
 import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect"
 import Banner from "../../components/Banner"
-import { Controller, useForm, useWatch } from "react-hook-form"
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { projectSchema } from "../types/project.filter.schema";
 import type { Country } from "../types/country.type";
@@ -18,11 +18,19 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import ProjectCard from "../components/ProjectCard";
 import SortSelect from "../../components/SortSelect";
 
+const OPTIONS = [
+  { value: "date_newest", label: "Date Newest" },
+  { value: "date_oldest", label: "Date Oldest" },
+  { value: "name_za", label: "Name Z–A" },
+  { value: "name_az", label: "Name A–Z" },
+];
+
 export default function ProjectsPublicPage(){
     const [page, setPage] = useState(1);
     const [perPage] = useState(20);
     const [filters, setFilters] = useState<any>(null);
     const [projects, setProjects] = useState<any[]>([]);
+    const [sort, setSort] = useState("date_newest");
 
     const form = useForm<any>({
         resolver: zodResolver(projectSchema),
@@ -133,7 +141,7 @@ export default function ProjectsPublicPage(){
                     <div className="w-1/3">
                         <div className="flex justify-baseline space-x-3 items-center">
                             <p>Sort by</p> 
-                            <SortSelect/>
+                            <SortSelect options={OPTIONS} value={sort} onChange={(opt) => setSort(opt.value)}/>
                         </div>
                     </div>
                 </form>
