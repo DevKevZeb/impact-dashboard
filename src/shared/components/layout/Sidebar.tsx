@@ -185,9 +185,7 @@ export function Sidebar({ isOpen }: SidebarProps) {
                 <div
                   className={cn(
                     "overflow-hidden transition-all duration-300 space-y-1",
-                    isExpanded && isOpen
-                      ? "max-h-[500px] mt-1 opacity-100"
-                      : "max-h-0 opacity-0"
+                    isExpanded && isOpen ? "max-h-[500px] mt-1 opacity-100" : "max-h-0 opacity-0"
                   )}
                 >
                   {item.children.map((child) => {
@@ -200,11 +198,8 @@ export function Sidebar({ isOpen }: SidebarProps) {
                         to={child.path}
                         className="flex items-center pl-10 pr-3 py-2 rounded-lg text-sm transition-all"
                         style={{
-                          color: isChildActive
-                            ? "var(--color-secondary)":"",
-                          backgroundColor: isChildActive
-                            ? "color-mix(in oklch, var(--color-primary) 8%, white)"
-                            : "transparent",
+                          color: isChildActive? "var(--color-secondary)":"",
+                          backgroundColor: isChildActive ? "color-mix(in oklch, var(--color-primary) 8%, white)" : "transparent",
                         }}
                       >
                         <span className="truncate">
