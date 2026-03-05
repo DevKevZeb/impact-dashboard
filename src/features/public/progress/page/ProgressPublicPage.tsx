@@ -13,6 +13,15 @@ import type { Measure } from "../../projects/types/measure.type";
 import OverallSection from "../components/sections/OverallSection";
 import SortSelect from "../../components/SortSelect";
 import KpaSection from "../components/sections/KpaSection";
+import KpaSelectedSection from "../components/sections/KpaSelectedSection";
+import StrategicOutputSelectedSection from "../components/sections/StrategicOutputSelectedSection";
+import MeasureSelectedSection from "../components/sections/MeasureSelectedSection";
+
+type ProgressFilters = {
+    kpa: KPA | null;
+    strategic_output: StrategicOutput | null;
+    measure: Measure | null;
+};
 
 const OPTIONS = [
   { value: "overall", label: "Overall Strategy" },
@@ -21,7 +30,13 @@ const OPTIONS = [
 
 export default function ProgressPublicPage(){
     const [sort, setSort] = useState("overall");
-    const form = useForm<any>({
+    const [submittedFilters, setSubmittedFilters] = useState<ProgressFilters>({
+        kpa: null,
+        strategic_output: null,
+        measure: null,
+    });
+
+    const form = useForm<ProgressFilters>({
         resolver: zodResolver(filterSchema),
         defaultValues: {kpa: null, strategic_output: null, measure: null}
     });
@@ -29,30 +44,60 @@ export default function ProgressPublicPage(){
     const kpa = useWatch({ control: form.control, name: "kpa" });
     const strategicOutput = useWatch({ control: form.control, name: "strategic_output" });
     
+    useEffect(() => {
+        form.reset({kpa: null, strategic_output: null, measure: null});
+        setSubmittedFilters({
+            kpa: null,
+            strategic_output: null,
+            measure: null,
+        });
+    }, [sort, form]);
     
     useEffect(() => {
         form.setValue("strategic_output", null);
         form.setValue("measure", null);
-    }, [kpa?.id]);
+    }, [kpa?.id, form]);
 
     useEffect(() => {
         form.setValue("measure", null);
-    }, [strategicOutput?.id]);
+    }, [strategicOutput?.id, form]);
     
     const { control, handleSubmit } = form;
 
-    const onsubmit = (data: any) => {
-        console.log(data)
-        kpa: data.kpa ?? null;
-        //strategic_output: data.strategic_output ?? null,
-        //measure: data.measure ?? null,
+    const onSubmit = (data: ProgressFilters) => {
+        setSubmittedFilters({
+            kpa: data.kpa ?? null,
+            strategic_output: data.strategic_output ?? null,
+            measure: data.measure ?? null,
+        });
+    };
+
+    const renderKpasInformationSection = () => {
+        if (submittedFilters.measure) {
+            return <MeasureSelectedSection measureId={submittedFilters.measure.id} measureName={submittedFilters.measure.name} />;
+        }
+
+        if (submittedFilters.strategic_output) {
+            return (
+                <StrategicOutputSelectedSection
+                    strategicOutputId={submittedFilters.strategic_output.id}
+                    strategicOutputName={submittedFilters.strategic_output.name}
+                />
+            );
+        }
+
+        if (submittedFilters.kpa) {
+            return <KpaSelectedSection kpaId={submittedFilters.kpa.id} kpaName={submittedFilters.kpa.name} />;
+        }
+
+        return <KpaSection/>;
     };
 
     return(
-        <div>
+        <div className="mb-20">
             <Banner title="Progress" description="Find out where we are with our Pacific Regional E-commerce Strategy" image="https://pacificecommerce.org/wp-content/uploads/2022/04/banner-450.png"/>
             <div className="flex flex-col items-center justify-center pb-20">
-                <form className="w-5/7 flex flex-col py-14" onSubmit={handleSubmit(onsubmit)}>
+                <form className="w-5/7 flex flex-col py-14" onSubmit={handleSubmit(onSubmit)}>
                     <div className="w-1/3">
                         <div className="flex justify-baseline space-x-3 mb-5 items-center">
                             <p>Category</p> 
@@ -97,7 +142,8 @@ export default function ProgressPublicPage(){
                 </form>
             </div>
             {sort === "overall" && <OverallSection/>}
-            {sort === "kpas_information" && <KpaSection/>}
+            {sort === "kpas_information" && renderKpasInformationSection()}
+            
         </div>
     )
 }

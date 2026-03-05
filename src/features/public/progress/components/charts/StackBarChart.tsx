@@ -8,8 +8,7 @@ import * as htmlToImage from "html-to-image";
 
 interface Beneficiary { id: number; name: string; }
 interface KpaBeneficiaries { name: string; beneficiaries: Beneficiary[]; }
-interface OverallResponseData { beneficiaries: KpaBeneficiaries[]; }
-interface Props { data: OverallResponseData; }
+interface Props { data:  KpaBeneficiaries[]; }
 
 const CustomXAxisTick = ({
   x, y, payload, maxChars = 12,
@@ -34,8 +33,7 @@ export function StackBarChart({ data }: Props) {
   const [open, setOpen] = useState(false);
 
   const chartData = useMemo(() => {
-    if (!data?.beneficiaries) return [];
-    const kpas = data.beneficiaries;
+    const kpas = data??[];
     const unique = [...new Map(
       kpas.flatMap((k) => k.beneficiaries).map((b) => [b.id, b])
     ).values()];
@@ -49,9 +47,8 @@ export function StackBarChart({ data }: Props) {
   }, [data]);
 
   const beneficiaries = useMemo(() => {
-    if (!data?.beneficiaries) return [];
     return [...new Map(
-      data.beneficiaries.flatMap((k) => k.beneficiaries).map((b) => [b.id, b])
+      data.flatMap((k) => k.beneficiaries).map((b) => [b.id, b])
     ).values()];
   }, [data]);
 
