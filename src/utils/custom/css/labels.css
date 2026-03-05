@@ -16,6 +16,13 @@
     @apply lg:text-7xl md:text-5xl text-4xl text-[#1e3291];
 }
 
+.second-head-label {
+    @apply lg:text-5xl md:text-3xl text-2xl text-[#1e3291];
+}
+
+.third-head-label {
+    @apply lg:text-4xl md:text-2xl text-xl text-[#61C8E7];
+}
 .previous-message {
     @apply text-xs mt-2 px-3 py-1 w-full  rounded-lg  bg-amber-50  text-amber-700  border border-amber-200 flex items-center gap-2;
 }

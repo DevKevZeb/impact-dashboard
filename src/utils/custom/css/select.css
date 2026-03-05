@@ -13,18 +13,18 @@
     justify-between
     rounded-xl
     border
-    border-slate-300
-    bg-white
+    border-gray-300 
+    text-gray-900
     px-4
-    py-2.5
+    py-1.5
     pr-14
-    text-sm
-    text-slate-800
+    text-base
+    placeholder:text-gray-700 
+    transition
     cursor-pointer
     focus:outline-none
-    focus:border-blue-500
-    focus:ring-1
-    focus:ring-blue-500;
+    focus:ring-2
+    focus:ring-blue-600;
 }
 
 /* separador vertical */
