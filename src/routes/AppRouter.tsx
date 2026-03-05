@@ -20,6 +20,8 @@ import { UsersPage } from "@/features/users/pages/UsersPage";
 import { ActiveUsersPage } from "@/features/users/pages/ActiveUsersPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/RegisterPage";
+import { EmailVerificationPendingPage } from "@/features/auth/pages/EmailVerificationPendingPage";
+import { VerifyEmailPage } from "@/features/auth/pages/VerifyEmailPage";
 import { PrivateRoute } from "./PrivateRoute";
 import HomePage from "@/features/public/Home/page/HomePage";
 import PublicRoute from "./PublicRoute";
@@ -61,6 +63,8 @@ export function AppRouter() {
             
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
+            <Route path="email-verification-pending" element={<EmailVerificationPendingPage />} />
+            <Route path="verify-email" element={<VerifyEmailPage />} />
         </Route>
 
         {/* Protected Routes - Require Authentication */}
