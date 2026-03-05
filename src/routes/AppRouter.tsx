@@ -18,6 +18,7 @@ import DonorsListPage from "@/features/donors/pages/DonorsListPage";
 import CreateProjectPage from "@/features/projects/pages/CreateProjectPage";
 import { UsersPage } from "@/features/users/pages/UsersPage";
 import { ActiveUsersPage } from "@/features/users/pages/ActiveUsersPage";
+import { UnverifiedUsersPage } from "@/features/users/pages/UnverifiedUsersPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/RegisterPage";
 import { EmailVerificationPendingPage } from "@/features/auth/pages/EmailVerificationPendingPage";
@@ -74,6 +75,7 @@ export function AppRouter() {
             <Route path="admin">
                 <Route path="users" element={<UsersPage />} />
                 <Route path="users/active" element={<ActiveUsersPage />} />
+                <Route path="users/unverified" element={<UnverifiedUsersPage />} />
             </Route>
 
             {/* Configuration Routes */}

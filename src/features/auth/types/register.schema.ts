@@ -25,6 +25,13 @@ export const registerSchema = z
     role_name: z.enum(["project-manager", "country-manager"], {
       message: "Please select a valid role",
     }),
+    country_id: z
+      .number({
+        required_error: "Please select a country",
+        invalid_type_error: "Please select a valid country",
+      })
+      .int("Country ID must be an integer")
+      .positive("Please select a country"),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: "Passwords do not match",

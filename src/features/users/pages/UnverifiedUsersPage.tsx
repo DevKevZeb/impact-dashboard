@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Loader2, Users as UsersIcon, Search } from "lucide-react";
-import { usePendingUsers, useApproveUser, useRejectUser } from "../api/userQueries";
+import { useUnverifiedUsers, useRejectUser } from "../api/userQueries";
 import { UserTableRow } from "../components/UserTableRow";
-import { ApproveUserDialog } from "../components/ActivateUserDialog";
 import { RejectUserDialog } from "../components/RejectUserDialog";
 import {
   DataTable,
@@ -15,16 +14,14 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import { useTableSort } from "@/shared/hooks/useTableSort";
 import type { User } from "../types/user.types";
 
-export function UsersPage() {
+export function UnverifiedUsersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
 
-  const { data, isLoading, error } = usePendingUsers(currentPage, perPage);
-  const approveMutation = useApproveUser();
+  const { data, isLoading, error } = useUnverifiedUsers(currentPage, perPage);
   const rejectMutation = useRejectUser();
 
   // Sorting on current page data
@@ -33,23 +30,9 @@ export function UsersPage() {
     "id"
   );
 
-  const handleApprove = (user: User) => {
-    setSelectedUser(user);
-    setIsApproveDialogOpen(true);
-  };
-
   const handleReject = (user: User) => {
     setSelectedUser(user);
     setIsRejectDialogOpen(true);
-  };
-
-  const handleConfirmApprove = async () => {
-    if (!selectedUser) return;
-
-    await approveMutation.mutateAsync(selectedUser.id);
-
-    setIsApproveDialogOpen(false);
-    setSelectedUser(null);
   };
 
   const handleConfirmReject = async () => {
@@ -72,7 +55,7 @@ export function UsersPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
           <Loader2 className="loader-default" />
-          <p className="text-gray-500">Loading pending users...</p>
+          <p className="text-gray-500">Loading unverified users...</p>
         </div>
       </div>
     );
@@ -101,16 +84,16 @@ export function UsersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="page-title">Pending Users</h1>
+          <h1 className="page-title">Unverified Users</h1>
           <p className="text-gray-500 mt-2">
-            Review and activate user registrations awaiting approval
+            Manage users who haven't verified their email address
           </p>
         </div>
 
         {data && data.users.length > 0 && (
-          <div className="flex items-center gap-2 px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <span className="text-yellow-700 font-medium text-sm">
-              {data.pagination.total} Pending
+          <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 rounded-lg">
+            <span className="text-orange-700 font-medium text-sm">
+              {data.pagination.total} Unverified
             </span>
           </div>
         )}
@@ -188,8 +171,8 @@ export function UsersPage() {
                     key={user.id}
                     user={user}
                     index={rowIndex}
-                    onApprove={handleApprove}
                     onReject={handleReject}
+                    showApprove={false}
                   />
                 );
               })}
@@ -210,33 +193,23 @@ export function UsersPage() {
       ) : (
         <EmptyState
           icon={UsersIcon}
-          title={searchTerm ? "No results found" : "No pending users"}
+          title={searchTerm ? "No results found" : "No unverified users"}
           description={
             searchTerm
               ? "Try another search term"
-              : "All user registrations have been processed"
+              : "All users have verified their email addresses"
           }
         />
       )}
 
       {selectedUser && (
-        <>
-          <ApproveUserDialog
-            user={selectedUser}
-            open={isApproveDialogOpen}
-            onOpenChange={setIsApproveDialogOpen}
-            onConfirm={handleConfirmApprove}
-            isLoading={approveMutation.isPending}
-          />
-
-          <RejectUserDialog
-            user={selectedUser}
-            open={isRejectDialogOpen}
-            onOpenChange={setIsRejectDialogOpen}
-            onConfirm={handleConfirmReject}
-            isLoading={rejectMutation.isPending}
-          />
-        </>
+        <RejectUserDialog
+          user={selectedUser}
+          open={isRejectDialogOpen}
+          onOpenChange={setIsRejectDialogOpen}
+          onConfirm={handleConfirmReject}
+          isLoading={rejectMutation.isPending}
+        />
       )}
     </div>
   );

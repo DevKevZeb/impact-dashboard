@@ -1,4 +1,5 @@
-export type UserState = "pending" | "active" | "inactive";
+// UserState es dinámico - acepta cualquier estado del backend
+export type UserState = string;
 
 export interface UserRole {
   id: number;
@@ -10,12 +11,18 @@ export interface UserStateInfo {
   name: string;
 }
 
+export interface Country {
+  id: number;
+  name: string;
+}
+
 export interface User {
   id: number;
   name: string;
   email: string;
   roles: UserRole[];
   userState: UserStateInfo;
+  countries: Country[]; // Backend envía array de países
   createdAt: string;
   updatedAt: string;
 }

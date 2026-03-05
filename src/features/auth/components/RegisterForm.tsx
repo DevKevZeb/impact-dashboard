@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { registerSchema, type RegisterFormData } from "../types/register.schema";
 import { useRegister } from "../api/registerQueries";
 import { ROLE_OPTIONS } from "../types/register.types";
+import { usePublicCountries } from "@/features/country/hooks/country/usePublicCountries";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +30,10 @@ export function RegisterForm() {
   const navigate = useNavigate();
   const { mutate: register, isPending } = useRegister();
   const [selectedRole, setSelectedRole] = useState<string>("");
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  
+  // Fetch countries for dropdown (no auth required)
+  const { data: countriesData, isLoading: isLoadingCountries } = usePublicCountries();
 
   const {
     register: registerField,
@@ -44,6 +49,7 @@ export function RegisterForm() {
       password: "",
       password_confirmation: "",
       role_name: undefined,
+      country_id: undefined,
     },
   });
 
@@ -63,6 +69,13 @@ export function RegisterForm() {
   const handleRoleChange = (value: string) => {
     setSelectedRole(value);
     setValue("role_name", value as "project-manager" | "country-manager", {
+      shouldValidate: true,
+    });
+  };
+
+  const handleCountryChange = (value: string) => {
+    setSelectedCountry(value);
+    setValue("country_id", parseInt(value), {
       shouldValidate: true,
     });
   };
@@ -192,6 +205,34 @@ export function RegisterForm() {
               <div className="mt-2 p-3 bg-blue-50 border-l-4 border-blue-500 rounded text-sm text-gray-700">
                 {selectedRoleOption.description}
               </div>
+            )}
+          </div>
+
+          {/* Country */}
+          <div className="space-y-2">
+            <Label htmlFor="country_id">
+              Country <span className="text-red-500">*</span>
+            </Label>
+            <Select
+              value={selectedCountry}
+              onValueChange={handleCountryChange}
+              disabled={isPending || isLoadingCountries}
+            >
+              <SelectTrigger
+                className={errors.country_id ? "border-red-500" : ""}
+              >
+                <SelectValue placeholder={isLoadingCountries ? "Loading countries..." : "Select your country"} />
+              </SelectTrigger>
+              <SelectContent position="popper" className="max-h-64 overflow-y-auto">
+                {countriesData?.countries.map((country) => (
+                  <SelectItem key={country.id} value={country.id.toString()}>
+                    {country.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.country_id && (
+              <p className="text-sm text-red-600">{errors.country_id.message}</p>
             )}
           </div>
 

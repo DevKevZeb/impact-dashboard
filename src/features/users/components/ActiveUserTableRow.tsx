@@ -37,6 +37,16 @@ export function ActiveUserTableRow({
         <div className="text-sm text-gray-600">{user.email}</div>
       </DataTableCell>
 
+      {/* Country - Medium width */}
+      <DataTableCell className="min-w-[140px] whitespace-nowrap">
+        <div className="text-sm text-gray-600">
+          {user.countries && user.countries.length > 0 
+            ? user.countries.map(c => c.name).join(', ') 
+            : <span className="text-gray-400">—</span>
+          }
+        </div>
+      </DataTableCell>
+
       {/* Role - Medium width */}
       <DataTableCell className="min-w-[140px]">
         <div className="flex flex-wrap gap-1">
