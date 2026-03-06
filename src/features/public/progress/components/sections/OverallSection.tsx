@@ -3,7 +3,6 @@ import { HorizontalBarChart } from "../charts/HorizontalBarChart";
 import SimpleBarChart from "../charts/SimpleBarChart";
 import { StackBarChart } from "../charts/StackBarChart";
 
-
 export default function OverallSection(){
 
     const { data, isLoading, error } = useOverall();

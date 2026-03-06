@@ -29,7 +29,7 @@ const OPTIONS = [
 ];
 
 export default function ProgressPublicPage(){
-    const [sort, setSort] = useState("overall");
+        const [sort, setSort] = useState("overall");
     const [submittedFilters, setSubmittedFilters] = useState<ProgressFilters>({
         kpa: null,
         strategic_output: null,

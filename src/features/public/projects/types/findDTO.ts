@@ -20,4 +20,5 @@ export interface findDTO {
         state: string,
     },
     search?: string,
+    sort?: string,
 }

@@ -38,7 +38,6 @@ export default function SimpleBarChart({data}:SimpleBarChartProps){
         }
     };
       
-      
     const exportSVG = async () => {
         if (!containerRef.current) return;
         setOpen(false);
@@ -67,7 +66,6 @@ export default function SimpleBarChart({data}:SimpleBarChartProps){
         setOpen(false);
     };
     
-
     return(
         <div ref={containerRef} className="relative w-full bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
             <div ref={menuRef} className="absolute top-4 right-4 z-10">
