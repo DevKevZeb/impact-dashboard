@@ -61,40 +61,38 @@ export function StackBarChart({ data }: Props) {
     return () => document.removeEventListener("mousedown", h);
   }, [open]);
 
-
-    const exportPNG = async () => {
+  const exportPNG = async () => {
     if (!containerRef.current) return;
     setOpen(false);
     try {
         const dataUrl = await htmlToImage.toPng(containerRef.current, {
-        backgroundColor: "#ffffff",
-        pixelRatio: 2,
-        filter: (node) => !menuRef.current?.contains(node as Node) || node === containerRef.current,
+          backgroundColor: "#ffffff",
+          pixelRatio: 2,
+          filter: (node) => !menuRef.current?.contains(node as Node) || node === containerRef.current,
         });
         Object.assign(document.createElement("a"), {
-        download: "beneficiaries-chart.png",
-        href: dataUrl,
+          download: "beneficiaries-chart.png",
+          href: dataUrl,
         }).click();
     } catch (err) {
         console.error("PNG export failed:", err);
     }
-    };
+  };
 
-
-    const exportSVG = async () => {
-    if (!containerRef.current) return;
-    setOpen(false);
-    try {
-        const dataUrl = await htmlToImage.toSvg(containerRef.current, { backgroundColor: "#ffffff", filter: (node) => !menuRef.current?.contains(node as Node) || node === containerRef.current, });
-        const svgString = decodeURIComponent(dataUrl.split(",")[1]);
-        const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        Object.assign(document.createElement("a"), {download: "beneficiaries-chart.svg",href: url,}).click();
-        URL.revokeObjectURL(url);
-    } catch (err) {
-        console.error("SVG export failed:", err);
-    }
-    };
+  const exportSVG = async () => {
+      if (!containerRef.current) return;
+      setOpen(false);
+      try {
+          const dataUrl = await htmlToImage.toSvg(containerRef.current, { backgroundColor: "#ffffff", filter: (node) => !menuRef.current?.contains(node as Node) || node === containerRef.current, });
+          const svgString = decodeURIComponent(dataUrl.split(",")[1]);
+          const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          Object.assign(document.createElement("a"), {download: "beneficiaries-chart.svg",href: url,}).click();
+          URL.revokeObjectURL(url);
+      } catch (err) {
+          console.error("SVG export failed:", err);
+      }
+  };
 
   const exportCSV = () => {
     if (!chartData.length) return;
