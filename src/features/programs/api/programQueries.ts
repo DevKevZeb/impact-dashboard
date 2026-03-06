@@ -51,11 +51,11 @@ export function useCreateProgram() {
     mutationFn: (input: ProgramCreateInput) => programService.create(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: programKeys.lists() });
-      toast.success("Programa creado exitosamente");
+      toast.success("Program created successfully");
     },
     onError: (error: unknown) => {
       const apiError = error as ApiError;
-      let errorMessage = "Error al crear el programa";
+      let errorMessage = "Failed to create program";
       
       // Check for validation errors (422) with specific field messages
       if (apiError.response?.data?.errors) {
@@ -69,7 +69,7 @@ export function useCreateProgram() {
         errorMessage = apiError.response.data.message;
       }
       
-      toast.error("Error al crear programa", {
+      toast.error("Error creating program", {
         description: errorMessage,
       });
     },
@@ -85,12 +85,12 @@ export function useUpdateProgram() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: programKeys.lists() });
       queryClient.invalidateQueries({ queryKey: programKeys.detail(variables.id) });
-      toast.success("Programa actualizado exitosamente");
+      toast.success("Program updated successfully");
     },
     onError: (error: unknown) => {
       const apiError = error as ApiError;
       
-      let errorMessage = "Error al actualizar el programa";
+      let errorMessage = "Failed to update program";
       
       // Check for validation errors (422) with specific field messages
       if (apiError.response?.data?.errors) {
@@ -104,7 +104,7 @@ export function useUpdateProgram() {
         errorMessage = apiError.response.data.message;
       }
       
-      toast.error("Error al actualizar programa", {
+      toast.error("Error updating program", {
         description: errorMessage,
       });
     },
