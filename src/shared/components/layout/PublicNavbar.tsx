@@ -30,7 +30,7 @@ export default function PublicNavbar() {
         </div>
 
         <button className=" min-[1290px]:hidden" ref={buttonRef} onClick={() => setMobileOpen(!mobileOpen)}>
-          <Menu className="w-6 h-6"/>
+          <Menu className="w-6 h-6 cursor-pointer"/>
         </button>
       </div>
       {mobileOpen && <PublicMobileNavbar ignoreRef={buttonRef} onNavigate={() => setMobileOpen(false)} />}  

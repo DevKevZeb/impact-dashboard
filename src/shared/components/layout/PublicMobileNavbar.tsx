@@ -25,20 +25,14 @@ export function PublicMobileNavbar({ onNavigate, ignoreRef, }: { onNavigate: () 
           return (
             <div key={item.label}>
               {!item.children && item.to && (
-                <NavLink
-                  to={item.to}
-                  onClick={onNavigate}
-                  className={cn(
-                    "block px-6 py-4 text-left text-base",
-                    isActive ? "selected-nav-label-color font-medium" : "nav-label-color" )}
-                >
+                <NavLink to={item.to} onClick={onNavigate} className={cn( "block px-6 py-4 text-left cursor-pointer text-base", isActive ? "selected-nav-label-color font-medium" : "nav-label-color" )} >
                   {item.label}
                 </NavLink>
               )}
 
               {item.children && (
                 <>
-                  <button onClick={() =>setOpen(expanded ? null : item.label)} className={cn( "w-full flex items-center justify-between px-6 py-4 text-left", isActive && "selected-nav-label-color font-medium" )} >
+                  <button onClick={() =>setOpen(expanded ? null : item.label)} className={cn( "w-full flex cursor-pointer items-center justify-between px-6 py-4 text-left", isActive && "selected-nav-label-color font-medium" )} >
                     {item.label}
                     <span className="ml-2 flex items-center">
                       {expanded ? (
@@ -54,14 +48,7 @@ export function PublicMobileNavbar({ onNavigate, ignoreRef, }: { onNavigate: () 
                     <div className="pl-8 pb-3 bg-slate-50">
                       {item.children.map((child) => {
                         return (
-                        <NavLink
-                          key={child.to}
-                          to={child.to}
-                          onClick={onNavigate}
-                          className={cn(
-                            "block pb-2 text-sm font-medium cursor-pointer",
-                            isPathActive(child.to) ? "selected-nav-label-color" : "nav-label-color" )}
-                        >
+                        <NavLink key={child.to} to={child.to} onClick={onNavigate} className={cn( "block pb-2 text-sm font-medium cursor-pointer", isPathActive(child.to) ? "selected-nav-label-color" : "nav-label-color" )} >
                           {child.label}
                         </NavLink>
                       )
