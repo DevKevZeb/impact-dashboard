@@ -242,7 +242,7 @@ export function ProgramCreateDialog({
           {/* 5. Sustainable Development Goals */}
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700 block">
-              Sustainable Development Goals (Optional)
+              Sustainable Development Goals
             </label>
             <p className="text-xs text-gray-500">Select one or more SDGs related to this program</p>
             {sdgs && sdgs.length > 0 ? (

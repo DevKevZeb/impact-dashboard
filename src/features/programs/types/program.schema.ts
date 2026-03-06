@@ -7,28 +7,28 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif
 export const contactSchema = z.object({
   first_name: z
     .string()
-    .min(2, "El nombre debe tener al menos 2 caracteres")
-    .max(50, "El nombre no debe exceder 50 caracteres")
+    .min(2, "First name must be at least 2 characters")
+    .max(50, "First name must not exceed 50 characters")
     .trim(),
   last_name: z
     .string()
-    .min(2, "El apellido debe tener al menos 2 caracteres")
-    .max(50, "El apellido no debe exceder 50 caracteres")
+    .min(2, "Last name must be at least 2 characters")
+    .max(50, "Last name must not exceed 50 characters")
     .trim(),
   title: z
     .string()
-    .min(2, "El título debe tener al menos 2 caracteres")
-    .max(100, "El título no debe exceder 100 caracteres")
+    .min(2, "Title must be at least 2 characters")
+    .max(100, "Title must not exceed 100 characters")
     .trim(),
   email: z
     .string()
-    .email("Debe ser un email válido")
-    .max(254, "El email no debe exceder 254 caracteres")
+    .email("Must be a valid email")
+    .max(254, "Email must not exceed 254 characters")
     .trim(),
   phone: z
     .string()
-    .min(7, "El teléfono debe tener al menos 7 dígitos")
-    .max(15, "El teléfono no debe exceder 15 dígitos")
+    .min(7, "Phone must be at least 7 digits")
+    .max(15, "Phone must not exceed 15 digits")
     .optional()
     .or(z.literal("")),
 });
@@ -36,26 +36,26 @@ export const contactSchema = z.object({
 export const programCreateSchema = z.object({
   name: z
     .string()
-    .min(3, "El nombre debe tener al menos 3 caracteres")
-    .max(255, "El nombre no debe exceder 255 caracteres")
+    .min(3, "Name must be at least 3 characters")
+    .max(255, "Name must not exceed 255 characters")
     .trim(),
   description: z
     .string()
-    .min(10, "La descripción debe tener al menos 10 caracteres")
-    .max(2000, "La descripción no debe exceder 2000 caracteres")
+    .min(10, "Description must be at least 10 characters")
+    .max(2000, "Description must not exceed 2000 characters")
     .trim(),
   banner_img: z
     .instanceof(File)
-    .refine((file) => file.size <= MAX_FILE_SIZE, "La imagen no debe exceder 2MB")
+    .refine((file) => file.size <= MAX_FILE_SIZE, "Image must not exceed 2MB")
     .refine(
       (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-      "Solo se permiten imágenes JPG, PNG, GIF o WEBP"
+      "Only JPG, PNG, GIF or WEBP images are allowed"
     )
     .optional(),
   program_url: z
     .string()
-    .url("Debe ser una URL válida")
-    .regex(/^https?:\/\//, "La URL debe usar protocolo HTTP o HTTPS")
+    .url("Must be a valid URL")
+    .regex(/^https?:\/\//, "URL must use HTTP or HTTPS protocol")
     .optional()
     .or(z.literal("")),
   contact: contactSchema, // Nested contact object
@@ -65,32 +65,32 @@ export const programCreateSchema = z.object({
 export const programUpdateSchema = z.object({
   name: z
     .string()
-    .min(3, "El nombre debe tener al menos 3 caracteres")
-    .max(255, "El nombre no debe exceder 255 caracteres")
+    .min(3, "Name must be at least 3 characters")
+    .max(255, "Name must not exceed 255 characters")
     .trim(),
   description: z
     .string()
-    .min(10, "La descripción debe tener al menos 10 caracteres")
-    .max(2000, "La descripción no debe exceder 2000 caracteres")
+    .min(10, "Description must be at least 10 characters")
+    .max(2000, "Description must not exceed 2000 characters")
     .trim(),
   banner_img: z
     .instanceof(File)
-    .refine((file) => file.size <= MAX_FILE_SIZE, "La imagen no debe exceder 2MB")
+    .refine((file) => file.size <= MAX_FILE_SIZE, "Image must not exceed 2MB")
     .refine(
       (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-      "Solo se permiten imágenes JPG, PNG, GIF o WEBP"
+      "Only JPG, PNG, GIF or WEBP images are allowed"
     )
     .optional(),
   program_url: z
     .string()
-    .url("Debe ser una URL válida")
-    .regex(/^https?:\/\//, "La URL debe usar protocolo HTTP o HTTPS")
+    .url("Must be a valid URL")
+    .regex(/^https?:\/\//, "URL must use HTTP or HTTPS protocol")
     .optional()
     .or(z.literal("")),
   contact: contactSchema.extend({
-    id: z.number().int().min(1, "ID del contacto requerido"), // ID del contacto existente
+    id: z.number().int().min(1, "Contact ID is required"), // ID del contacto existente
   }),
-  program_state_id: z.number().int().min(1, "Debe seleccionar un estado"),
+  program_state_id: z.number().int().min(1, "Must select a state"),
   sdg_ids: z.array(z.number().int().min(1)).optional(),
 });
 

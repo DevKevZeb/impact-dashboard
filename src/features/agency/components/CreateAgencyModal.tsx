@@ -12,7 +12,10 @@ import type { Agency, CreateAgencyDto } from "../types/agency.types";
 
 const agencySchema = z.object({
   name: z.string("The agency name must be a string").min(2, "The Agency name is required"),
-  url: z.string().url("The valid URL is required"),
+  url: z.union([
+    z.string().url("Enter a valid URL (e.g. https://example.com)"),
+    z.literal(""),
+  ]).optional(),
   isApproved: z.boolean(),
 });
 
@@ -87,7 +90,7 @@ export default function CreateAgencyModal({ open, agency, onClose, onSubmit }: P
 
           {/* URL */}
           <div className="flex flex-col space-y-1">
-            <Label className="text-gray-700">URL</Label>
+            <Label className="text-gray-700">URL <span className="text-gray-400 font-normal">(optional)</span></Label>
             <Input
             className="input-default"
               placeholder="https://example.com"
