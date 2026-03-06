@@ -235,14 +235,14 @@ export default function ProgramsPublicPage() {
                             )}
                         />
                     </div>
-                    <div className="w-full flex justify-start items-center gap-3 mt-6">
+                    <span className="block w-full h-px bg-slate-300 my-14"></span>
+                    <div className="w-full flex justify-start items-center gap-3">
                         <p>Sort by</p>
                         <SortSelect options={SORT_OPTIONS} value={sort} onChange={(option) => setSort(option.value)} />
                         <Button type="button" className="btn-secondary text-base" onClick={onSort}>
                             Sort
                         </Button>
                     </div>
-                    <span className="block w-full h-px bg-slate-300 my-14"></span>
                 </form>
 
                 <div className="w-5/7 my-4">
