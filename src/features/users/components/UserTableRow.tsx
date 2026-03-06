@@ -10,11 +10,12 @@ import type { User } from "../types/user.types";
 interface UserTableRowProps {
   user: User;
   index: number;
-  onApprove: (user: User) => void;
+  onApprove?: (user: User) => void;
   onReject: (user: User) => void;
+  showApprove?: boolean;
 }
 
-export function UserTableRow({ user, index, onApprove, onReject }: UserTableRowProps) {
+export function UserTableRow({ user, index, onApprove, onReject, showApprove = true }: UserTableRowProps) {
   return (
     <DataTableRow>
       {/* # - Fixed small width (Frontend index, not DB ID) */}
@@ -30,6 +31,16 @@ export function UserTableRow({ user, index, onApprove, onReject }: UserTableRowP
       {/* Email - Large width */}
       <DataTableCell className="min-w-[220px] whitespace-nowrap">
         <div className="text-sm text-gray-600">{user.email}</div>
+      </DataTableCell>
+
+      {/* Country - Medium width */}
+      <DataTableCell className="min-w-[140px] whitespace-nowrap">
+        <div className="text-sm text-gray-600">
+          {user.countries && user.countries.length > 0 
+            ? user.countries.map(c => c.name).join(', ') 
+            : <span className="text-gray-400">—</span>
+          }
+        </div>
       </DataTableCell>
 
       {/* Role - Medium width */}
@@ -67,14 +78,16 @@ export function UserTableRow({ user, index, onApprove, onReject }: UserTableRowP
         {user.userState && user.userState.name.toLowerCase() === "pending" && (
           <Can scope={SCOPES.USERS_WRITE}>
             <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                onClick={() => onApprove(user)}
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <CheckCircle className="w-4 h-4 mr-1" />
-                Approve
-              </Button>
+              {showApprove && onApprove && (
+                <Button
+                  size="sm"
+                  onClick={() => onApprove(user)}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <CheckCircle className="w-4 h-4 mr-1" />
+                  Approve
+                </Button>
+              )}
               <Button
                 size="sm"
                 onClick={() => onReject(user)}
@@ -84,6 +97,18 @@ export function UserTableRow({ user, index, onApprove, onReject }: UserTableRowP
                 Delete
               </Button>
             </div>
+          </Can>
+        )}
+        {user.userState && user.userState.name.toLowerCase() === "unverified" && (
+          <Can scope={SCOPES.USERS_WRITE}>
+            <Button
+              size="sm"
+              onClick={() => onReject(user)}
+              variant="destructive"
+            >
+              <XCircle className="w-4 h-4 mr-1" />
+              Delete
+            </Button>
           </Can>
         )}
         {user.userState && user.userState.name.toLowerCase() === "active" && (

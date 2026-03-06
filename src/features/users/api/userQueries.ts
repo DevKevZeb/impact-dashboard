@@ -5,6 +5,7 @@ import { toast } from "sonner";
 export const userKeys = {
   all: ["users"] as const,
   pending: () => [...userKeys.all, "pending"] as const,
+  unverified: () => [...userKeys.all, "unverified"] as const,
   list: () => [...userKeys.all, "list"] as const,
 };
 
@@ -12,6 +13,14 @@ export function usePendingUsers(page: number = 1, perPage: number = 10) {
   return useQuery({
     queryKey: [...userKeys.pending(), page, perPage],
     queryFn: () => userService.getPendingUsers(page, perPage),
+    staleTime: 1 * 60 * 1000, // 1 minute
+  });
+}
+
+export function useUnverifiedUsers(page: number = 1, perPage: number = 10) {
+  return useQuery({
+    queryKey: [...userKeys.unverified(), page, perPage],
+    queryFn: () => userService.getUnverifiedUsers(page, perPage),
     staleTime: 1 * 60 * 1000, // 1 minute
   });
 }

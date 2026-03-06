@@ -15,6 +15,16 @@ export const userService = {
     return mapUserListFromDTO(data.data);
   },
 
+  getUnverifiedUsers: async (page: number = 1, perPage: number = 10): Promise<UserListResponse> => {
+    const { data } = await apiClient.get<ApiResponse<UserListResponseDTO>>(
+      `${USERS_ENDPOINT}/unverified`,
+      {
+        params: { page, per_page: perPage },
+      }
+    );
+    return mapUserListFromDTO(data.data);
+  },
+
   getAllUsers: async (page: number = 1, perPage: number = 10): Promise<UserListResponse> => {
     const { data } = await apiClient.get<ApiResponse<UserListResponseDTO>>(USERS_ENDPOINT, {
       params: { page, per_page: perPage },

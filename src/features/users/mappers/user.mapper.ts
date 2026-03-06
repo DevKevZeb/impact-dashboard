@@ -10,6 +10,10 @@ export interface UserDTO {
     id: number;
     name: string;
   };
+  countries: Array<{
+    id: number;
+    name: string;
+  }>; // Backend envía array
   created_at: string;
   updated_at: string;
 }
@@ -35,6 +39,10 @@ export function mapUserFromDTO(dto: UserDTO): User {
       id: dto.userState.id,
       name: dto.userState.name,
     },
+    countries: dto.countries.map(country => ({
+      id: country.id,
+      name: country.name,
+    })),
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
   };

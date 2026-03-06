@@ -288,6 +288,7 @@ export function ActiveUsersPage() {
                 >
                   Email
                 </DataTableHead>
+                <DataTableHead className="min-w-[140px]">Country</DataTableHead>
                 <DataTableHead className="min-w-[140px]">Role</DataTableHead>
                 <DataTableHead className="w-32">Status</DataTableHead>
                 <DataTableHead
