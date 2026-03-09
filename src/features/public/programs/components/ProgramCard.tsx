@@ -1,12 +1,13 @@
+import { Link, useNavigate } from "react-router-dom";
+
 interface ProgramCardProps {
   id: number | string;
   name: string;
   description: string;
-  programUrl?: string | null;
 }
 
-export default function ProgramCard({ id, name, description, programUrl }: ProgramCardProps) {
-  const hasUrl = !!programUrl;
+export default function ProgramCard({ id, name, description }: ProgramCardProps) {
+  const navigate = useNavigate();
 
   return (
     <div
@@ -21,23 +22,14 @@ export default function ProgramCard({ id, name, description, programUrl }: Progr
         />
       </div>
       <div className="flex flex-1 flex-col p-5 px-10">
-        <h3 className="mb-2 line-clamp-2 text-xl font-bold text-secondary">{name}</h3>
+        <Link to={`/development/programs/${id}`} className="mb-2 line-clamp-2 text-xl font-bold text-secondary hover:text-primary">
+          {name}
+        </Link>
         <p className="mb-6 line-clamp-5 text-gray-600">{description}</p>
         <div className="mt-auto">
-          {hasUrl ? (
-            <a
-              href={programUrl as string}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-secondary block w-full text-center"
-            >
-              VIEW PROGRAM
-            </a>
-          ) : (
-            <button className="btn-secondary w-full opacity-70" disabled>
-              VIEW PROGRAM
-            </button>
-          )}
+          <button className="btn-secondary w-full" onClick={() => navigate(`/development/programs/${id}`)}>
+            VIEW PROGRAM
+          </button>
         </div>
       </div>
     </div>

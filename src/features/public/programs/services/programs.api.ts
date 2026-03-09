@@ -2,6 +2,7 @@ import { publicApiClient } from "@/shared/lib/axios.public";
 import type {
   ProgramFindDTO,
   PublicProgramCard,
+  PublicProgramDetails,
   PublicProgramsPaginatedResponse,
 } from "../types/findDTO";
 
@@ -48,6 +49,37 @@ export async function getPaginatedPrograms(
       last_page: data.data.last_page,
       per_page: data.data.per_page,
       total: data.data.total,
+    },
+  };
+}
+
+export async function getProgramById(programId: number): Promise<PublicProgramDetails> {
+  const { data } = await publicApiClient.get(`/programs/${programId}`);
+  const summary = data.data.program_summary ?? {};
+
+  return {
+    id: data.data.id,
+    name: data.data.name,
+    description: data.data.description,
+    banner_img: data.data.banner_img,
+    sdgs: data.data.sdgs ?? [],
+    program_summary: {
+      start_date: summary.start_date ?? null,
+      end_date: summary.end_date ?? null,
+      geographical_focus: summary.geographical_focus ?? [],
+      beneficiaries: summary.beneficiaries ?? [],
+      status: summary.status ?? null,
+      donors: summary.donors ?? [],
+      budget: Number(summary.budget ?? 0),
+      implementing_agencies: summary.implementing_agencies ?? [],
+      contact_person: {
+        id: summary.contact_person?.id ?? null,
+        first_name: summary.contact_person?.first_name ?? null,
+        last_name: summary.contact_person?.last_name ?? null,
+        title: summary.contact_person?.title ?? null,
+        email: summary.contact_person?.email ?? null,
+        phone: summary.contact_person?.phone ?? null,
+      },
     },
   };
 }
