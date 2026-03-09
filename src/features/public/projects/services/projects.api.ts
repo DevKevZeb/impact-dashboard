@@ -2,12 +2,13 @@ import { publicApiClient } from "@/shared/lib/axios.public";
 import type { findDTO } from "../types/findDTO";
 import { mapProject, mapProjectCards } from "../mappers/project.mapper";
 
-export async function getPaginatedProjects( page: number, per_page: number, filters: findDTO | null ) {
+export async function getPaginatedProjects(page: number, per_page: number, filters: findDTO | null, programId?: number) {
   const params = new URLSearchParams();
 
   params.append("page", String(page));
   params.append("per_page", String(per_page));
   params.append("sort", filters?.sort ?? "date_newest");
+  if (programId) params.append("program_id", String(programId));
 
   if (filters?.search) params.append("search", filters.search);
   
@@ -36,6 +37,5 @@ export async function getPaginatedProjects( page: number, per_page: number, filt
 
 export async function getProjectsByProjectId(projectId: number){
     const { data } = await publicApiClient.get(`/projects/${projectId}`);
-    console.log(data);
     return mapProject(data.data);
 }

@@ -4,6 +4,7 @@ import ProjectBanner from "../../components/ProjectBanner";
 import InfoBlock from "../../components/InfoBlock";
 import { usePublicProgram } from "../hooks/usePrograms";
 import InfoRow from "../../components/InfoRow";
+import PublicProjectsExplorer from "../../projects/components/PublicProjectsExplorer";
 
 function formatDateEN(date: Date | string | null): string {
   if (!date) {
@@ -193,6 +194,13 @@ export default function PublicProgramDetailsPage() {
               <p className="text-slate-600">No SDGs assigned.</p>
             )}
           </section>
+        </div>
+
+        <div className="w-full bg-slate-50">
+          <section className="mx-auto w-5/7 pt-10">
+            <InfoRow title="Projects Under the Program" description="Explore projects assigned to this program." icon={MapPin} />
+          </section>
+          <PublicProjectsExplorer programId={data.id} wrapperClassName="w-5/7" />
         </div>
       </div>
     </div>
