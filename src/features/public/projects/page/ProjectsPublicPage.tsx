@@ -31,6 +31,7 @@ export default function ProjectsPublicPage(){
     const [filters, setFilters] = useState<any>(null);
     const [projects, setProjects] = useState<any[]>([]);
     const [sort, setSort] = useState("date_newest");
+    const [appliedSort, setAppliedSort] = useState("date_newest");
 
     const form = useForm<any>({
         resolver: zodResolver(projectSchema),
@@ -82,6 +83,22 @@ export default function ProjectsPublicPage(){
             strategic_output: data.strategic_output ?? null,
             measure: data.measure ?? null,
             project_state: data.project_state ?? null,
+            sort: appliedSort,
+        });
+    };
+
+    const onSort = () => {
+        const currentValues = form.getValues();
+        setAppliedSort(sort);
+        setPage(1);
+        setFilters({
+            search: currentValues.search || null,
+            country: currentValues.country ?? null,
+            kpa: currentValues.kpa ?? null,
+            strategic_output: currentValues.strategic_output ?? null,
+            measure: currentValues.measure ?? null,
+            project_state: currentValues.project_state ?? null,
+            sort,
         });
     };
 
@@ -142,6 +159,7 @@ export default function ProjectsPublicPage(){
                         <div className="flex justify-baseline space-x-3 items-center">
                             <p>Sort by</p> 
                             <SortSelect options={OPTIONS} value={sort} onChange={(opt) => setSort(opt.value)}/>
+                            <Button type="button" className="btn-secondary text-base" onClick={onSort}>Sort</Button>
                         </div>
                     </div>
                 </form>

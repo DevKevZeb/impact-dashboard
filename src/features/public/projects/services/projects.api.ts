@@ -7,6 +7,7 @@ export async function getPaginatedProjects( page: number, per_page: number, filt
 
   params.append("page", String(page));
   params.append("per_page", String(per_page));
+  params.append("sort", filters?.sort ?? "date_newest");
 
   if (filters?.search) params.append("search", filters.search);
   

@@ -1,9 +1,11 @@
 import type { KPA } from "../types/kpa.type";
 
 export function mapKPA(raw: any): KPA {
+    const source = raw?.kpa ?? raw;
+
     return {
-        id: raw.id,
-        name: raw.name
+        id: source.id,
+        name: source.name
     }
 }
 

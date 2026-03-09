@@ -1,7 +1,7 @@
 import useKpaSelected from "../../hooks/useKpaSelected";
 import { HorizontalBarChart } from "../charts/HorizontalBarChart";
 
-type Props = { kpaId: number; kpaName: string; };
+type Props = { kpaId: number; kpaName: string; sort?: string; };
 
 export default function KpaSelectedSection({ kpaId, kpaName }: Props) {
 	const { data, isLoading, error } = useKpaSelected(kpaId);
