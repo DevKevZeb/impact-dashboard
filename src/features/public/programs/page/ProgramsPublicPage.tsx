@@ -262,7 +262,6 @@ export default function ProgramsPublicPage() {
                                     id={program.id}
                                     name={program.name}
                                     description={program.description}
-                                    programUrl={program.program_url}
                                 />
                             ))}
                         </div>
