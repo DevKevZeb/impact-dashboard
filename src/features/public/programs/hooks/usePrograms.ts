@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPaginatedPrograms, getProgramById } from "../services/programs.api";
 import type { ProgramFindDTO } from "../types/findDTO";
 
-export function usePublicPrograms(page: number, perPage: number, filters: ProgramFindDTO | null) {
+export function usePublicPrograms(page: number, perPage: number, filters: ProgramFindDTO) {
   return useQuery({
     queryKey: ["public-programs", "list", page, perPage, filters],
     queryFn: () => getPaginatedPrograms(page, perPage, filters),

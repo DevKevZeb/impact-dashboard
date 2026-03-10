@@ -6,7 +6,7 @@ import { usePublicProgram } from "../hooks/usePrograms";
 import InfoRow from "../../components/InfoRow";
 import PublicProjectsExplorer from "../../projects/components/PublicProjectsExplorer";
 
-function formatDateEN(date: Date | string | null): string {
+function formatDateEN(date: Date | string): string {
   if (!date) {
     return "N/A";
   }

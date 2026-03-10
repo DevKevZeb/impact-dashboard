@@ -5,22 +5,39 @@ import type { Country } from "../../projects/types/country.type";
 import type { ProgramState } from "./program.state.type";
 import type { Sdg } from "@/features/sdgs/types/sdg.types";
 
+export const DEFAULT_PROGRAM_SORT = "date_newest";
+
+export const DEFAULT_SELECT_OPTION = {
+  id: 0,
+  name: "",
+};
+
 export interface ProgramFindDTO {
-  country: Country | null;
-  kpa: KPA | null;
-  strategic_output: StrategicOutput | null;
-  measure: Measure | null;
-  program_state: ProgramState | null;
-  search: string | null;
-  sort: string | null;
+  country: Country;
+  kpa: KPA;
+  strategic_output: StrategicOutput;
+  measure: Measure;
+  program_state: ProgramState;
+  search: string;
+  sort: string;
 }
+
+export const DEFAULT_PROGRAM_FILTERS: ProgramFindDTO = {
+  country: DEFAULT_SELECT_OPTION,
+  kpa: DEFAULT_SELECT_OPTION,
+  strategic_output: DEFAULT_SELECT_OPTION,
+  measure: DEFAULT_SELECT_OPTION,
+  program_state: DEFAULT_SELECT_OPTION,
+  search: "",
+  sort: DEFAULT_PROGRAM_SORT,
+};
 
 export interface PublicProgramCard {
   id: number;
   name: string;
   description: string;
-  banner_img: string | null;
-  program_url: string | null;
+  banner_img: string;
+  program_url: string;
   projects_count?: number;
 }
 
@@ -28,11 +45,11 @@ export interface PublicProgramDetails {
   id: number;
   name: string;
   description: string;
-  banner_img: string | null;
+  banner_img: string;
   sdgs: Sdg[];
   program_summary: {
-    start_date: string | null;
-    end_date: string | null;
+    start_date: string;
+    end_date: string;
     geographical_focus: Array<{
       id: number;
       name: string;
@@ -41,7 +58,7 @@ export interface PublicProgramDetails {
       id: number;
       name: string;
     }>;
-    status: string | null;
+    status: string;
     donors: Array<{
       id: number;
       name: string;
@@ -50,15 +67,15 @@ export interface PublicProgramDetails {
     implementing_agencies: Array<{
       id: number;
       name: string;
-      url?: string | null;
+      url?: string;
     }>;
     contact_person: {
-      id: number | null;
-      first_name: string | null;
-      last_name: string | null;
-      title: string | null;
-      email: string | null;
-      phone: string | null;
+      id: number;
+      first_name: string;
+      last_name: string;
+      title: string;
+      email: string;
+      phone: string;
     };
   };
 }
