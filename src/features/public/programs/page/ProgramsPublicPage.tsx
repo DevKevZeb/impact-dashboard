@@ -1,6 +1,7 @@
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import { FolderX, Loader, Search } from "lucide-react";
 import Banner from "../../components/Banner";
 import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
@@ -17,6 +18,7 @@ import type { StrategicOutput } from "../../projects/types/strategic.output.type
 import type { ProgramState } from "../types/program.state.type";
 import { publicProgramFilterSchema } from "../types/program.filter.schema";
 import type { ProgramFindDTO, PublicProgramCard } from "../types/findDTO";
+import { DEFAULT_PROGRAM_FILTERS, DEFAULT_PROGRAM_SORT, DEFAULT_SELECT_OPTION } from "../types/findDTO";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -32,44 +34,50 @@ const SORT_OPTIONS = [
     { value: "name_az", label: "Name A-Z" },
 ];
 
+type ProgramFiltersForm = z.input<typeof publicProgramFilterSchema>;
+
 export default function ProgramsPublicPage() {
     const [page, setPage] = useState(1);
     const [perPage] = useState(20);
-    const [sort, setSort] = useState("date_newest");
-    const [filters, setFilters] = useState<ProgramFindDTO | null>(null);
+    const [sort, setSort] = useState(DEFAULT_PROGRAM_SORT);
+    const [filters, setFilters] = useState<ProgramFindDTO>(DEFAULT_PROGRAM_FILTERS);
     const [programs, setPrograms] = useState<PublicProgramCard[]>([]);
 
-    const form = useForm<ProgramFindDTO>({
+    const form = useForm<ProgramFiltersForm>({
         resolver: zodResolver(publicProgramFilterSchema),
         defaultValues: {
-            country: null,
-            kpa: null,
-            strategic_output: null,
-            measure: null,
-            program_state: null,
+            country: DEFAULT_SELECT_OPTION,
+            kpa: DEFAULT_SELECT_OPTION,
+            strategic_output: DEFAULT_SELECT_OPTION,
+            measure: DEFAULT_SELECT_OPTION,
+            program_state: DEFAULT_SELECT_OPTION,
             search: "",
-            sort: "date_newest",
+            sort: DEFAULT_PROGRAM_SORT,
         },
     });
 
-    const country = useWatch({ control: form.control, name: "country" });
-    const kpa = useWatch({ control: form.control, name: "kpa" });
-    const strategicOutput = useWatch({ control: form.control, name: "strategic_output" });
+    const country = useWatch({ control: form.control, name: "country" }) ?? DEFAULT_SELECT_OPTION;
+    const kpa = useWatch({ control: form.control, name: "kpa" }) ?? DEFAULT_SELECT_OPTION;
+    const strategicOutput = useWatch({ control: form.control, name: "strategic_output" }) ?? DEFAULT_SELECT_OPTION;
+
+    const hasCountry = country.id > 0;
+    const hasKpa = kpa.id > 0;
+    const hasStrategicOutput = strategicOutput.id > 0;
 
     useEffect(() => {
-        form.setValue("kpa", null);
-        form.setValue("strategic_output", null);
-        form.setValue("measure", null);
-    }, [country?.id, form]);
+        form.setValue("kpa", DEFAULT_SELECT_OPTION);
+        form.setValue("strategic_output", DEFAULT_SELECT_OPTION);
+        form.setValue("measure", DEFAULT_SELECT_OPTION);
+    }, [country.id, form]);
 
     useEffect(() => {
-        form.setValue("strategic_output", null);
-        form.setValue("measure", null);
-    }, [kpa?.id, form]);
+        form.setValue("strategic_output", DEFAULT_SELECT_OPTION);
+        form.setValue("measure", DEFAULT_SELECT_OPTION);
+    }, [kpa.id, form]);
 
     useEffect(() => {
-        form.setValue("measure", null);
-    }, [strategicOutput?.id, form]);
+        form.setValue("measure", DEFAULT_SELECT_OPTION);
+    }, [strategicOutput.id, form]);
 
     const { control, handleSubmit } = form;
     const { data, isLoading, isFetching, error } = usePublicPrograms(page, perPage, filters);
@@ -92,32 +100,54 @@ export default function ProgramsPublicPage() {
         });
     }, [data]);
 
-    const onSubmit = (submittedFilters: ProgramFindDTO) => {
+    const onSubmit = (submittedFilters: ProgramFiltersForm) => {
         setPage(1);
-        setFilters({
-            country: submittedFilters.country ?? null,
-            kpa: submittedFilters.kpa ?? null,
-            strategic_output: submittedFilters.strategic_output ?? null,
-            measure: submittedFilters.measure ?? null,
-            program_state: submittedFilters.program_state ?? null,
-            search: submittedFilters.search?.trim() || null,
+        const nextFilters: ProgramFindDTO = {
+            ...DEFAULT_PROGRAM_FILTERS,
+            search: (submittedFilters.search ?? "").trim(),
             sort,
+        };
+
+        nextFilters.country = submittedFilters.country ?? DEFAULT_SELECT_OPTION;
+        nextFilters.kpa = submittedFilters.kpa ?? DEFAULT_SELECT_OPTION;
+        nextFilters.strategic_output = submittedFilters.strategic_output ?? DEFAULT_SELECT_OPTION;
+        nextFilters.measure = submittedFilters.measure ?? DEFAULT_SELECT_OPTION;
+        nextFilters.program_state = submittedFilters.program_state ?? DEFAULT_SELECT_OPTION;
+
+        setFilters({
+            ...DEFAULT_PROGRAM_FILTERS,
+            ...nextFilters,
         });
     };
 
     const onSort = () => {
         const currentValues = form.getValues();
         setPage(1);
-        setFilters({
-            country: currentValues.country ?? null,
-            kpa: currentValues.kpa ?? null,
-            strategic_output: currentValues.strategic_output ?? null,
-            measure: currentValues.measure ?? null,
-            program_state: currentValues.program_state ?? null,
-            search: currentValues.search?.trim() || null,
+        const nextFilters: ProgramFindDTO = {
+            ...DEFAULT_PROGRAM_FILTERS,
+            search: (currentValues.search ?? "").trim(),
             sort,
+        };
+
+        nextFilters.country = currentValues.country ?? DEFAULT_SELECT_OPTION;
+        nextFilters.kpa = currentValues.kpa ?? DEFAULT_SELECT_OPTION;
+        nextFilters.strategic_output = currentValues.strategic_output ?? DEFAULT_SELECT_OPTION;
+        nextFilters.measure = currentValues.measure ?? DEFAULT_SELECT_OPTION;
+        nextFilters.program_state = currentValues.program_state ?? DEFAULT_SELECT_OPTION;
+
+        setFilters({
+            ...DEFAULT_PROGRAM_FILTERS,
+            ...nextFilters,
         });
     };
+
+    const hasActiveFilters =
+        filters.country.id > 0 ||
+        filters.kpa.id > 0 ||
+        filters.strategic_output.id > 0 ||
+        filters.measure.id > 0 ||
+        filters.program_state.id > 0 ||
+        filters.search.length > 0;
 
     return (
         <div>
@@ -148,8 +178,8 @@ export default function ProgramsPublicPage() {
                             name="country"
                             render={({ field }) => (
                                 <AsyncSearchSelect<Country>
-                                    value={field.value}
-                                    onChange={field.onChange}
+                                    value={field.value ?? DEFAULT_SELECT_OPTION}
+                                    onChange={(value) => field.onChange(value ?? DEFAULT_SELECT_OPTION)}
                                     placeholder="Search by Country"
                                     fetchOptions={fetchCountriesForSelect}
                                     getOptionLabel={(option) => option.name}
@@ -164,16 +194,16 @@ export default function ProgramsPublicPage() {
                             render={({ field }) => (
                                 <div>
                                     <AsyncSearchSelect<KPA>
-                                        key={country?.id ?? "no-country"}
-                                        value={field.value}
-                                        onChange={field.onChange}
+                                        key={hasCountry ? country.id : "no-country"}
+                                        value={field.value ?? DEFAULT_SELECT_OPTION}
+                                        onChange={(value) => field.onChange(value ?? DEFAULT_SELECT_OPTION)}
                                         placeholder="Search by KPA"
-                                        fetchOptions={fetchKPAsForSelect(country ? country.id : 0)}
+                                        fetchOptions={fetchKPAsForSelect(country.id)}
                                         getOptionLabel={(option) => option.name}
                                         getOptionKey={(option) => option.id}
-                                        disabled={!country}
+                                        disabled={!hasCountry}
                                     />
-                                    {!country && <p className="previous-message">Select a Country first</p>}
+                                    {!hasCountry && <p className="previous-message">Select a Country first</p>}
                                 </div>
                             )}
                         />
@@ -184,16 +214,16 @@ export default function ProgramsPublicPage() {
                             render={({ field }) => (
                                 <div>
                                     <AsyncSearchSelect<StrategicOutput>
-                                        key={kpa?.id ?? "no-kpa"}
-                                        value={field.value}
-                                        onChange={field.onChange}
+                                        key={hasKpa ? kpa.id : "no-kpa"}
+                                        value={field.value ?? DEFAULT_SELECT_OPTION}
+                                        onChange={(value) => field.onChange(value ?? DEFAULT_SELECT_OPTION)}
                                         placeholder="Search by Strategic Output"
-                                        fetchOptions={fetchStrategicOutputsForSelect(kpa ? kpa.id : 0)}
+                                        fetchOptions={fetchStrategicOutputsForSelect(kpa.id)}
                                         getOptionLabel={(option) => option.name}
                                         getOptionKey={(option) => option.id}
-                                        disabled={!kpa}
+                                        disabled={!hasKpa}
                                     />
-                                    {!kpa && <p className="previous-message">Select a KPA first</p>}
+                                    {!hasKpa && <p className="previous-message">Select a KPA first</p>}
                                 </div>
                             )}
                         />
@@ -204,16 +234,16 @@ export default function ProgramsPublicPage() {
                             render={({ field }) => (
                                 <div>
                                     <AsyncSearchSelect<Measure>
-                                        key={strategicOutput?.id ?? "no-strategic-output"}
-                                        value={field.value}
-                                        onChange={field.onChange}
+                                        key={hasStrategicOutput ? strategicOutput.id : "no-strategic-output"}
+                                        value={field.value ?? DEFAULT_SELECT_OPTION}
+                                        onChange={(value) => field.onChange(value ?? DEFAULT_SELECT_OPTION)}
                                         placeholder="Search by Measure"
-                                        fetchOptions={fetchMeasuresForSelect(strategicOutput ? strategicOutput.id : 0)}
+                                        fetchOptions={fetchMeasuresForSelect(strategicOutput.id)}
                                         getOptionLabel={(option) => option.name}
                                         getOptionKey={(option) => option.id}
-                                        disabled={!strategicOutput}
+                                        disabled={!hasStrategicOutput}
                                     />
-                                    {!strategicOutput && (
+                                    {!hasStrategicOutput && (
                                         <p className="previous-message">Select a Strategic Output first</p>
                                     )}
                                 </div>
@@ -225,8 +255,8 @@ export default function ProgramsPublicPage() {
                             name="program_state"
                             render={({ field }) => (
                                 <AsyncSearchSelect<ProgramState>
-                                    value={field.value}
-                                    onChange={field.onChange}
+                                    value={field.value ?? DEFAULT_SELECT_OPTION}
+                                    onChange={(value) => field.onChange(value ?? DEFAULT_SELECT_OPTION)}
                                     placeholder="Search by Program State"
                                     fetchOptions={fetchProgramStatesForSelect}
                                     getOptionLabel={(option) => option.name}
@@ -235,14 +265,14 @@ export default function ProgramsPublicPage() {
                             )}
                         />
                     </div>
-                    <div className="w-full flex justify-start items-center gap-3 mt-6">
+                    <span className="block w-full h-px bg-slate-300 my-14"></span>
+                    <div className="w-full flex justify-start items-center gap-3">
                         <p>Sort by</p>
                         <SortSelect options={SORT_OPTIONS} value={sort} onChange={(option) => setSort(option.value)} />
                         <Button type="button" className="btn-secondary text-base" onClick={onSort}>
                             Sort
                         </Button>
                     </div>
-                    <span className="block w-full h-px bg-slate-300 my-14"></span>
                 </form>
 
                 <div className="w-5/7 my-4">
@@ -262,7 +292,6 @@ export default function ProgramsPublicPage() {
                                     id={program.id}
                                     name={program.name}
                                     description={program.description}
-                                    programUrl={program.program_url}
                                 />
                             ))}
                         </div>
@@ -271,9 +300,9 @@ export default function ProgramsPublicPage() {
                     {!isLoading && !isFetching && !error && programs.length === 0 && (
                         <EmptyState
                             icon={FolderX}
-                            title={filters ? "No programs match your filters" : "No programs available"}
+                            title={hasActiveFilters ? "No programs match your filters" : "No programs available"}
                             description={
-                                filters
+                                hasActiveFilters
                                     ? "Try adjusting your filters or search terms."
                                     : "There are no programs to display at the moment."
                             }

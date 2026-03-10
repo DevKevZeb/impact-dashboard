@@ -1,36 +1,21 @@
 import z from "zod";
 
+const defaultOption = {
+  id: 0,
+  name: "",
+};
+
+const optionSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
 export const publicProgramFilterSchema = z.object({
-  country: z
-    .object({
-      id: z.number(),
-      name: z.string(),
-    })
-    .nullable(),
-  kpa: z
-    .object({
-      id: z.number(),
-      name: z.string(),
-    })
-    .nullable(),
-  strategic_output: z
-    .object({
-      id: z.number(),
-      name: z.string(),
-    })
-    .nullable(),
-  measure: z
-    .object({
-      id: z.number(),
-      name: z.string(),
-    })
-    .nullable(),
-  program_state: z
-    .object({
-      id: z.number(),
-      name: z.string(),
-    })
-    .nullable(),
-  search: z.string().nullable(),
-  sort: z.string().nullable(),
+  country: optionSchema.default(defaultOption),
+  kpa: optionSchema.default(defaultOption),
+  strategic_output: optionSchema.default(defaultOption),
+  measure: optionSchema.default(defaultOption),
+  program_state: optionSchema.default(defaultOption),
+  search: z.string().default(""),
+  sort: z.string().default("date_newest"),
 });
