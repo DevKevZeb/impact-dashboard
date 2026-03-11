@@ -12,11 +12,19 @@ export const authKeys = {
 export function useLogin() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
+  const setUser = useAuthStore((state) => state.setUser);
 
   return useMutation({
     mutationFn: (credentials: LoginInput) => login(credentials),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setAuth(data.user, data.access_token);
+      // Fetch full profile to get country_user_role and populate countryUserRoleId
+      try {
+        const fullUser = await getCurrentUser();
+        setUser(fullUser);
+      } catch {
+        // Login still succeeds even if /auth/me fails
+      }
       navigate("/");
     },
     onError: (error) => {
@@ -32,7 +40,7 @@ export function useCurrentUser() {
     queryKey: authKeys.me(),
     queryFn: getCurrentUser,
     enabled: isAuthenticated,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
     retry: false,
   });
 }

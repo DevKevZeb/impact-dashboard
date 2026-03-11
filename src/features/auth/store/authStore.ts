@@ -7,7 +7,10 @@ interface AuthStore {
   token: string | null;
   isAuthenticated: boolean;
   scopes: string[];
+  hasCountryScope: boolean;
+  countryUserRoleId: number;
   setAuth: (user: User, token: string) => void;
+  setUser: (user: User) => void;
   logout: () => void;
   hasScope: (scope: string) => boolean;
   hasAnyScope: (scopes: string[]) => boolean;
@@ -31,6 +34,8 @@ export const useAuthStore = create<AuthStore>()(
       token: null,
       isAuthenticated: false,
       scopes: [],
+      hasCountryScope: false,
+      countryUserRoleId: 0,
 
       setAuth: (user, token) => {
         localStorage.setItem("auth_token", token);
@@ -40,6 +45,16 @@ export const useAuthStore = create<AuthStore>()(
           token,
           isAuthenticated: true,
           scopes,
+          hasCountryScope: !!user.country_user_role,
+          countryUserRoleId: user.country_user_role?.id ?? 0,
+        });
+      },
+
+      setUser: (user) => {
+        set({
+          user,
+          hasCountryScope: !!user.country_user_role,
+          countryUserRoleId: user.country_user_role?.id ?? 0,
         });
       },
 
@@ -53,6 +68,8 @@ export const useAuthStore = create<AuthStore>()(
           token: null,
           isAuthenticated: false,
           scopes: [],
+          hasCountryScope: false,
+          countryUserRoleId: 0,
         });
 
       },
@@ -86,6 +103,8 @@ export const useAuthStore = create<AuthStore>()(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
         scopes: state.scopes,
+        hasCountryScope: state.hasCountryScope,
+        countryUserRoleId: state.countryUserRoleId,
       }),
     }
   )

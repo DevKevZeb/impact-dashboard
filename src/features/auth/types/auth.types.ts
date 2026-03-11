@@ -3,12 +3,18 @@ export interface Role {
   name: string;
 }
 
+export interface CountryUserRole {
+  id: number;
+  country: { id: number; name: string };
+}
+
 export interface User {
   id: number;
   name: string;
   email: string;
   user_state_id: number;
   roles: Role[];
+  country_user_role: CountryUserRole | null;
 }
 
 export interface LoginInput {

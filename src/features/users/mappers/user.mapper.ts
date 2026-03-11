@@ -1,19 +1,15 @@
 import type { User, UserListResponse } from "../types/user.types";
 
-// DTO matches backend response structure (camelCase for userState)
+// DTO matches backend response structure
 export interface UserDTO {
   id: number;
   name: string;
   email: string;
-  roles: Array<{ id: number; name: string; guard_name?: string }>;
-  userState: {
-    id: number;
-    name: string;
-  };
-  countries: Array<{
-    id: number;
-    name: string;
-  }>; // Backend envía array
+  roles: Array<{ id: number; name: string; guard_name?: string }> | null;
+  userState?: { id: number; name: string } | null;   // camelCase (some endpoints)
+  user_state?: { id: number; name: string } | null;  // snake_case (standard Laravel)
+  countries?: Array<{ id: number; name: string }> | null;  // legacy field
+  country_user_role?: { id: number; country: { id: number; name: string } | null } | null;
   created_at: string;
   updated_at: string;
 }
@@ -27,22 +23,24 @@ export interface UserListResponseDTO {
 }
 
 export function mapUserFromDTO(dto: UserDTO): User {
+  const state = dto.userState ?? dto.user_state;
   return {
     id: dto.id,
     name: dto.name,
     email: dto.email,
-    roles: dto.roles.map(role => ({
+    roles: (dto.roles ?? []).map(role => ({
       id: role.id,
       name: role.name,
     })),
     userState: {
-      id: dto.userState.id,
-      name: dto.userState.name,
+      id: state?.id ?? 0,
+      name: state?.name ?? "Unknown",
     },
-    countries: dto.countries.map(country => ({
-      id: country.id,
-      name: country.name,
-    })),
+    countries: dto.countries
+      ? dto.countries.map(country => ({ id: country.id, name: country.name }))
+      : dto.country_user_role?.country
+        ? [{ id: dto.country_user_role.country.id, name: dto.country_user_role.country.name }]
+        : [],
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
   };
@@ -50,12 +48,12 @@ export function mapUserFromDTO(dto: UserDTO): User {
 
 export function mapUserListFromDTO(dto: UserListResponseDTO): UserListResponse {
   return {
-    users: dto.users.map(mapUserFromDTO),
+    users: (dto.users ?? []).map(mapUserFromDTO),
     pagination: {
-      total: dto.total,
-      per_page: dto.per_page,
-      current_page: dto.current_page,
-      last_page: dto.last_page,
+      total: dto.total ?? 0,
+      per_page: dto.per_page ?? 10,
+      current_page: dto.current_page ?? 1,
+      last_page: dto.last_page ?? 1,
     },
   };
 }

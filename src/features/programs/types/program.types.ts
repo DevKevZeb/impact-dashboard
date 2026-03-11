@@ -18,7 +18,7 @@ export interface Program {
   program_url: string | null;
   contact: Contact;
   program_state: ProgramState;
-  sdgs?: Sdg[];
+  sdgs: Sdg[];
   created_at?: string;
   updated_at?: string;
   projects_count?: number;
@@ -46,21 +46,35 @@ export interface ProgramUpdateInput {
   description: string;
   banner_img?: File;
   program_url?: string;
-  contact: {
-    id: number;  // ID del contacto existente
-    first_name: string;
-    last_name: string;
-    title: string;
-    email: string;
-    phone?: string;
-  };
+  contact_id: number;
   program_state_id: number;
   sdg_ids?: number[];
 }
 
-export interface ProgramsResponse {
-  programs: Program[];
+export interface ProgramAssignment {
+  id: number;
+  program_id: number;
+  country_user_role_id: number;
+  program: Program;
+  country_user_role: {
+    id: number;
+    country: { id: number; name: string } | null;
+  };
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProgramAssignmentList {
+  assignments: ProgramAssignment[];
   total: number;
+  per_page: number;
+  current_page: number;
+  last_page: number;
+}
+
+export interface CreateAssignmentPayload {
+  program_id: number;
+  country_user_role_id: number;
 }
 
 export interface ProgramPaginatedResponse {

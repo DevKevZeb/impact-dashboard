@@ -58,10 +58,10 @@ export async function login(credentials: LoginInput): Promise<AuthResponse> {
 }
 
 export async function getCurrentUser(): Promise<User> {
-  const { data } = await apiClient.get<ApiResponse<{ user: User }>>(
+  const { data } = await apiClient.get<ApiResponse<User>>(
     `${AUTH_ENDPOINT}/me`
   );
-  return data.data.user;
+  return data.data;
 }
 
 export async function refreshToken(): Promise<RefreshTokenResponse> {

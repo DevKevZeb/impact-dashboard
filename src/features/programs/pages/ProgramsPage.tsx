@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, Plus, Loader2, FolderKanban } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useProgramsPaginated } from "../api/programQueries";
+import { useMyPrograms } from "../api/programQueries";
 import { ProgramTableRow } from "../components/ProgramTableRow";
 import { ProgramCreateDialog } from "../components/ProgramCreateDialog";
 import { ProgramEditDialog } from "../components/ProgramEditDialog";
@@ -28,10 +28,10 @@ export function ProgramsPage() {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
 
-  const { data, isLoading, error } = useProgramsPaginated(currentPage, perPage);
+  const { programs, pagination, isLoading, error } = useMyPrograms(currentPage, perPage);
 
   // Filter data by search term
-  const filteredData = (data?.programs || []).filter((program) =>
+  const filteredData = programs.filter((program) =>
     program.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -127,7 +127,9 @@ export function ProgramsPage() {
             </DataTableHeader>
             <DataTableBody>
               {sortedData.map((program, index) => {
-                const rowIndex = data ? (data.pagination.current_page - 1) * data.pagination.per_page + index + 1 : index + 1;
+                const rowIndex = pagination
+                  ? (pagination.current_page - 1) * pagination.per_page + index + 1
+                  : index + 1;
                 return (
                   <ProgramTableRow
                     key={program.id}
@@ -141,12 +143,12 @@ export function ProgramsPage() {
             </DataTableBody>
           </DataTable>
           
-          {data && (
+          {pagination && (
             <TablePagination
-              currentPage={data.pagination.current_page}
-              totalPages={data.pagination.last_page}
-              totalItems={data.pagination.total}
-              itemsPerPage={data.pagination.per_page}
+              currentPage={pagination.current_page}
+              totalPages={pagination.last_page}
+              totalItems={pagination.total}
+              itemsPerPage={pagination.per_page}
               onPageChange={setCurrentPage}
             />
           )}
