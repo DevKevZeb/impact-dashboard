@@ -1,4 +1,4 @@
-import { useProgramsPaginated } from "@/features/programs/api/programQueries";
+import { useMyPrograms } from "@/features/programs/api/programQueries";
 import { BookOpenCheck, Loader2, Search } from "lucide-react";
 import { useState } from "react";
 import ProgramsWithProjectsTable from "../components/ProgramsWithProjectsTable";
@@ -18,7 +18,7 @@ export default function ListProgramsWithProjects(){
 
     //const debouncedSearch = useDebounce(searchTerm, 400);
 
-    const { data, isLoading, error } = useProgramsPaginated(page, perPage);
+    const { programs, pagination, isLoading, error } = useMyPrograms(page, perPage);
 
     //const showSkeleton = isFetching && (searchChanged || pageChanged);
 
@@ -65,8 +65,8 @@ export default function ListProgramsWithProjects(){
                 <input type="text" placeholder="Search by program name..." value={searchTerm} onChange={(e) => handleSearchChange(e.target.value)} className="search-default" />
             </div>
 
-            { data && data.programs.length > 0 ?
-            <ProgramsWithProjectsTable programs={data.programs} pagination={data.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage}/>
+            { programs.length > 0 && pagination ?
+            <ProgramsWithProjectsTable programs={programs} pagination={pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage}/>
         : <EmptyState icon={BookOpenCheck} title={searchTerm ? "No Program found" : "No Programs available"}
           description={
             searchTerm && "Try adjusting your search terms"

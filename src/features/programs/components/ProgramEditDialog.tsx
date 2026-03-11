@@ -17,13 +17,15 @@ import { useHasScope } from "@/features/auth/hooks/useHasScope";
 import { SCOPES } from "@/features/auth/utils/permissions";
 import { toast } from "sonner";
 import { useUpdateProgram } from "../api/programQueries";
+import { contactSearchService } from "../api/programService";
 import { useSdgs } from "@/features/sdgs/api/sdgQueries";
 import { useProgramStates } from "@/features/program-states/api/programStateQueries";
+import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
 import {
   programUpdateSchema,
   type ProgramUpdateFormData,
 } from "../types/program.schema";
-import type { Program } from "../types/program.types";
+import type { Program, Contact } from "../types/program.types";
 
 interface ProgramEditDialogProps {
   program: Program | null;
@@ -43,6 +45,7 @@ export function ProgramEditDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedSdgs, setSelectedSdgs] = useState<number[]>([]);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -61,17 +64,11 @@ export function ProgramEditDialog({
         name: program.name,
         description: program.description,
         program_url: program.program_url || "",
-        contact: {
-          id: program.contact.id,  // ID del contacto existente
-          first_name: program.contact.first_name,
-          last_name: program.contact.last_name,
-          title: program.contact.title,
-          email: program.contact.email,
-          phone: program.contact.phone || "",
-        },
+        contact_id: program.contact.id,
         program_state_id: program.program_state.id,
         sdg_ids: program.sdgs?.map((sdg) => sdg.id) || [],
       });
+      setSelectedContact(program.contact);
       setSelectedSdgs(program.sdgs?.map((sdg) => sdg.id) || []);
       setPreviewUrl(null);
     }
@@ -122,20 +119,14 @@ export function ProgramEditDialog({
           banner_img: data.banner_img,
           program_url: data.program_url || undefined,
           program_state_id: data.program_state_id,
-          contact: {
-            id: data.contact.id,  // ID del contacto existente
-            first_name: data.contact.first_name,
-            last_name: data.contact.last_name,
-            title: data.contact.title,
-            email: data.contact.email,
-            phone: data.contact.phone || undefined,
-          },
+          contact_id: data.contact_id,
           sdg_ids: selectedSdgs.length > 0 ? selectedSdgs : undefined,
         },
       });
       reset();
       clearFile();
       setSelectedSdgs([]);
+      setSelectedContact(null);
       onOpenChange(false);
     } catch {
       // Error handling is done in the mutation
@@ -148,6 +139,7 @@ export function ProgramEditDialog({
     reset();
     clearFile();
     setSelectedSdgs([]);
+    setSelectedContact(null);
     onOpenChange(false);
   };
 
@@ -362,105 +354,30 @@ export function ProgramEditDialog({
             )}
           </div>
 
-          {/* 7. Contact Information */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-900 border-b pb-2">
-              Contact Information
-            </h3>
-
-            <div className="grid grid-cols-2 gap-4">
-              {/* First Name */}
-              <div className="space-y-2">
-                <label htmlFor="contact.first_name" className="text-sm font-medium text-gray-700 block">
-                  First Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="contact.first_name"
-                  type="text"
-                  {...register("contact.first_name")}
-                  placeholder="John"
-                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-                  aria-invalid={errors.contact?.first_name ? "true" : "false"}
-                />
-                {errors.contact?.first_name && (
-                  <p className="text-sm text-red-600">{errors.contact.first_name.message}</p>
-                )}
-              </div>
-
-              {/* Last Name */}
-              <div className="space-y-2">
-                <label htmlFor="contact.last_name" className="text-sm font-medium text-gray-700 block">
-                  Last Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="contact.last_name"
-                  type="text"
-                  {...register("contact.last_name")}
-                  placeholder="Doe"
-                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-                  aria-invalid={errors.contact?.last_name ? "true" : "false"}
-                />
-                {errors.contact?.last_name && (
-                  <p className="text-sm text-red-600">{errors.contact.last_name.message}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Title */}
-            <div className="space-y-2">
-              <label htmlFor="contact.title" className="text-sm font-medium text-gray-700 block">
-                Title/Position <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="contact.title"
-                type="text"
-                {...register("contact.title")}
-                placeholder="Project Director"
-                className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-                aria-invalid={errors.contact?.title ? "true" : "false"}
-              />
-              {errors.contact?.title && (
-                <p className="text-sm text-red-600">{errors.contact.title.message}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {/* Email */}
-              <div className="space-y-2">
-                <label htmlFor="contact.email" className="text-sm font-medium text-gray-700 block">
-                  Email <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="contact.email"
-                  type="email"
-                  {...register("contact.email")}
-                  placeholder="john.doe@org.com"
-                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-                  aria-invalid={errors.contact?.email ? "true" : "false"}
-                />
-                {errors.contact?.email && (
-                  <p className="text-sm text-red-600">{errors.contact.email.message}</p>
-                )}
-              </div>
-
-              {/* Phone */}
-              <div className="space-y-2">
-                <label htmlFor="contact.phone" className="text-sm font-medium text-gray-700 block">
-                  Phone (Optional)
-                </label>
-                <input
-                  id="contact.phone"
-                  type="tel"
-                  {...register("contact.phone")}
-                  placeholder="+1234567890"
-                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-                  aria-invalid={errors.contact?.phone ? "true" : "false"}
-                />
-                {errors.contact?.phone && (
-                  <p className="text-sm text-red-600">{errors.contact.phone.message}</p>
-                )}
-              </div>
-            </div>
+          {/* 7. Contact */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700 block">
+              Contact <span className="text-red-500">*</span>
+            </label>
+            <p className="text-xs text-gray-500">Search and select the program contact</p>
+            <AsyncSearchSelect<Contact>
+              value={selectedContact}
+              onChange={(contact) => {
+                setSelectedContact(contact);
+                if (contact) setValue("contact_id", contact.id);
+              }}
+              fetchOptions={contactSearchService.search}
+              getOptionLabel={(c) =>
+                `${c.first_name} ${c.last_name} — ${c.title}`
+              }
+              getOptionKey={(c) => c.id}
+              placeholder="Search contact by name..."
+              emptyMessage="No contacts found"
+              enab={true}
+            />
+            {errors.contact_id && (
+              <p className="text-sm text-red-600">{errors.contact_id.message}</p>
+            )}
           </div>
 
           <DialogFooter>

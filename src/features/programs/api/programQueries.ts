@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { programService } from "./programService";
-import type { ProgramCreateInput, ProgramUpdateInput } from "../types/program.types";
+import { programService, assignmentService } from "./programService";
+import type { ProgramCreateInput, ProgramUpdateInput, Program } from "../types/program.types";
 import { toast } from "sonner";
+import { useAuthStore } from "@/features/auth/store/authStore";
 
 interface ApiError {
   response?: {
@@ -20,20 +21,40 @@ export const programKeys = {
   detail: (id: number) => [...programKeys.all, "detail", id] as const,
 };
 
-export function usePrograms() {
-  return useQuery({
-    queryKey: programKeys.lists(),
-    queryFn: programService.getAll,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-}
+export const assignmentKeys = {
+  all: ["program-assignments"] as const,
+  byCountryUserRole: (id: number) =>
+    [...assignmentKeys.all, "by-role", id] as const,
+};
 
-export function useProgramsPaginated(page: number, perPage: number) {
+export function useProgramsPaginated(page: number, perPage: number, enabled = true) {
   return useQuery({
     queryKey: [...programKeys.lists(), page, perPage],
     queryFn: () => programService.getPaginated(page, perPage),
     staleTime: 5 * 60 * 1000,
+    enabled,
   });
+}
+
+export function useMyPrograms(page: number, perPage: number) {
+  const { hasCountryScope, countryUserRoleId } = useAuthStore();
+
+  const adminQuery = useProgramsPaginated(page, perPage, !hasCountryScope);
+  const pmQuery = useProgramAssignments(countryUserRoleId, page, perPage);
+
+  const programs: Program[] = hasCountryScope
+    ? (pmQuery.data?.assignments.map((a) => a.program) ?? [])
+    : (adminQuery.data?.programs ?? []);
+
+  const pagination = hasCountryScope ? pmQuery.data?.pagination : adminQuery.data?.pagination;
+
+  return {
+    programs,
+    pagination,
+    isLoading: hasCountryScope ? pmQuery.isLoading : adminQuery.isLoading,
+    error: hasCountryScope ? pmQuery.error : adminQuery.error,
+    isAdmin: !hasCountryScope,
+  };
 }
 
 export function useProgram(id: number) {
@@ -44,13 +65,44 @@ export function useProgram(id: number) {
   });
 }
 
+export function useProgramAssignments(
+  countryUserRoleId: number,
+  page = 1,
+  perPage = 10
+) {
+  return useQuery({
+    queryKey: [
+      ...assignmentKeys.byCountryUserRole(countryUserRoleId),
+      page,
+      perPage,
+    ],
+    queryFn: () =>
+      assignmentService.getByCountryUserRole(countryUserRoleId, page, perPage),
+    staleTime: 5 * 60 * 1000,
+    enabled: countryUserRoleId > 0, 
+  });
+}
+
 export function useCreateProgram() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: ProgramCreateInput) => programService.create(input),
+    mutationFn: async (input: ProgramCreateInput) => {
+      const program = await programService.create(input);
+
+      const { hasCountryScope, countryUserRoleId } = useAuthStore.getState();
+      if (hasCountryScope) {
+        await assignmentService.create({
+          program_id: program.id,
+          country_user_role_id: countryUserRoleId,
+        });
+      }
+
+      return program;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: programKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: assignmentKeys.all });
       toast.success("Program created successfully");
     },
     onError: (error: unknown) => {

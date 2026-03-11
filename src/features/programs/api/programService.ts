@@ -1,25 +1,24 @@
 import { apiClient, type ApiResponse } from "@/shared/lib/axios";
 import type {
   Program,
+  Contact,
   ProgramCreateInput,
   ProgramUpdateInput,
-  ProgramsResponse,
   ProgramPaginatedResponse,
+  ProgramAssignmentList,
+  ProgramAssignment,
+  CreateAssignmentPayload,
 } from "../types/program.types";
+import type { PaginatedResult } from "@/shared/components/AsyncSearchSelect/asyncSearch.type";
 
 const PROGRAMS_ENDPOINT = "/programs";
+const ASSIGNMENTS_ENDPOINT = "/program_country_user_roles";
 
 export const programService = {
-  getAll: async (): Promise<Program[]> => {
-    const { data } = await apiClient.get<ApiResponse<ProgramsResponse>>(
-      PROGRAMS_ENDPOINT
-    );
-    return data.data.programs;
-  },
-
   getPaginated: async (page: number, perPage: number) => {
     const { data } = await apiClient.get<ApiResponse<ProgramPaginatedResponse>>(
-      `${PROGRAMS_ENDPOINT}?page=${page}&per_page=${perPage}`
+      PROGRAMS_ENDPOINT,
+      { params: { page, per_page: perPage } }
     );
     return {
       programs: data.data.programs,
@@ -79,22 +78,10 @@ export const programService = {
 
   update: async (id: number, input: ProgramUpdateInput): Promise<Program> => {
     const formData = new FormData();
-    formData.append("_method", "PUT"); // Laravel method spoofing
+    formData.append("_method", "PUT");
     formData.append("name", input.name);
     formData.append("description", input.description);
-    
-    // Contact como objeto anidado (FormData syntax) - incluye ID
-    formData.append("contact[id]", input.contact.id.toString());
-    formData.append("contact[first_name]", input.contact.first_name);
-    formData.append("contact[last_name]", input.contact.last_name);
-    formData.append("contact[title]", input.contact.title);
-    formData.append("contact[email]", input.contact.email);
-    if (input.contact.phone) {
-      formData.append("contact[phone]", input.contact.phone);
-    }
-
-    formData.append("program_state_id", input.program_state_id.toString());
-
+    formData.append("contact_id", input.contact_id.toString());
     if (input.banner_img) {
       formData.append("banner_img", input.banner_img);
     }
@@ -119,11 +106,61 @@ export const programService = {
     return data.data;
   },
 
-  search: async (name: string): Promise<Program> => {
-    const { data } = await apiClient.get<ApiResponse<Program>>(
+  search: async (name: string): Promise<Program[]> => {
+    const { data } = await apiClient.get<ApiResponse<{ programs: Program[] }>>(
       `${PROGRAMS_ENDPOINT}/search`,
       { params: { name } }
     );
+    return data.data.programs;
+  },
+};
+
+export const assignmentService = {
+  getByCountryUserRole: async (
+    countryUserRoleId: number,
+    page = 1,
+    perPage = 10
+  ) => {
+    const { data } = await apiClient.get<ApiResponse<ProgramAssignmentList>>(
+      ASSIGNMENTS_ENDPOINT,
+      { params: { country_user_role_id: countryUserRoleId, page, per_page: perPage } }
+    );
+    return {
+      assignments: data.data.assignments,
+      pagination: {
+        current_page: data.data.current_page,
+        last_page: data.data.last_page,
+        per_page: data.data.per_page,
+        total: data.data.total,
+      },
+    };
+  },
+
+  create: async (payload: CreateAssignmentPayload): Promise<ProgramAssignment> => {
+    const { data } = await apiClient.post<ApiResponse<ProgramAssignment>>(
+      ASSIGNMENTS_ENDPOINT,
+      payload
+    );
     return data.data;
+  },
+
+  delete: async (pivotId: number): Promise<void> => {
+    await apiClient.delete(`${ASSIGNMENTS_ENDPOINT}/${pivotId}`);
+  },
+};
+
+export const contactSearchService = {
+  search: async ({ query, page, limit }: { query: string; page: number; limit: number }): Promise<PaginatedResult<Contact>> => {
+    const { data } = await apiClient.get<
+      ApiResponse<{
+        contacts: Contact[];
+        current_page: number;
+        last_page: number;
+      }>
+    >(`/contacts`, { params: { search: query, page, per_page: limit } });
+    return {
+      items: data.data.contacts,
+      hasMore: data.data.current_page < data.data.last_page,
+    };
   },
 };

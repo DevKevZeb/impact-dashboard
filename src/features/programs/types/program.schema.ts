@@ -87,9 +87,7 @@ export const programUpdateSchema = z.object({
     .regex(/^https?:\/\//, "URL must use HTTP or HTTPS protocol")
     .optional()
     .or(z.literal("")),
-  contact: contactSchema.extend({
-    id: z.number().int().min(1, "Contact ID is required"), // ID del contacto existente
-  }),
+  contact_id: z.number({ error: "Must select a contact" }).int().min(1, "Must select a contact"),
   program_state_id: z.number().int().min(1, "Must select a state"),
   sdg_ids: z.array(z.number().int().min(1)).optional(),
 });
