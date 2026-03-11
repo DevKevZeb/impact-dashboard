@@ -29,6 +29,7 @@ import PublicRoute from "./PublicRoute";
 import { PublicLayout } from "@/shared/components/layout/PublicLayout";
 import ListProjectsOfProgramPage from "@/features/projects/pages/ListProjectsOfProgramPage";
 import ProgramsPublicPage from "@/features/public/programs/page/ProgramsPublicPage";
+import PublicProgramDetailsPage from "@/features/public/programs/page/PublicProgramDetailsPage";
 import ProjectsPublicPage from "@/features/public/projects/page/ProjectsPublicPage";
 import ProgressPublicPage from "@/features/public/progress/page/ProgressPublicPage";
 import PublicProjectDetailsPage from "@/features/public/projects/page/PublicProjectDetailsPage";
@@ -42,6 +43,7 @@ export function AppRouter() {
 
             <Route path="development">
                 <Route path="programs" element={<ProgramsPublicPage/>} />
+                <Route path="programs/:id" element={<PublicProgramDetailsPage />} />
                 <Route path="projects" element={<ProjectsPublicPage/>}/>
                 <Route path="projects/:id" element={<PublicProjectDetailsPage />} />
                 <Route path="progress" element={<ProgressPublicPage/>} />
