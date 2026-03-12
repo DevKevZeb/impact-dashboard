@@ -26,6 +26,12 @@ import { fetchDonorsForSelect } from "@/features/donors/services/donor.api";
 import { fetchAgenciesForSelector } from "@/features/agency/services/agency.api";
 import { useCallback, useEffect, useState } from "react";
 import BackArrow from "@/shared/components/backArrow/BackArrow";
+import {
+    fetchProgramKpasForSelect,
+    fetchProgramMeasuresForSelect,
+    fetchProgramStrategicOutputsForSelect,
+} from "../services/project.catalog.api";
+import { useAuthStore } from "@/features/auth/store/authStore";
 
 interface Props {
     mode: "create" | "edit";
@@ -37,6 +43,8 @@ interface Props {
 }
  
 export default function ProjectFormView({ mode, programName, form, onSubmit, onInvalid, programId }: Props) {
+    const hasCountryScope = useAuthStore((state) => state.hasCountryScope);
+
 
     const [totalDonors, setTotalDonors] = useState<number | null>(null);
     const [totalAgencies, setTotalAgencies] = useState<number | null>(null);
@@ -47,7 +55,24 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
     const project_state = useWatch({ control: form.form.control, name: "project_state" });
     const beneficiary = useWatch({ control: form.form.control, name: "beneficiary" });
 
-    const fetchKpas = useCallback(fetchKpasForSelect, []);
+    const fetchKpas = useCallback(
+        hasCountryScope ? fetchProgramKpasForSelect(programId ?? 0) : fetchKpasForSelect,
+        [hasCountryScope, programId]
+    );
+
+    const fetchStrategicOutputs = useCallback(
+        hasCountryScope
+            ? fetchProgramStrategicOutputsForSelect(programId ?? 0, kpa?.id ?? 0)
+            : fetchStrategicOutputsForSelect(kpa?.id ?? 0),
+        [hasCountryScope, programId, kpa?.id]
+    );
+
+    const fetchMeasures = useCallback(
+        hasCountryScope
+            ? fetchProgramMeasuresForSelect(programId ?? 0, strategicOutput?.id ?? 0)
+            : fetchMeasuresForSelect(strategicOutput?.id ?? 0),
+        [hasCountryScope, programId, strategicOutput?.id]
+    );
 
     useEffect(() => {
         fetchDonorsForSelect([])({ query: "", page: 1, limit: 1 })
@@ -105,7 +130,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 {kpa && kpa !==null && kpa.strategic_outputs_count > 0 ? 
                 (<div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A STRATEGIC OUTPUT</Label>
-                    <AsyncSearchSelect<StrategicOutputCountry> enab={false} value={strategicOutput} onChange={(v) => { form.form.setValue("strategicOutput", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchStrategicOutputsForSelect(kpa.id)} getOptionLabel={(k) => `${k?.name ?? ""} - ${k?.country?.name ?? ""}`} getOptionKey={(k)=> k.id} placeholder="Select a Strategic Output" emptyMessage="No Strategic Outputs found"/>
+                    <AsyncSearchSelect<StrategicOutputCountry> enab={false} value={strategicOutput} onChange={(v) => { form.form.setValue("strategicOutput", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchStrategicOutputs} getOptionLabel={(k) => `${k?.name ?? ""} - ${k?.country?.name ?? ""}`} getOptionKey={(k)=> k.id} placeholder="Select a Strategic Output" emptyMessage="No Strategic Outputs found"/>
                     {form.form.formState.errors.strategicOutput && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.strategicOutput.message === 'string' ? form.form.formState.errors.strategicOutput.message : 'Invalid input'}</p>
                     )}
@@ -116,7 +141,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 {strategicOutput && (strategicOutput.measures_count > 0 ? 
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A MEASURE</Label>
-                    <AsyncSearchSelect<Measure> enab={false} value={measure} onChange={(v) => { form.form.setValue("measure", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("indicators", []); }} fetchOptions={fetchMeasuresForSelect(strategicOutput!.id)} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a Measure" emptyMessage="No Measure found"/>
+                    <AsyncSearchSelect<Measure> enab={false} value={measure} onChange={(v) => { form.form.setValue("measure", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("indicators", []); }} fetchOptions={fetchMeasures} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a Measure" emptyMessage="No Measure found"/>
                     {form.form.formState.errors.measure && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.measure.message === 'string' ? form.form.formState.errors.measure.message : 'Invalid input'}</p>
                     )}
@@ -125,7 +150,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
 
                 {measure && (
                     measure.indicators_count > 0 ? (
-                        <IndicatorSection form={form} measure={measure} />
+                        <IndicatorSection form={form} measure={measure} useProgramContext={hasCountryScope} />
                     ) : (
                         <AlertBox message="The selected measure has no indicators. Please select another one." />
                     )
