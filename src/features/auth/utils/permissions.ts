@@ -23,9 +23,9 @@ export const SCOPES = {
   PROGRAMS_ALL: "programs:*",
   
   // ===== Program States =====
-  PROGRAM_STATES_READ: "program-states:read",
-  PROGRAM_STATES_WRITE: "program-states:write",
-  PROGRAM_STATES_ALL: "program-states:*",
+  PROGRAM_STATES_READ: "program_states:read",
+  PROGRAM_STATES_WRITE: "program_states:write",
+  PROGRAM_STATES_ALL: "program_states:*",
   
   // ===== Users =====
   USERS_READ: "users:read",
@@ -43,9 +43,9 @@ export const SCOPES = {
   INDICATORS_ALL: "indicators:*",
   
   // ===== Indicator Types =====
-  INDICATOR_TYPES_READ: "indicator-types:read",
-  INDICATOR_TYPES_WRITE: "indicator-types:write",
-  INDICATOR_TYPES_ALL: "indicator-types:*",
+  INDICATOR_TYPES_READ: "indicator_types:read",
+  INDICATOR_TYPES_WRITE: "indicator_types:write",
+  INDICATOR_TYPES_ALL: "indicator_types:*",
   
   // ===== Countries =====
   COUNTRIES_READ: "countries:read",
@@ -58,9 +58,9 @@ export const SCOPES = {
   KPAS_ALL: "kpas:*",
   
   // ===== Country-KPA =====
-  COUNTRY_KPA_READ: "country-kpa:read",
-  COUNTRY_KPA_WRITE: "country-kpa:write",
-  COUNTRY_KPA_ALL: "country-kpa:*",
+  COUNTRY_KPA_READ: "country_kpa:read",
+  COUNTRY_KPA_WRITE: "country_kpa:write",
+  COUNTRY_KPA_ALL: "country_kpa:*",
   
   // ===== SDGs =====
   SDGS_READ: "sdgs:read",
@@ -68,9 +68,9 @@ export const SCOPES = {
   SDGS_ALL: "sdgs:*",
   
   // ===== Strategic Outputs =====
-  STRATEGIC_OUTPUTS_READ: "strategic-outputs:read",
-  STRATEGIC_OUTPUTS_WRITE: "strategic-outputs:write",
-  STRATEGIC_OUTPUTS_ALL: "strategic-outputs:*",
+  STRATEGIC_OUTPUTS_READ: "strategic_outputs:read",
+  STRATEGIC_OUTPUTS_WRITE: "strategic_outputs:write",
+  STRATEGIC_OUTPUTS_ALL: "strategic_outputs:*",
   
   // ===== Measures =====
   MEASURES_READ: "measures:read",
@@ -78,9 +78,9 @@ export const SCOPES = {
   MEASURES_ALL: "measures:*",
   
   // ===== Project States =====
-  PROJECT_STATES_READ: "project-states:read",
-  PROJECT_STATES_WRITE: "project-states:write",
-  PROJECT_STATES_ALL: "project-states:*",
+  PROJECT_STATES_READ: "project_states:read",
+  PROJECT_STATES_WRITE: "project_states:write",
+  PROJECT_STATES_ALL: "project_states:*",
 } as const;
 
 export type Scope = typeof SCOPES[keyof typeof SCOPES];
