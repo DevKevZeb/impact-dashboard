@@ -33,6 +33,7 @@ import PublicProgramDetailsPage from "@/features/public/programs/page/PublicProg
 import ProjectsPublicPage from "@/features/public/projects/page/ProjectsPublicPage";
 import ProgressPublicPage from "@/features/public/progress/page/ProgressPublicPage";
 import PublicProjectDetailsPage from "@/features/public/projects/page/PublicProjectDetailsPage";
+import { RolesPermissionsPage } from "@/features/roles-permissions/pages/RolesPermissionsPage";
 
 export function AppRouter() {
     return (
@@ -78,6 +79,7 @@ export function AppRouter() {
                 <Route path="users" element={<UsersPage />} />
                 <Route path="users/active" element={<ActiveUsersPage />} />
                 <Route path="users/unverified" element={<UnverifiedUsersPage />} />
+                <Route path="roles-permissions" element={<RolesPermissionsPage />} />
             </Route>
 
             {/* Configuration Routes */}
