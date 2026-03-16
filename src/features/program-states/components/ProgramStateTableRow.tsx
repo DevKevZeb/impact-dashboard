@@ -5,12 +5,14 @@ interface ProgramStateTableRowProps {
   programState: ProgramState;
   index: number;
   onEdit: (programState: ProgramState) => void;
+  canWrite?: boolean;
 }
 
 export function ProgramStateTableRow({
   programState,
   index,
   onEdit,
+  canWrite,
 }: ProgramStateTableRowProps) {
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -31,13 +33,15 @@ export function ProgramStateTableRow({
 
       {/* Actions */}
       <td className="px-4 py-3 text-sm text-gray-700">
-        <button
-          onClick={handleEdit}
-          className="btn-edit-table"
-          title="Edit Program State"
-        >
-          <SquarePen className="w-4 h-4" />
-        </button>
+        {canWrite && (
+          <button
+            onClick={handleEdit}
+            className="btn-edit-table"
+            title="Edit Program State"
+          >
+            <SquarePen className="w-4 h-4" />
+          </button>
+        )}
       </td>
     </tr>
   );
