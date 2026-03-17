@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search, Plus, Loader2, FolderKanban } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useMyPrograms } from "../api/programQueries";
 import { ProgramTableRow } from "../components/ProgramTableRow";
@@ -8,6 +9,7 @@ import { ProgramEditDialog } from "../components/ProgramEditDialog";
 import { ProgramDetailDialog } from "../components/ProgramDetailDialog";
 import { Can } from "@/features/auth/components/Can";
 import { SCOPES } from "@/features/auth/utils/permissions";
+import { useAuthStore } from "@/features/auth/store/authStore";
 import {
   DataTable,
   DataTableHeader,
@@ -20,6 +22,8 @@ import { useTableSort } from "@/shared/hooks/useTableSort";
 import type { Program } from "../types/program.types";
 
 export function ProgramsPage() {
+  const navigate = useNavigate();
+  const { hasCountryScope } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
@@ -54,6 +58,10 @@ export function ProgramsPage() {
   const handleEdit = (program: Program) => {
     setSelectedProgram(program);
     setIsEditDialogOpen(true);
+  };
+
+  const handleInvite = (program: Program) => {
+    navigate(`/app/programs/${program.id}/invite`);
   };
 
   if (isLoading) {
@@ -137,6 +145,8 @@ export function ProgramsPage() {
                     index={rowIndex}
                     onView={handleView}
                     onEdit={handleEdit}
+                    onInvite={handleInvite}
+                    canInvite={hasCountryScope}
                   />
                 );
               })}

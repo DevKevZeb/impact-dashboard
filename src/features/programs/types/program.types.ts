@@ -22,6 +22,7 @@ export interface Program {
   created_at?: string;
   updated_at?: string;
   projects_count?: number;
+  can_edit?: boolean;
 }
 
 
@@ -83,4 +84,36 @@ export interface ProgramPaginatedResponse {
   last_page: number;
   per_page: number;
   total: number;
+}
+
+export interface InviteCandidate {
+  id: number;
+  name: string;
+  email: string;
+  agency: {
+    id: number;
+    name: string;
+  } | null;
+}
+
+export interface InviteCandidatesResponse {
+  candidates: InviteCandidate[];
+  total: number;
+  per_page: number;
+  current_page: number;
+  last_page: number;
+}
+
+export interface InviteProgram {
+  id: number;
+  program_country_user_role_id: number;
+  invited_user_role_id: number;
+}
+
+export interface InviteProgramListResponse {
+  invites: InviteProgram[];
+  total: number;
+  per_page: number;
+  current_page: number;
+  last_page: number;
 }

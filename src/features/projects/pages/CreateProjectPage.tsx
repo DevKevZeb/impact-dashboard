@@ -51,6 +51,6 @@ export default function CreateProjectPage({mode}: Props) {
     if (mode === "edit" && projectQuery.error) return <div>Error loading project</div>;
     
     return (
-        <ProjectFormView mode={mode} programName={programQuery.data?.name} programId={programQuery.data?.id} form={form} onSubmit={onSubmit} onInvalid={onInvalid} />
+        <ProjectFormView mode={mode} programName={programQuery.data?.name} programId={programQuery.data?.id} projectId={projectId} form={form} onSubmit={onSubmit} onInvalid={onInvalid} />
     );
 }

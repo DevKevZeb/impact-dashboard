@@ -11,6 +11,7 @@ export function mapProjectTable(raw: any): ProjectTable{
         progress: raw.progress,
         comments: raw.comments,
         budget: raw.budget,
+        weight: raw.weight,
         state: raw.project_state,
         program_id: raw.program_id,
     }
@@ -31,6 +32,7 @@ export function mapProject(raw: any): Project{
         progress: raw.progress,
         comments: raw.comments,
         budget: raw.budget,
+        weight: raw.weight,
         contact: raw.contact,
         beneficiary: raw.beneficiary,
         project_state: raw.project_state,
@@ -75,6 +77,7 @@ export function mapProjectToForm(project: Project) {
 
     project_url: project.project_url || "",
     budget: Number(project.budget) || 0,
+    weight: Number(project.weight) || 0,
 
     beneficiary: project.beneficiary ?? null,
     contact: project.contact,
