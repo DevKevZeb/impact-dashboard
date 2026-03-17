@@ -31,6 +31,11 @@ export const SCOPES = {
   USERS_READ: "users:read",
   USERS_WRITE: "users:write",
   USERS_ALL: "users:*",
+
+  // ===== Roles & Permissions =====
+  ROLES_READ: "roles",
+  ROLES_WRITE: "roles:write",
+  ROLES_ALL: "roles:*",
   
   // ===== Agencies =====
   AGENCIES_READ: "agencies:read",
