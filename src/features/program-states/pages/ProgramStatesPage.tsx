@@ -5,6 +5,7 @@ import { useProgramStatesPaginated } from "../api/programStateQueries";
 import { ProgramStateTableRow } from "../components/ProgramStateTableRow";
 import { ProgramStateCreateDialog } from "../components/ProgramStateCreateDialog";
 import { ProgramStateEditDialog } from "../components/ProgramStateEditDialog";
+import { useHasScope } from "@/features/auth/hooks/useHasScope";
 import {
   DataTable,
   DataTableHeader,
@@ -17,6 +18,7 @@ import { useTableSort } from "@/shared/hooks/useTableSort";
 import type { ProgramState } from "../types/programState.types";
 
 export function ProgramStatesPage() {
+  const canWrite = useHasScope("program_states:write");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10); // Fixed items per page for now
   const [searchTerm, setSearchTerm] = useState("");
@@ -84,14 +86,16 @@ export function ProgramStatesPage() {
           </p>
         </div>
 
-        <Button
-          onClick={() => setIsCreateDialogOpen(true)}
-          size="lg"
-          className="btn-secondary"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          New State
-        </Button>
+        {canWrite && (
+          <Button
+            onClick={() => setIsCreateDialogOpen(true)}
+            size="lg"
+            className="btn-secondary"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            New State
+          </Button>
+        )}
       </div>
 
       {/* Search */}
@@ -134,6 +138,7 @@ export function ProgramStatesPage() {
                     programState={programState}
                     index={rowIndex}
                     onEdit={handleEdit}
+                    canWrite={canWrite}
                   />
                 );
               })}
@@ -164,15 +169,19 @@ export function ProgramStatesPage() {
       )}
 
       {/* Dialogs */}
-      <ProgramStateCreateDialog
-        open={isCreateDialogOpen}
-        onOpenChange={setIsCreateDialogOpen}
-      />
-      <ProgramStateEditDialog
-        open={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        programState={selectedProgramState}
-      />
+      {canWrite && (
+        <>
+          <ProgramStateCreateDialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          />
+          <ProgramStateEditDialog
+            open={isEditDialogOpen}
+            onOpenChange={setIsEditDialogOpen}
+            programState={selectedProgramState}
+          />
+        </>
+      )}
     </div>
   );
 }

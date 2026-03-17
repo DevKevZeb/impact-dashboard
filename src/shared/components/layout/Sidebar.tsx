@@ -70,9 +70,10 @@ const menuItems: MenuItem[] = [
     title: "Administration",
     icon: ShieldCheck,
     children: [
+      { title: "Unverified Email Users", path: "/app/admin/users/unverified", requiredScopes: [SCOPES.USERS_READ] },
       { title: "Pending Approvals", path: "/app/admin/users", requiredScopes: [SCOPES.USERS_READ] },
-      { title: "Unverified Users", path: "/app/admin/users/unverified", requiredScopes: [SCOPES.USERS_READ] },
       { title: "User Management", path: "/app/admin/users/active", requiredScopes: [SCOPES.USERS_READ] },
+      { title: "Roles & Permissions", path: "/app/admin/roles-permissions", requiredScopes: [SCOPES.ROLES_READ, SCOPES.ROLES_WRITE] },
     ],
   },
   {

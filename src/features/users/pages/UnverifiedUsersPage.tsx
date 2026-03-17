@@ -84,7 +84,7 @@ export function UnverifiedUsersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="page-title">Unverified Users</h1>
+          <h1 className="page-title">Unverified Email Users</h1>
           <p className="text-gray-500 mt-2">
             Manage users who haven't verified their email address
           </p>
@@ -193,7 +193,7 @@ export function UnverifiedUsersPage() {
       ) : (
         <EmptyState
           icon={UsersIcon}
-          title={searchTerm ? "No results found" : "No unverified users"}
+          title={searchTerm ? "No results found" : "No unverified email users"}
           description={
             searchTerm
               ? "Try another search term"
