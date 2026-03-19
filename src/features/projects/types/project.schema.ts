@@ -53,6 +53,13 @@ export const projectSchema = z.object({
 
     project_url: z.preprocess(v => v === undefined ? "" : v, z.string()),
     budget: z.preprocess((v) => {   if (v === undefined || v === "" || Number.isNaN(Number(v)))return 0; return Number(v);}, z.number().min(0, "Contribution must be ≥ 0")),
+        weight: z.preprocess(
+            (v) => {
+                if (v === undefined || v === "" || Number.isNaN(Number(v))) return 0;
+                return Number(v);
+            },
+            z.number().min(0, "Weight must be ≥ 0").max(1, "Weight must be ≤ 1")
+        ),
 
 
     beneficiary: z.object({

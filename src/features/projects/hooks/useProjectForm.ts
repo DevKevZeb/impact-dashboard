@@ -21,6 +21,7 @@ export function getDefaultProjectValues(programId: number) {
     agencies: [],
     project_url: "",
     budget: 0,
+    weight: 0,
     contact: {
         id: undefined,
       first_name: "",

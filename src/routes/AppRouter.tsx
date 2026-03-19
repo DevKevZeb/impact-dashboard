@@ -33,6 +33,7 @@ import PublicProgramDetailsPage from "@/features/public/programs/page/PublicProg
 import ProjectsPublicPage from "@/features/public/projects/page/ProjectsPublicPage";
 import ProgressPublicPage from "@/features/public/progress/page/ProgressPublicPage";
 import PublicProjectDetailsPage from "@/features/public/projects/page/PublicProjectDetailsPage";
+import { ProgramInvitePage } from "@/features/programs/pages/ProgramInvitePage";
 import { RolesPermissionsPage } from "@/features/roles-permissions/pages/RolesPermissionsPage";
 
 export function AppRouter() {
@@ -95,6 +96,7 @@ export function AppRouter() {
 
             {/* Programs & Projects Routes */}
             <Route path="programs" element={<ProgramsPage />} />
+            <Route path="programs/:programId/invite" element={<ProgramInvitePage />} />
             <Route path="projects" element={<ListProgramsWithProjects />}/>
             <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
             <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>

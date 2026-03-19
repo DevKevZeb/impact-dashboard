@@ -8,11 +8,15 @@ import type {
   ProgramAssignmentList,
   ProgramAssignment,
   CreateAssignmentPayload,
+  InviteCandidatesResponse,
+  InviteProgramListResponse,
+  InviteProgram,
 } from "../types/program.types";
 import type { PaginatedResult } from "@/shared/components/AsyncSearchSelect/asyncSearch.type";
 
 const PROGRAMS_ENDPOINT = "/programs";
 const ASSIGNMENTS_ENDPOINT = "/program_country_user_roles";
+const INVITES_ENDPOINT = "/invite_programs";
 
 export const programService = {
   getPaginated: async (page: number, perPage: number) => {
@@ -162,5 +166,77 @@ export const contactSearchService = {
       items: data.data.contacts,
       hasMore: data.data.current_page < data.data.last_page,
     };
+  },
+};
+
+export const inviteProgramService = {
+  getCandidates: async ({
+    programCountryUserRoleId,
+    page = 1,
+    perPage = 10,
+    search,
+  }: {
+    programCountryUserRoleId: number;
+    page?: number;
+    perPage?: number;
+    search?: string;
+  }) => {
+    const { data } = await apiClient.get<ApiResponse<InviteCandidatesResponse>>(
+      `${INVITES_ENDPOINT}/candidates`,
+      {
+        params: {
+          program_country_user_role_id: programCountryUserRoleId,
+          page,
+          per_page: perPage,
+          ...(search ? { search } : {}),
+        },
+      }
+    );
+
+    return {
+      candidates: data.data.candidates,
+      pagination: {
+        current_page: data.data.current_page,
+        last_page: data.data.last_page,
+        per_page: data.data.per_page,
+        total: data.data.total,
+      },
+    };
+  },
+
+  getByOwnerAssignment: async ({
+    programCountryUserRoleId,
+    perPage = 100,
+  }: {
+    programCountryUserRoleId: number;
+    perPage?: number;
+  }) => {
+    const { data } = await apiClient.get<ApiResponse<InviteProgramListResponse>>(
+      INVITES_ENDPOINT,
+      {
+        params: {
+          program_country_user_role_id: programCountryUserRoleId,
+          per_page: perPage,
+        },
+      }
+    );
+
+    return data.data.invites;
+  },
+
+  create: async (payload: {
+    program_country_user_role_id: number;
+    invited_user_role_id: number;
+  }): Promise<InviteProgram> => {
+    const { data } = await apiClient.post<ApiResponse<InviteProgram>>(
+      INVITES_ENDPOINT,
+      payload
+    );
+
+    return data.data;
+  },
+
+  delete: async (inviteId: number): Promise<void> => {
+    await apiClient.delete(`${INVITES_ENDPOINT}/${inviteId}`);
   },
 };

@@ -1,4 +1,4 @@
-import { Eye, SquarePen } from "lucide-react";
+import { Eye, SquarePen, UserPlus } from "lucide-react";
 import type { Program } from "../types/program.types";
 import { DataTableRow, DataTableCell } from "@/shared/components/table";
 import { Can } from "@/features/auth/components/Can";
@@ -9,9 +9,18 @@ interface ProgramTableRowProps {
   index: number;
   onEdit: (program: Program) => void;
   onView: (program: Program) => void;
+  onInvite?: (program: Program) => void;
+  canInvite?: boolean;
 }
 
-export function ProgramTableRow({ program, index, onEdit, onView }: ProgramTableRowProps) {
+export function ProgramTableRow({
+  program,
+  index,
+  onEdit,
+  onView,
+  onInvite,
+  canInvite = false,
+}: ProgramTableRowProps) {
   const bannerUrl = program.banner_img
     ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '')}/storage/${program.banner_img}`
     : null;
@@ -24,6 +33,11 @@ export function ProgramTableRow({ program, index, onEdit, onView }: ProgramTable
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(program);
+  };
+
+  const handleInvite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onInvite?.(program);
   };
 
   return (
@@ -103,6 +117,7 @@ export function ProgramTableRow({ program, index, onEdit, onView }: ProgramTable
             <Eye className="w-4 h-4" />
           </button>
           <Can scope={SCOPES.PROGRAMS_WRITE}>
+            {program.can_edit !== false && (
             <button
               onClick={handleEdit}
               className="btn-edit-table"
@@ -110,6 +125,16 @@ export function ProgramTableRow({ program, index, onEdit, onView }: ProgramTable
             >
               <SquarePen className="w-4 h-4" />
             </button>
+            )}
+            {canInvite && program.can_edit !== false && onInvite && (
+              <button
+                onClick={handleInvite}
+                className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-emerald-600 hover:bg-emerald-50 transition-colors"
+                title="Invite Project Manager"
+              >
+                <UserPlus className="w-4 h-4" />
+              </button>
+            )}
           </Can>
         </div>
       </DataTableCell>

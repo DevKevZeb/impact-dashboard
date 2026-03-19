@@ -33,6 +33,7 @@ export interface Project {
     progress: number;
     comments: string;
     budget: number;
+    weight: number;
     contact: Contact;
     beneficiary: Beneficiary;
     project_state: ProjectState;
@@ -54,6 +55,7 @@ export interface ProjectDTO {
     progress: number;
     comments: string;
     budget: number;
+    weight: number;
     contact: Contact;
     beneficiary: Beneficiary;
     project_state: ProjectState;
@@ -76,6 +78,7 @@ export interface ProjectTable {
     progress: number;
     comments: string;
     budget: number;
+    weight?: number;
     state: ProjectState;
     program_id: number;
 }
