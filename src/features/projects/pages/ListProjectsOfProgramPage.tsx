@@ -8,12 +8,17 @@ import ProjectsOfProgramTable from "../components/ProjectsOfProgramTable";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import BackArrow from "@/shared/components/backArrow/BackArrow";
+import { useDeleteProject } from "../hooks/useDeleteProject";
+import type { ProjectTable } from "../types/project.types";
+import DeleteProjectDialog from "../components/DeleteProjectDialog";
 
 
 export default function ListProjectsOfProgramPage(){
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedProject, setSelectedProject] = useState<ProjectTable | null>(null);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
     const { programId } = useParams();
     const parsedProgramId = Number(programId);
@@ -29,12 +34,27 @@ export default function ListProjectsOfProgramPage(){
 
     const debouncedSearch = useDebounce(searchTerm, 400);
     const { data, isLoading, isFetching, error } = useProjects(page, perPage, parsedProgramId, debouncedSearch);
+    const deleteProjectMutation = useDeleteProject(parsedProgramId);
     const showSkeleton = isFetching && (searchChanged || pageChanged);
 
 
     const handleSearchChange = (value: string) => {
         setPage(1);
         setSearchTerm(value);
+    };
+
+    const handleDeleteClick = (project: ProjectTable) => {
+        setSelectedProject(project);
+        setIsDeleteDialogOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!selectedProject) return;
+
+        await deleteProjectMutation.mutateAsync(selectedProject.id);
+
+        setIsDeleteDialogOpen(false);
+        setSelectedProject(null);
     };
 
     useEffect(() => {
@@ -84,12 +104,30 @@ export default function ListProjectsOfProgramPage(){
 
             {showSkeleton ? <TableSkeleton columns={9} /> :
             data && data.projects.length > 0 ?
-                <ProjectsOfProgramTable projects={data.projects} pagination={data.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage}/>
+                <ProjectsOfProgramTable
+                    projects={data.projects}
+                    pagination={data.pagination}
+                    page={page}
+                    perPage={perPage}
+                    setPage={setPage}
+                    setPerPage={setPerPage}
+                    onDelete={handleDeleteClick}
+                />
                 : <EmptyState icon={FolderOpenDot} title={searchTerm ? "No Projects found" : "No Projects available"}
                     description={
                         searchTerm && "Try adjusting your search terms"
                 } />
             }
+
+            {selectedProject && (
+                <DeleteProjectDialog
+                    project={selectedProject}
+                    open={isDeleteDialogOpen}
+                    onOpenChange={setIsDeleteDialogOpen}
+                    onConfirm={handleConfirmDelete}
+                    isLoading={deleteProjectMutation.isPending}
+                />
+            )}
         </div>
     )
 }
