@@ -1,6 +1,6 @@
 import type { ProjectTable } from "../types/project.types";
 import { useNavigate } from "react-router-dom";
-import { SquarePen } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
 
 interface Pagination {
@@ -17,9 +17,10 @@ interface Props {
     perPage: number;
     setPage: (page: number) => void;
     setPerPage: (perPage: number) => void;
+    onDelete: (project: ProjectTable) => void;
 }
 
-export default function ProjectsOfProgramTable({projects, pagination, page, perPage, setPage, setPerPage }: Props){
+export default function ProjectsOfProgramTable({projects, pagination, page, perPage, setPage, setPerPage, onDelete }: Props){
         const canWrite = useHasScope("projects:write");
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       setPerPage(Number(e.target.value));
@@ -84,6 +85,9 @@ export default function ProjectsOfProgramTable({projects, pagination, page, perP
                         <td className="table-cell text-center">
                             <button className="btn-edit-table" onClick={() => navigate(`/app/projects/edit/${project.program_id}/${project.id}`)}>
                                 <SquarePen className="w-4 h-4" />
+                            </button>
+                            <button className="btn-delete-table" onClick={() => onDelete(project)}>
+                                <Trash2 className="w-4 h-4" />
                             </button>
                         </td>)}
 
