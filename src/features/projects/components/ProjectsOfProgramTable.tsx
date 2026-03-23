@@ -82,7 +82,7 @@ export default function ProjectsOfProgramTable({projects, pagination, page, perP
                             {project.state.state}
                         </td>
                         {canWrite && (
-                        <td className="table-cell text-center">
+                        <td className="table-cell text-center space-x-2">
                             <button className="btn-edit-table" onClick={() => navigate(`/app/projects/edit/${project.program_id}/${project.id}`)}>
                                 <SquarePen className="w-4 h-4" />
                             </button>

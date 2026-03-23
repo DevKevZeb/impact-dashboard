@@ -1,4 +1,4 @@
-import { Eye, SquarePen, UserPlus } from "lucide-react";
+import { Eye, SquarePen, Trash2, UserPlus } from "lucide-react";
 import type { Program } from "../types/program.types";
 import { DataTableRow, DataTableCell } from "@/shared/components/table";
 import { Can } from "@/features/auth/components/Can";
@@ -9,6 +9,7 @@ interface ProgramTableRowProps {
   index: number;
   onEdit: (program: Program) => void;
   onView: (program: Program) => void;
+  onDelete?: (program: Program) => void;
   onInvite?: (program: Program) => void;
   canInvite?: boolean;
 }
@@ -18,6 +19,7 @@ export function ProgramTableRow({
   index,
   onEdit,
   onView,
+  onDelete,
   onInvite,
   canInvite = false,
 }: ProgramTableRowProps) {
@@ -33,6 +35,11 @@ export function ProgramTableRow({
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(program);
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete?.(program);
   };
 
   const handleInvite = (e: React.MouseEvent) => {
@@ -108,7 +115,8 @@ export function ProgramTableRow({
       </DataTableCell>
 
       <DataTableCell>
-        <div className="space-x-1">
+        <div className="grid grid-cols-2 gap-1 w-fit">
+          {/* Row 1: View + Invite */}
           <button
             onClick={handleView}
             className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-sky-600 hover:bg-sky-50 transition-colors"
@@ -117,16 +125,7 @@ export function ProgramTableRow({
             <Eye className="w-4 h-4" />
           </button>
           <Can scope={SCOPES.PROGRAMS_WRITE}>
-            {program.can_edit !== false && (
-            <button
-              onClick={handleEdit}
-              className="btn-edit-table"
-              title="Edit Program"
-            >
-              <SquarePen className="w-4 h-4" />
-            </button>
-            )}
-            {canInvite && program.can_edit !== false && onInvite && (
+            {canInvite && program.can_edit !== false && onInvite ? (
               <button
                 onClick={handleInvite}
                 className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-emerald-600 hover:bg-emerald-50 transition-colors"
@@ -134,6 +133,34 @@ export function ProgramTableRow({
               >
                 <UserPlus className="w-4 h-4" />
               </button>
+            ) : (
+              <span className="w-8 h-8" />
+            )}
+          </Can>
+
+          {/* Row 2: Edit + Delete */}
+          <Can scope={SCOPES.PROGRAMS_WRITE}>
+            {program.can_edit !== false ? (
+              <button
+                onClick={handleEdit}
+                className="btn-edit-table"
+                title="Edit Program"
+              >
+                <SquarePen className="w-4 h-4" />
+              </button>
+            ) : (
+              <span className="w-8 h-8" />
+            )}
+            {program.can_edit !== false && onDelete ? (
+              <button
+                onClick={handleDelete}
+                className="btn-delete-table"
+                title="Delete Program"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            ) : (
+              <span className="w-8 h-8" />
             )}
           </Can>
         </div>

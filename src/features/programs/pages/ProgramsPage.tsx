@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Search, Plus, Loader2, FolderKanban } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useMyPrograms } from "../api/programQueries";
+import { useMyPrograms, useDeleteProgram } from "../api/programQueries";
 import { ProgramTableRow } from "../components/ProgramTableRow";
 import { ProgramCreateDialog } from "../components/ProgramCreateDialog";
 import { ProgramEditDialog } from "../components/ProgramEditDialog";
 import { ProgramDetailDialog } from "../components/ProgramDetailDialog";
+import { DeleteProgramDialog } from "../components/DeleteProgramDialog";
 import { Can } from "@/features/auth/components/Can";
 import { SCOPES } from "@/features/auth/utils/permissions";
 import { useAuthStore } from "@/features/auth/store/authStore";
@@ -30,9 +31,11 @@ export function ProgramsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
 
   const { programs, pagination, isLoading, error } = useMyPrograms(currentPage, perPage);
+  const deleteProgramMutation = useDeleteProgram();
 
   // Filter data by search term
   const filteredData = programs.filter((program) =>
@@ -58,6 +61,18 @@ export function ProgramsPage() {
   const handleEdit = (program: Program) => {
     setSelectedProgram(program);
     setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (program: Program) => {
+    setSelectedProgram(program);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedProgram) return;
+    await deleteProgramMutation.mutateAsync(selectedProgram.id);
+    setIsDeleteDialogOpen(false);
+    setSelectedProgram(null);
   };
 
   const handleInvite = (program: Program) => {
@@ -145,6 +160,7 @@ export function ProgramsPage() {
                     index={rowIndex}
                     onView={handleView}
                     onEdit={handleEdit}
+                    onDelete={handleDelete}
                     onInvite={handleInvite}
                     canInvite={hasCountryScope}
                   />
@@ -198,6 +214,15 @@ export function ProgramsPage() {
         open={isDetailDialogOpen}
         onOpenChange={setIsDetailDialogOpen}
       />
+      {selectedProgram && (
+        <DeleteProgramDialog
+          program={selectedProgram}
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          onConfirm={handleConfirmDelete}
+          isLoading={deleteProgramMutation.isPending}
+        />
+      )}
     </div>
   );
 }
