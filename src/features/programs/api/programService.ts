@@ -117,6 +117,10 @@ export const programService = {
     );
     return data.data.programs;
   },
+
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`${PROGRAMS_ENDPOINT}/${id}`);
+  },
 };
 
 export const assignmentService = {
