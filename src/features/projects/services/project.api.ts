@@ -71,6 +71,11 @@ export async function getProjectsByProjectId(projectId: number){
     return mapProject(data.data);
 }
 
+export async function deleteProject(projectId: number): Promise<void> {
+  const { data } = await apiClient.delete(`/projects/${projectId}`);
+  toast.success(data?.message ?? "Project deleted successfully");
+}
+
 export async function getProgramWeightAvailability(programId: number, excludeProjectId?: number) {
   const perPage = 100;
   let page = 1;

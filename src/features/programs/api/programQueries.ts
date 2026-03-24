@@ -243,3 +243,20 @@ export function useUpdateProgram() {
     },
   });
 }
+
+export function useDeleteProgram() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => programService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: programKeys.lists() });
+      toast.success("Program deleted successfully");
+    },
+    onError: (error: unknown) => {
+      const apiError = error as ApiError;
+      const errorMessage = apiError.response?.data?.message ?? "Failed to delete program";
+      toast.error("Error deleting program", { description: errorMessage });
+    },
+  });
+}
