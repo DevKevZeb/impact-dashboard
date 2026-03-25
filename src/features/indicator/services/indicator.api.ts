@@ -73,3 +73,7 @@ export function fetchIndicatorForSelect(measureId: number, excludedIds: number[]
 
   }
 }
+
+export async function deleteIndicator(id: number): Promise<void> {
+  await apiClient.delete(`/indicators/${id}`);
+}

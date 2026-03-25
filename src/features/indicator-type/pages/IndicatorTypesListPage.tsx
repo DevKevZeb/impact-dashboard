@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 import CreateIndicatorTypeModal from "../components/CreateIndicatorTypeModal";
+import { DeleteIndicatorTypeDialog } from "../components/DeleteIndicatorTypeDialog";
 import type { IndicatorType, IndicatorTypeDTO } from "../types/IndicatorTypeType";
 import { useCreateIndicatorType } from "../hooks/useCreateIndicatorType";
 import { useUpdateIndicatorType } from "../hooks/useUpdateIndicatorType";
+import { useDeleteIndicatorType } from "../hooks/useDeleteIndicatorType";
 import { useIndicatorTypes } from "../hooks/useIndicatorTypes";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import IndicatorTypeTable from "../components/IndicatorTypeTable";
@@ -33,8 +35,11 @@ export default function IndicatorTypesListPage(){
 
     const showSkeleton = isFetching && (searchChanged || pageChanged);
 
+    const [typeToDelete, setTypeToDelete] = useState<IndicatorType | null>(null);
+
     const { mutateAsync: createIndicatorType } = useCreateIndicatorType();
     const { mutateAsync: updateIndicatorType } = useUpdateIndicatorType();
+    const { mutateAsync: deleteIndicatorType, isPending: isDeletingType } = useDeleteIndicatorType();
 
     const handleSubmit = async (formData: IndicatorTypeDTO) => {
         if(selectedType) await updateIndicatorType( { id: selectedType.id, dto: formData } );
@@ -54,6 +59,16 @@ export default function IndicatorTypesListPage(){
         setSelectedType(type);
         setOpenModal(true);
     }
+
+    const handleDelete = (type: IndicatorType) => {
+        setTypeToDelete(type);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!typeToDelete) return;
+        await deleteIndicatorType(typeToDelete.id);
+        setTypeToDelete(null);
+    };
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -114,7 +129,7 @@ export default function IndicatorTypesListPage(){
             
             {showSkeleton ? <TableSkeleton columns={2}/> :
             data && data.types.length>0 ? (
-                <IndicatorTypeTable types={data?.types} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(agency) => console.log("DELETE", agency)} canWrite={canWrite}/>
+                <IndicatorTypeTable types={data?.types} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={handleDelete} canWrite={canWrite}/>
             ) : (
                 <EmptyState
                     icon={Tag}
@@ -126,6 +141,13 @@ export default function IndicatorTypesListPage(){
                     }
                 />
             )}
+            <DeleteIndicatorTypeDialog
+                typeName={typeToDelete?.name ?? ""}
+                open={!!typeToDelete}
+                onOpenChange={(open) => { if (!open) setTypeToDelete(null); }}
+                onConfirm={handleConfirmDelete}
+                isLoading={isDeletingType}
+            />
         </div>
     )
 }

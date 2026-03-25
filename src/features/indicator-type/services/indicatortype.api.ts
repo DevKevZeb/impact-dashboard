@@ -83,3 +83,7 @@ export async function fetchIndicatorTypesForSelect(params: { query: string; page
     hasMore: res.pagination.current_page < res.pagination.last_page,
   };
 }
+
+export async function deleteIndicatorType(id: number): Promise<void> {
+  await apiClient.delete(`/indicator-types/${id}`);
+}
