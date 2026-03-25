@@ -12,11 +12,15 @@ import { useCreateStrategicOutput } from "@/features/strategic-output/hooks/useC
 import type { UpdateMeasureDTO } from "@/features/measures/types/measureTypes";
 import { useCreateMeasure } from "@/features/measures/hooks/useCreateMeasure";
 import { useUpdateMeasure } from "@/features/measures/hooks/useUpdateMeasure";
+import { useDeleteMeasure } from "@/features/measures/hooks/useDeleteMeasure";
 import CreateMeasureModal from "@/features/measures/components/CreateMeasureModal";
+import { DeleteMeasureDialog } from "@/features/measures/components/DeleteMeasureDialog";
 import type { Indicator } from "@/features/indicator/types/indicatorTypes";
 import CreateIndicatorModal from "@/features/indicator/components/CreateIndicatorModal";
+import { DeleteIndicatorDialog } from "@/features/indicator/components/DeleteIndicatorDialog";
 import { useCreateIndicator } from "@/features/indicator/hooks/useCreateIndicator";
 import { useUpdateIndicator } from "@/features/indicator/hooks/useUpdateIndicator";
+import { useDeleteIndicator } from "@/features/indicator/hooks/useDeleteIndicator";
 import CountryKpasTable from "../components/CountryKpasTable";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import { handleExportExcel } from "../utils/csvKPAsSaver";
@@ -50,12 +54,17 @@ export default function InfoCountryKpaPage() {
   const [editMeasure, setEditMeasure] = useState<UpdateMeasureDTO | null>(null);
   const { mutateAsync: createMeasure } = useCreateMeasure();
   const { mutateAsync: updateMeasure } = useUpdateMeasure();
+  const [measureToDelete, setMeasureToDelete] = useState<{ id: number; name: string; strategicOutputId: number } | null>(null);
+  const { mutateAsync: deleteMeasureMutation, isPending: isDeletingMeasure } = useDeleteMeasure();
 
   const [parentMeasureId, setParentMeasureId] = useState<number | null>(null);
   const [openIndicatorModal, setOpenIndicatorModal] = useState(false);
   const [editIndicator, setEditIndicator] = useState<Indicator | null>(null);
   const {mutateAsync: createIndicator } = useCreateIndicator();
-  const {mutateAsync: updateIndicator } = useUpdateIndicator(); 
+  const {mutateAsync: updateIndicator } = useUpdateIndicator();
+
+  const [indicatorToDelete, setIndicatorToDelete] = useState<{ id: number; name: string; measureId: number } | null>(null);
+  const { mutateAsync: deleteIndicatorMutation, isPending: isDeletingIndicator } = useDeleteIndicator(indicatorToDelete?.measureId);
 
   const initial = useMemo<TreeNode[]>(() => [
     {
@@ -183,6 +192,38 @@ export default function InfoCountryKpaPage() {
     await refetch();
   }
 
+  const handleDeleteMeasure = (node: any) => {
+    setMeasureToDelete({
+      id: (node.data as any)?.id,
+      name: node.label,
+      strategicOutputId: node.parent_id ?? 0,
+    });
+  };
+
+  const handleConfirmDeleteMeasure = async () => {
+    if (!measureToDelete) return;
+    await deleteMeasureMutation(measureToDelete.id);
+    refreshNode?.(`so-${measureToDelete.strategicOutputId}`);
+    setMeasureToDelete(null);
+    await refetch();
+  };
+
+  const handleDeleteIndicator = (node: any) => {
+    setIndicatorToDelete({
+      id: (node.data as any)?.id,
+      name: node.label,
+      measureId: node.parent_id ?? 0,
+    });
+  };
+
+  const handleConfirmDeleteIndicator = async () => {
+    if (!indicatorToDelete) return;
+    await deleteIndicatorMutation(indicatorToDelete.id);
+    refreshNode?.(`m-${indicatorToDelete.measureId}`);
+    setIndicatorToDelete(null);
+    await refetch();
+  };
+
 
   return (
     <div className="p-6 space-y-4">
@@ -220,6 +261,8 @@ export default function InfoCountryKpaPage() {
             onEditMeasure={handleEditMeasure}
             onAddIndicator={handleCreateIndicator} 
             onEditIndicator={handleEditIndicator}
+            onDeleteIndicator={handleDeleteIndicator}
+            onDeleteMeasure={handleDeleteMeasure}
           />
         </>
       )}
@@ -246,6 +289,9 @@ export default function InfoCountryKpaPage() {
       {parentMeasureId !== null && (
         <CreateIndicatorModal open={openIndicatorModal} indicator={editIndicator} parentMeasureId={parentMeasureId} onClose={() => setOpenIndicatorModal(false)} onSubmit={handleSubmitIndicator}/>
       )}
+
+      <DeleteIndicatorDialog indicatorName={indicatorToDelete?.name ?? ""} open={!!indicatorToDelete} onOpenChange={(open) => { if (!open) setIndicatorToDelete(null); }} onConfirm={handleConfirmDeleteIndicator} isLoading={isDeletingIndicator} />
+      <DeleteMeasureDialog measureName={measureToDelete?.name ?? ""} open={!!measureToDelete} onOpenChange={(open) => { if (!open) setMeasureToDelete(null); }} onConfirm={handleConfirmDeleteMeasure} isLoading={isDeletingMeasure} />
 
     </div>
   );
