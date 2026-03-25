@@ -94,7 +94,7 @@ export function fetchAgenciesForSelector(excludedIds: number[] = []){
 }
 
 
-/*
-export async function deleteAgency(id: number): Promise<void> {
-  await apiClient.delete(`/agencies/${id}`);
-}*/
+export async function deleteAgency(id: number): Promise<{ success: boolean; message: string; data: unknown[] }> {
+  const { data } = await apiClient.delete(`/agencies/${id}`);
+  return data;
+}

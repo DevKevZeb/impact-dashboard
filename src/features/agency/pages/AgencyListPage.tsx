@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import AgencyTable from "../components/AgencyTable";
 import CreateAgencyModal from "../components/CreateAgencyModal";
+import DeleteAgencyDialog from "../components/DeleteAgencyDialog";
 
 import { useAgencies } from "../hooks/useAgencies";
 import { useCreateAgency } from "../hooks/useCreateAgency";
 import { useUpdateAgency } from "../hooks/useUpdateAgency";
+import { useDeleteAgency } from "../hooks/useDeleteAgency";
 
 import type { Agency, CreateAgencyDto } from "../types/agency.types";
 import TableSkeleton from "@/components/ui/TableSkeleton";
@@ -13,8 +16,10 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import { Button } from "@/components/ui/button";
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import { toast } from "sonner";
 
 export default function AgencyListPage() {
+  const queryClient = useQueryClient();
   const canWrite = useHasScope("agencies:write");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -34,8 +39,10 @@ export default function AgencyListPage() {
 
   const { mutateAsync: createAgency } = useCreateAgency();
   const { mutateAsync: updateAgency } = useUpdateAgency();
+  const { mutateAsync: deleteAgency, isPending: isDeletingAgency } = useDeleteAgency();
 
   const [openModal, setOpenModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
 
   const handleSubmit = async (formData: CreateAgencyDto) => {
@@ -56,6 +63,50 @@ export default function AgencyListPage() {
   const handleEdit = (agency: Agency) => {
     setSelectedAgency(agency);
     setOpenModal(true);
+  };
+
+  const handleDelete = (agency: Agency) => {
+    setSelectedAgency(agency);
+    setOpenDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedAgency) return;
+
+    try {
+      const result = await deleteAgency(selectedAgency.id);
+      toast.success(result?.message || "Agency deleted successfully");
+      setOpenDeleteModal(false);
+      setSelectedAgency(null);
+    } catch (error: any) {
+      const status = error?.response?.status;
+      const message = error?.response?.data?.message;
+
+      if (status === 409) {
+        toast.error(message || "Cannot delete agency because it is related to other records.");
+        setOpenDeleteModal(false);
+        return;
+      }
+
+      if (status === 404) {
+        toast.info("The agency no longer exists. The list will be refreshed.");
+        queryClient.invalidateQueries({ queryKey: ["agencies"] });
+        setOpenDeleteModal(false);
+        setSelectedAgency(null);
+        return;
+      }
+
+      if (status === 403) {
+        toast.error("You do not have permission to delete agencies.");
+        return;
+      }
+
+      if (status === 401) {
+        return;
+      }
+
+      toast.error(message || "Error deleting agency.");
+    }
   };
 
   const handleApprove = async (agency: Agency) => {
@@ -124,9 +175,19 @@ export default function AgencyListPage() {
 
       <CreateAgencyModal open={openModal} agency={selectedAgency} onClose={() => setOpenModal(false)} onSubmit={handleSubmit} />
 
+      {selectedAgency && (
+        <DeleteAgencyDialog
+          agency={selectedAgency}
+          open={openDeleteModal}
+          onOpenChange={setOpenDeleteModal}
+          onConfirm={handleConfirmDelete}
+          isLoading={isDeletingAgency}
+        />
+      )}
+
       {showSkeleton ? <TableSkeleton columns={4} /> :
       data && data.agencies.length > 0 ? (
-        <AgencyTable agencies={data?.agencies} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} onEdit={handleEdit} onDelete={(agency) => console.log("DELETE", agency)} onApprove={handleApprove} setPerPage={setPerPage} canWrite={canWrite}  />
+        <AgencyTable agencies={data?.agencies} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} onEdit={handleEdit} onDelete={handleDelete} onApprove={handleApprove} setPerPage={setPerPage} canWrite={canWrite}  />
       ):
       <EmptyState 
       icon={Tag} title={searchTerm ? "No agencies found" : "No agencies available"}
