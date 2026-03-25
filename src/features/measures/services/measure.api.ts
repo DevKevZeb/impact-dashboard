@@ -91,3 +91,7 @@ export function fetchMeasuresForSelect(strategicOutputId: number){
     }
   }
 }
+
+export async function deleteMeasure(id: number): Promise<void> {
+  await apiClient.delete(`/measures/${id}`);
+}

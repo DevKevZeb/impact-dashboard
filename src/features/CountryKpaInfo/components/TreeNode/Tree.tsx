@@ -393,6 +393,9 @@
                   onAddMeasure={onAddMeasure}
                   onAddIndicator={onAddIndicator}
                   onEditIndicator={onEditIndicator}
+                  onDeleteIndicator={onDeleteIndicator}
+                  onDeleteMeasure={onDeleteMeasure}
+                  onDeleteStrategicOutput={onDeleteStrategicOutput}
                 />
               );
           })}
