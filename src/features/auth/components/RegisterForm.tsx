@@ -24,13 +24,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export function RegisterForm() {
   const navigate = useNavigate();
   const { mutate: register, isPending } = useRegister();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [captchaPayload, setCaptchaPayload] = useState<string>("");
+  const captchaRef = useRef<HTMLElement | null>(null);
+  const altchaChallengeUrl =
+    import.meta.env.VITE_ALTCHA_CHALLENGE_URL ||
+    `${import.meta.env.VITE_API_BASE_URL}/auth/captcha/challenge`;
   
   // Fetch countries for dropdown (no auth required)
   const { data: countriesData, isLoading: isLoadingCountries } = usePublicCountries();
@@ -39,6 +45,8 @@ export function RegisterForm() {
     register: registerField,
     handleSubmit,
     formState: { errors },
+    clearErrors,
+    setError,
     setValue,
     watch,
   } = useForm<RegisterFormData>({
@@ -50,12 +58,50 @@ export function RegisterForm() {
       password_confirmation: "",
       role_name: undefined,
       country_id: undefined,
+      altcha: "",
     },
   });
+
+  useEffect(() => {
+    const widget = captchaRef.current;
+    if (!widget) {
+      return;
+    }
+
+    const syncAltchaPayload = () => {
+      const form = widget.closest("form");
+      const payloadInput = form?.querySelector<HTMLInputElement>('input[name="altcha"]');
+      const payload = payloadInput?.value?.trim() ?? "";
+
+      setCaptchaPayload(payload);
+      setValue("altcha", payload, { shouldDirty: true, shouldValidate: true });
+
+      if (payload) {
+        clearErrors("altcha");
+      }
+    };
+
+    widget.addEventListener("statechange", syncAltchaPayload);
+    widget.addEventListener("verified", syncAltchaPayload);
+
+    return () => {
+      widget.removeEventListener("statechange", syncAltchaPayload);
+      widget.removeEventListener("verified", syncAltchaPayload);
+    };
+  }, [clearErrors, setValue]);
 
   const watchedRoleName = watch("role_name");
 
   const onSubmit = (data: RegisterFormData) => {
+    if (!data.altcha) {
+      setError("altcha", {
+        type: "manual",
+        message: "Please complete captcha validation",
+      });
+      toast.error("Please complete captcha validation before creating your account.");
+      return;
+    }
+
     register(data, {
       onSuccess: () => {
         // Redirect to email verification pending page
@@ -233,6 +279,27 @@ export function RegisterForm() {
             </Select>
             {errors.country_id && (
               <p className="text-sm text-red-600">{errors.country_id.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>
+              Captcha <span className="text-red-500">*</span>
+            </Label>
+            <div className={`rounded-md border p-3 ${errors.altcha ? "border-red-500" : "border-slate-200"}`}>
+              <altcha-widget
+                ref={captchaRef}
+                auto="off"
+                challengeurl={altchaChallengeUrl}
+                hidefooter
+                hidelogo
+              />
+            </div>
+            {captchaPayload ? (
+              <p className="text-xs text-green-700">Captcha verified.</p>
+            ) : null}
+            {errors.altcha && (
+              <p className="text-sm text-red-600">{errors.altcha.message}</p>
             )}
           </div>
 
