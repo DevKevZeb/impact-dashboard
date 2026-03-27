@@ -29,9 +29,6 @@ export const registerSchema = z
       .number({ error: "Please select a country" })
       .int("Country ID must be an integer")
       .positive("Please select a country"),
-    altcha: z
-      .string()
-      .min(1, "Please complete captcha validation"),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: "Passwords do not match",
