@@ -9,6 +9,8 @@ import CreateStrategicOutputModal from "@/features/strategic-output/components/C
 import type {  UpdateStrategicOutputDTO } from "@/features/strategic-output/types/StrategicOutput";
 import { useUpdateStrategicOutput } from "@/features/strategic-output/hooks/useUpdateStrategicOutput";
 import { useCreateStrategicOutput } from "@/features/strategic-output/hooks/useCreateStrategicOutput";
+import { useDeleteStrategicOutput } from "@/features/strategic-output/hooks/useDeleteStrategicOutput";
+import { DeleteStrategicOutputDialog } from "@/features/strategic-output/components/DeleteStrategicOutputDialog";
 import type { UpdateMeasureDTO } from "@/features/measures/types/measureTypes";
 import { useCreateMeasure } from "@/features/measures/hooks/useCreateMeasure";
 import { useUpdateMeasure } from "@/features/measures/hooks/useUpdateMeasure";
@@ -48,6 +50,8 @@ export default function InfoCountryKpaPage() {
   const [editStrategicOutput, setEditStrategicOutput] = useState<UpdateStrategicOutputDTO | null>(null); 
   const { mutateAsync: updateStrategicOutput } = useUpdateStrategicOutput();
   const { mutateAsync: createStrategicOutput } = useCreateStrategicOutput();
+  const [strategicOutputToDelete, setStrategicOutputToDelete] = useState<{ id: number; name: string; countryKpaId: number } | null>(null);
+  const { mutateAsync: deleteStrategicOutputMutation, isPending: isDeletingStrategicOutput } = useDeleteStrategicOutput();
 
   const [parentStrategicOutputId, setParentStrategicOutputId] = useState<number|null>(null);
   const [openMeasureModal, setOpenMeasureModal] = useState(false);
@@ -123,6 +127,22 @@ export default function InfoCountryKpaPage() {
     await refetch();
 
   }
+
+  const handleDeleteStrategicOutput = (node: any) => {
+    setStrategicOutputToDelete({
+      id: (node.data as any)?.id,
+      name: node.label,
+      countryKpaId: node.parent_id ?? 0,
+    });
+  };
+
+  const handleConfirmDeleteStrategicOutput = async () => {
+    if (!strategicOutputToDelete) return;
+    await deleteStrategicOutputMutation(strategicOutputToDelete.id);
+    refreshNode?.(`ck-${strategicOutputToDelete.countryKpaId}`);
+    setStrategicOutputToDelete(null);
+    await refetch();
+  };
 
   const handleCreateMeasure = async (node: TreeNode) => {
     setEditMeasure(null);
@@ -256,7 +276,8 @@ export default function InfoCountryKpaPage() {
             onSelectionChange={(key) => setSelected(key)} 
             loadChildren={loadChildrenCountryKpaTree} 
             onAddStrategicOutput={handleCreateStrategicOutput} 
-            onEditStrategicOutput={handleEditStrategicOutput} 
+            onEditStrategicOutput={handleEditStrategicOutput}
+            onDeleteStrategicOutput={handleDeleteStrategicOutput} 
             onAddMeasure={handleCreateMeasure} 
             onEditMeasure={handleEditMeasure}
             onAddIndicator={handleCreateIndicator} 
@@ -292,6 +313,7 @@ export default function InfoCountryKpaPage() {
 
       <DeleteIndicatorDialog indicatorName={indicatorToDelete?.name ?? ""} open={!!indicatorToDelete} onOpenChange={(open) => { if (!open) setIndicatorToDelete(null); }} onConfirm={handleConfirmDeleteIndicator} isLoading={isDeletingIndicator} />
       <DeleteMeasureDialog measureName={measureToDelete?.name ?? ""} open={!!measureToDelete} onOpenChange={(open) => { if (!open) setMeasureToDelete(null); }} onConfirm={handleConfirmDeleteMeasure} isLoading={isDeletingMeasure} />
+      <DeleteStrategicOutputDialog strategicOutputName={strategicOutputToDelete?.name ?? ""} open={!!strategicOutputToDelete} onOpenChange={(open) => { if (!open) setStrategicOutputToDelete(null); }} onConfirm={handleConfirmDeleteStrategicOutput} isLoading={isDeletingStrategicOutput} />
 
     </div>
   );

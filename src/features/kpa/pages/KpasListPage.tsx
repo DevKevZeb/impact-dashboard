@@ -5,7 +5,9 @@ import { useKpas } from "../hooks/useKpas";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import { useCreateKpa } from "../hooks/useCreateKpa";
 import { useUpdateKpa } from "../hooks/useUpdateKpa";
+import { useDeleteKpa } from "../hooks/useDeleteKpa";
 import CreateKpaModal from "../components/CreateKpaModal";
+import { DeleteKpaDialog } from "../components/DeleteKpaDialog";
 import { Loader2, Plus, Search, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -34,6 +36,8 @@ export default function KpasListPage(){
 
   const {mutateAsync: createKpa } = useCreateKpa();
   const {mutateAsync: updateKpa} = useUpdateKpa();
+  const [kpaToDelete, setKpaToDelete] = useState<Kpa | null>(null);
+  const { mutateAsync: deleteKpaMutation, isPending: isDeletingKpa } = useDeleteKpa();
 
   const handleSubmit = async (formData: CreateKpaDto) => {
     if(selectedKpa) await updateKpa({ id: selectedKpa.id, dto:formData});
@@ -52,6 +56,16 @@ export default function KpasListPage(){
   const handleEdit = (kpa: Kpa) => {
     setSelectedKpa(kpa);
     setOpenModal(true);
+  };
+
+  const handleDelete = (kpa: Kpa) => {
+    setKpaToDelete(kpa);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!kpaToDelete) return;
+    await deleteKpaMutation(kpaToDelete.id);
+    setKpaToDelete(null);
   };
 
   const handleSearchChange = (value: string) => {
@@ -111,9 +125,11 @@ export default function KpasListPage(){
 
     <CreateKpaModal open={openModal} kpa={selectedKpa} onClose={() => setOpenModal(false)} onSubmit={handleSubmit} />
 
+    <DeleteKpaDialog kpaName={kpaToDelete?.name ?? ""} open={!!kpaToDelete} onOpenChange={(open) => { if (!open) setKpaToDelete(null); }} onConfirm={handleConfirmDelete} isLoading={isDeletingKpa} />
+
     {showSkeleton ? <TableSkeleton columns={3} /> :
     data && data.kpas.length > 0 ? (
-      <KpaTable kpas={data?.kpas} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} onEdit={handleEdit} onDelete={(agency) => console.log("DELETE", agency)} setPerPage={setPerPage} canWrite={canWrite} />
+      <KpaTable kpas={data?.kpas} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} onEdit={handleEdit} onDelete={handleDelete} setPerPage={setPerPage} canWrite={canWrite} />
     ): (
         <EmptyState
           icon={Tag}
