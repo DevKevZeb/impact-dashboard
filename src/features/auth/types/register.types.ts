@@ -23,6 +23,8 @@ export interface RegisterInput {
   password: string;
   password_confirmation: string;
   role_name: "project-manager" | "country-manager";
+  country_id: number;
+  "g-recaptcha-response": string;
 }
 
 export interface RegisterResponse {

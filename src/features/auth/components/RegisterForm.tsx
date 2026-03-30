@@ -24,16 +24,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export function RegisterForm() {
   const navigate = useNavigate();
   const { mutate: register, isPending } = useRegister();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [recaptchaReady, setRecaptchaReady] = useState(false);
   
   // Fetch countries for dropdown (no auth required)
   const { data: countriesData, isLoading: isLoadingCountries } = usePublicCountries();
+
+  const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LekrposAAAAAKwvGRkvqbH3vA3IOsi-lwK9A5Zd";
+
+  // Load reCAPTCHA script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://www.google.com/recaptcha/api.js";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => setRecaptchaReady(true);
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup: remove script when component unmounts
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
 
   const {
     register: registerField,
@@ -50,18 +71,39 @@ export function RegisterForm() {
       password_confirmation: "",
       role_name: undefined,
       country_id: undefined,
+      "g-recaptcha-response": "",
     },
   });
 
   const watchedRoleName = watch("role_name");
 
   const onSubmit = (data: RegisterFormData) => {
-    register(data, {
+    // Capture reCAPTCHA token before submission
+    const token = window.grecaptcha?.getResponse();
+
+    if (!token) {
+      toast.error("Please complete the reCAPTCHA verification");
+      return;
+    }
+
+    // Add token to form data
+    const payload = {
+      ...data,
+      "g-recaptcha-response": token,
+    };
+
+    register(payload, {
       onSuccess: () => {
+        // Reset reCAPTCHA on success
+        window.grecaptcha?.reset();
         // Redirect to email verification pending page
         navigate("/email-verification-pending", {
           state: { email: data.email },
         });
+      },
+      onError: () => {
+        // Reset reCAPTCHA on error
+        window.grecaptcha?.reset();
       },
     });
   };
@@ -236,7 +278,26 @@ export function RegisterForm() {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isPending}>
+          {/* reCAPTCHA Checkbox */}
+          <div className="space-y-2">
+            {recaptchaReady ? (
+              <div
+                className="g-recaptcha"
+                data-sitekey={RECAPTCHA_SITE_KEY}
+              />
+            ) : (
+              <div className="p-4 bg-gray-100 rounded text-center text-sm text-gray-600">
+                Loading security verification...
+              </div>
+            )}
+            {errors["g-recaptcha-response"] && (
+              <p className="text-sm text-red-600">
+                {errors["g-recaptcha-response"].message}
+              </p>
+            )}
+          </div>
+
+          <Button type="submit" className="w-full" disabled={isPending || !recaptchaReady}>
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
