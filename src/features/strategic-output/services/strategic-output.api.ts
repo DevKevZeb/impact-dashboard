@@ -88,3 +88,7 @@ export function fetchStrategicOutputsForSelect(kpaId: number) {
     };
   };
 }
+
+export async function deleteStrategicOutput(id: number): Promise<void> {
+  await apiClient.delete(`/strategic-outputs/${id}`);
+}

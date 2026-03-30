@@ -83,3 +83,7 @@ export async function fetchKpasForSelect(params: { query: string; page: number; 
     hasMore: res.pagination.current_page < res.pagination.last_page,
   };
 }
+
+export async function deleteKpa(id: number): Promise<void> {
+  await apiClient.delete(`/kpas/${id}`);
+}
