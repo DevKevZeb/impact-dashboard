@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export function RegisterForm() {
@@ -32,21 +32,34 @@ export function RegisterForm() {
   const { mutate: register, isPending } = useRegister();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const [captchaPayload, setCaptchaPayload] = useState<string>("");
-  const captchaRef = useRef<HTMLElement | null>(null);
-  const altchaChallengeUrl =
-    import.meta.env.VITE_ALTCHA_CHALLENGE_URL ||
-    `${import.meta.env.VITE_API_BASE_URL}/auth/captcha/challenge`;
+  const [recaptchaReady, setRecaptchaReady] = useState(false);
   
   // Fetch countries for dropdown (no auth required)
   const { data: countriesData, isLoading: isLoadingCountries } = usePublicCountries();
+
+  const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LekrposAAAAAKwvGRkvqbH3vA3IOsi-lwK9A5Zd";
+
+  // Load reCAPTCHA script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://www.google.com/recaptcha/api.js";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => setRecaptchaReady(true);
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup: remove script when component unmounts
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
 
   const {
     register: registerField,
     handleSubmit,
     formState: { errors },
-    clearErrors,
-    setError,
     setValue,
     watch,
   } = useForm<RegisterFormData>({
@@ -58,56 +71,39 @@ export function RegisterForm() {
       password_confirmation: "",
       role_name: undefined,
       country_id: undefined,
-      altcha: "",
+      "g-recaptcha-response": "",
     },
   });
-
-  useEffect(() => {
-    const widget = captchaRef.current;
-    if (!widget) {
-      return;
-    }
-
-    const syncAltchaPayload = () => {
-      const form = widget.closest("form");
-      const payloadInput = form?.querySelector<HTMLInputElement>('input[name="altcha"]');
-      const payload = payloadInput?.value?.trim() ?? "";
-
-      setCaptchaPayload(payload);
-      setValue("altcha", payload, { shouldDirty: true, shouldValidate: true });
-
-      if (payload) {
-        clearErrors("altcha");
-      }
-    };
-
-    widget.addEventListener("statechange", syncAltchaPayload);
-    widget.addEventListener("verified", syncAltchaPayload);
-
-    return () => {
-      widget.removeEventListener("statechange", syncAltchaPayload);
-      widget.removeEventListener("verified", syncAltchaPayload);
-    };
-  }, [clearErrors, setValue]);
 
   const watchedRoleName = watch("role_name");
 
   const onSubmit = (data: RegisterFormData) => {
-    if (!data.altcha) {
-      setError("altcha", {
-        type: "manual",
-        message: "Please complete captcha validation",
-      });
-      toast.error("Please complete captcha validation before creating your account.");
+    // Capture reCAPTCHA token before submission
+    const token = window.grecaptcha?.getResponse();
+
+    if (!token) {
+      toast.error("Please complete the reCAPTCHA verification");
       return;
     }
 
-    register(data, {
+    // Add token to form data
+    const payload = {
+      ...data,
+      "g-recaptcha-response": token,
+    };
+
+    register(payload, {
       onSuccess: () => {
+        // Reset reCAPTCHA on success
+        window.grecaptcha?.reset();
         // Redirect to email verification pending page
         navigate("/email-verification-pending", {
           state: { email: data.email },
         });
+      },
+      onError: () => {
+        // Reset reCAPTCHA on error
+        window.grecaptcha?.reset();
       },
     });
   };
@@ -282,28 +278,26 @@ export function RegisterForm() {
             )}
           </div>
 
+          {/* reCAPTCHA Checkbox */}
           <div className="space-y-2">
-            <Label>
-              Captcha <span className="text-red-500">*</span>
-            </Label>
-            <div className={`rounded-md border p-3 ${errors.altcha ? "border-red-500" : "border-slate-200"}`}>
-              <altcha-widget
-                ref={captchaRef}
-                auto="off"
-                challengeurl={altchaChallengeUrl}
-                hidefooter
-                hidelogo
+            {recaptchaReady ? (
+              <div
+                className="g-recaptcha"
+                data-sitekey={RECAPTCHA_SITE_KEY}
               />
-            </div>
-            {captchaPayload ? (
-              <p className="text-xs text-green-700">Captcha verified.</p>
-            ) : null}
-            {errors.altcha && (
-              <p className="text-sm text-red-600">{errors.altcha.message}</p>
+            ) : (
+              <div className="p-4 bg-gray-100 rounded text-center text-sm text-gray-600">
+                Loading security verification...
+              </div>
+            )}
+            {errors["g-recaptcha-response"] && (
+              <p className="text-sm text-red-600">
+                {errors["g-recaptcha-response"].message}
+              </p>
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button type="submit" className="w-full" disabled={isPending || !recaptchaReady}>
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
