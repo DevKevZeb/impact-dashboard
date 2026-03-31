@@ -15,11 +15,15 @@ export const SCOPES = {
   // ===== Projects =====
   PROJECTS_READ: "projects:read",
   PROJECTS_WRITE: "projects:write",
+  PROJECTS_CREATE: "projects:create",
+  PROJECTS_DELETE: "projects:delete",
+  PROJECTS_WEIGHT: "projects:weight",
   PROJECTS_ALL: "projects:*",
   
   // ===== Programs =====
   PROGRAMS_READ: "programs:read",
   PROGRAMS_WRITE: "programs:write",
+  PROGRAMS_VIEW_BY_COUNTRY: "programs:view_by_country",
   PROGRAMS_ALL: "programs:*",
   
   // ===== Program States =====

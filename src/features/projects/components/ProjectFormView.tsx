@@ -46,6 +46,9 @@ interface Props {
  
 export default function ProjectFormView({ mode, programName, form, onSubmit, onInvalid, programId, projectId }: Props) {
     const hasCountryScope = useAuthStore((state) => state.hasCountryScope);
+    const isAdmin = useAuthStore((state) => state.hasScope("*:*"));
+    const canEditWeight = useAuthStore((state) => state.hasScope("projects:weight"));
+    const isCountryManager = canEditWeight && !isAdmin;
 
 
     const [totalDonors, setTotalDonors] = useState<number | null>(null);
@@ -113,6 +116,45 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 <BackArrow backTo={mode === 'edit' ? `/app/projects/program/${programId}` :"/app/projects"} /> 
             </div>
             <form className="space-y-6" onSubmit={form.form.handleSubmit(onSubmit, onInvalid)}>
+                {isCountryManager && (
+                    <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                        Your role only allows editing the project weight. All other fields are read-only.
+                    </div>
+                )}
+                {canEditWeight && (
+                    <div className="flex flex-col space-y-2">
+                        <Label className="text-gray-700">PROJECT WEIGHT (0 TO 1)</Label>
+                        <Input
+                            type="number"
+                            min={0}
+                            max={1}
+                            step="0.0001"
+                            placeholder="Enter project weight"
+                            className="input-default no-spinner"
+                            {...form.form.register("weight", { valueAsNumber: true })}
+                        />
+                        {form.form.formState.errors.weight && (
+                            <p className="text-sm text-red-600"> {typeof form.form.formState.errors.weight.message === "string" ? form.form.formState.errors.weight.message : "Invalid input"} </p>
+                        )}
+                        <div
+                            className={`rounded-md border px-3 py-2 text-sm ${
+                                isWeightExceeded
+                                    ? "border-red-200 bg-red-50 text-red-700"
+                                    : "border-emerald-200 bg-emerald-50 text-emerald-700"
+                            }`}
+                        >
+                            <p className="font-medium">
+                                Available weight in this program: {maxWeightForProject.toFixed(4)}
+                            </p>
+                            <p>
+                                {isWeightExceeded
+                                    ? `The entered weight exceeds the available amount by ${weightDelta.toFixed(4)}.`
+                                    : `After this value, ${weightDelta.toFixed(4)} will remain available in the program.`}
+                            </p>
+                        </div>
+                    </div>
+                )}
+                <div className={`space-y-6${isCountryManager ? " pointer-events-none opacity-60 select-none" : ""}`}>
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">NAME</Label>
                     <Input className="input-default" placeholder="Type the project name" {...form.form.register("name")} />
@@ -199,38 +241,6 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                     {form.form.formState.errors.budget && (
                         <p className="text-sm text-red-600"> {typeof form.form.formState.errors.budget.message === "string" ? form.form.formState.errors.budget.message : "Invalid input"} </p>
                     )}    
-                </div>
-
-                <div className="flex flex-col space-y-2">
-                    <Label className="text-gray-700">PROJECT WEIGHT (0 TO 1)</Label>
-                    <Input
-                        type="number"
-                        min={0}
-                        max={1}
-                        step="0.0001"
-                        placeholder="Enter project weight"
-                        className="input-default no-spinner"
-                        {...form.form.register("weight", { valueAsNumber: true })}
-                    />
-                    {form.form.formState.errors.weight && (
-                        <p className="text-sm text-red-600"> {typeof form.form.formState.errors.weight.message === "string" ? form.form.formState.errors.weight.message : "Invalid input"} </p>
-                    )}
-                    <div
-                        className={`rounded-md border px-3 py-2 text-sm ${
-                            isWeightExceeded
-                                ? "border-red-200 bg-red-50 text-red-700"
-                                : "border-emerald-200 bg-emerald-50 text-emerald-700"
-                        }`}
-                    >
-                        <p className="font-medium">
-                            Available weight in this program: {maxWeightForProject.toFixed(4)}
-                        </p>
-                        <p>
-                            {isWeightExceeded
-                                ? `The entered weight exceeds the available amount by ${weightDelta.toFixed(4)}.`
-                                : `After this value, ${weightDelta.toFixed(4)} will remain available in the program.`}
-                        </p>
-                    </div>
                 </div>
 
                 <div className="flex flex-col space-y-2">
@@ -321,7 +331,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.comments.message === 'string' ? form.form.formState.errors.comments.message : 'Invalid input'}</p>
                     )}
                 </div>
-
+                </div>
                 <Button type="submit" className="btn-secondary">{mode === "edit" ? 'Edit' : 'Create'}</Button>
             </form>
         </div>

@@ -102,6 +102,8 @@ export async function loadChildrenCountryKpaTree(nodeKey: string, page: number =
             type: i.type?.name,
             type_id: i.type?.id,
             target: i.target,
+            is_bottom_up: i.type?.is_bottom_up,
+            actual_value: i.actual_value ?? null,
           },
           parent_id: numericId
         })),

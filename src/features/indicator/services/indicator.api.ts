@@ -15,7 +15,7 @@ export async function getIndicatorsByMeasureId(id_measure: number, page: number 
 
 export async function createIndicator(dto: CreateIndicatorDTO): Promise<Indicator>{
   try{
-    const payload = { name: dto.name, target: dto.target, type_id: dto.type_id, measure_id: dto.measure_id };
+    const payload = { name: dto.name, target: dto.target, type_id: dto.type_id, measure_id: dto.measure_id, actual_value: dto.actual_value ?? null };
     const { data } = await apiClient.post("/indicators", payload);
 
     toast.success(data.message);
@@ -36,7 +36,7 @@ export async function createIndicator(dto: CreateIndicatorDTO): Promise<Indicato
 
 export async function updateIndicator(id: number, dto: UpdateIndicatorDTO): Promise<Indicator>{
   try{
-    const payload = { name: dto.name, target: dto.target, type_id: dto.type_id, measure_id: dto.measure_id};
+    const payload = { name: dto.name, target: dto.target, type_id: dto.type_id, measure_id: dto.measure_id, actual_value: dto.actual_value ?? null};
     const { data } = await apiClient.put(`/indicators/${id}`, payload);
 
     toast.success(data.message);
