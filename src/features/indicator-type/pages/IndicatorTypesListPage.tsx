@@ -15,7 +15,7 @@ import { useHasScope } from "@/features/auth/hooks/useHasScope";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 
 export default function IndicatorTypesListPage(){
-    const canWrite = useHasScope("indicators:write");
+    const canWrite = useHasScope("indicator_types:write");
 
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
