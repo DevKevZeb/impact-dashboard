@@ -15,7 +15,7 @@ import { fetchIndicatorTypesForSelect } from "@/features/indicator-type/services
 const indicatorSchema = z.object({
   name: z.string().min(2, "Name is required"),
   target: z.number().positive("Target must be greater than 0"),
-  actual_value: z.number().min(0, "Actual value cannot be negative").nullable().optional(),
+  actual_value: z.number().min(0, "Actual value cannot be negative"),
   measure_id: z.number(),
 
   type: z
@@ -28,8 +28,8 @@ const indicatorSchema = z.object({
     .refine((v) => v !== null, { message: "Type is required" }),
 }).superRefine((data, ctx) => {
   if (data.type !== null && data.type.is_bottom_up === false) {
-    // actual_value (αₓ) is required for TD
-    if (data.actual_value === null || data.actual_value === undefined) {
+    // actual_value (αₓ) must be > 0 for TD
+    if (data.actual_value <= 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Actual value (αₓ) is required for Top-Down indicators",
@@ -38,8 +38,7 @@ const indicatorSchema = z.object({
     }
     // αₓ cannot exceed Tₓ
     if (
-      data.actual_value !== null &&
-      data.actual_value !== undefined &&
+      data.actual_value > 0 &&
       data.target > 0 &&
       data.actual_value > data.target
     ) {
@@ -70,7 +69,7 @@ export default function CreateIndicatorModal({ open, indicator, parentMeasureId,
     defaultValues: {
       name: "",
       target: undefined,
-      actual_value: null,
+      actual_value: 0,
       measure_id: parentMeasureId,
       type: null,
     },
@@ -84,7 +83,7 @@ export default function CreateIndicatorModal({ open, indicator, parentMeasureId,
   // Clear actual_value when switching from TD → BU so it doesn't persist
   useEffect(() => {
     if (!isTopDown) {
-      setValue("actual_value", null);
+      setValue("actual_value", 0);
     }
   }, [isTopDown, setValue]);
 
@@ -94,7 +93,7 @@ export default function CreateIndicatorModal({ open, indicator, parentMeasureId,
         indicator ? {
               name: indicator.name,
               target: indicator.target,
-              actual_value: indicator.actual_value ?? null,
+              actual_value: indicator.actual_value ?? 0,
               measure_id: indicator.measure_id,
               type: indicator.type
                 ? { id: indicator.type.id, name: indicator.type.name, is_bottom_up: indicator.type.is_bottom_up }
@@ -102,7 +101,7 @@ export default function CreateIndicatorModal({ open, indicator, parentMeasureId,
             } : {
               name: "",
               target: undefined,
-              actual_value: null,
+              actual_value: 0,
               measure_id: parentMeasureId,
               type: null,
             }
@@ -114,7 +113,7 @@ export default function CreateIndicatorModal({ open, indicator, parentMeasureId,
     const dto: CreateIndicatorDTO = {
       name: data.name,
       target: data.target,
-      actual_value: data.type?.is_bottom_up === false ? (data.actual_value ?? null) : null,
+      actual_value: data.type?.is_bottom_up === false ? (data.actual_value ?? 0) : 0,
       measure_id: parentMeasureId,
       type_id: data.type!.id,
     };
@@ -189,12 +188,12 @@ export default function CreateIndicatorModal({ open, indicator, parentMeasureId,
                 step="any"
                 min="0"
                 {...register("actual_value", {
-                  setValueAs: (v) => (v === "" || v === null ? null : parseFloat(v)),
+                  setValueAs: (v) => (v === "" || v === null || v === undefined ? 0 : parseFloat(v)),
                 })}
               />
               <p className="text-xs text-muted-foreground">
                 Implementation = αₓ / Tₓ × 100 = {" "}
-                {watch("actual_value") != null && watch("target") > 0
+                {watch("actual_value") > 0 && watch("target") > 0
                   ? `${((watch("actual_value")! / watch("target")) * 100).toFixed(2)}%`
                   : "—"}
               </p>

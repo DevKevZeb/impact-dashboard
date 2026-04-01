@@ -2,7 +2,7 @@ export interface Indicator {
     id: number, 
     name: string,
     target?: number,
-    actual_value?: number | null,
+    actual_value?: number,
     type?: {
         id: number,
         name: string,
@@ -15,7 +15,7 @@ export interface Indicator {
 export interface CreateIndicatorDTO {
   name: string;
   target: number;
-  actual_value?: number | null;
+  actual_value: number;
   measure_id: number;
   type_id?: number;
 }
@@ -23,7 +23,7 @@ export interface CreateIndicatorDTO {
 export interface UpdateIndicatorDTO {
   name: string;
   target: number;
-  actual_value?: number | null;
+  actual_value: number;
   measure_id: number;
   type_id?: number;
 }
