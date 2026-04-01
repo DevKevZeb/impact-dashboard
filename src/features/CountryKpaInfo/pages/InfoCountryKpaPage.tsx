@@ -189,7 +189,7 @@ export default function InfoCountryKpaPage() {
       id: (node.data as any)?.id!,
       name: node.label,
       target: Number(node.meta!.target!),
-      actual_value: node.meta!.actual_value ?? null,
+      actual_value: node.meta!.actual_value ?? 0,
       measure_id: node.parent_id!,
       type: {
         id: node.meta!.type_id!,
