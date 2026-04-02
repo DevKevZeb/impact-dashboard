@@ -7,12 +7,17 @@ import type { Donor, DonorDTO } from "../types/donor.types";
 import { Button } from "@/components/ui/button";
 import CreateDonorModal from "../components/CreateDonorModal";
 import DonorTable from "../components/DonorTable";
+import DeleteDonorDialog from "../components/DeleteDonorDialog";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import { useDeleteDonor } from "../hooks/useDeleteDonor";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export default function DonorsListPage() {
+  const queryClient = useQueryClient();
     const canWrite = useHasScope("donors:write");
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
@@ -32,8 +37,10 @@ export default function DonorsListPage() {
 
     const { mutateAsync: createDonor } = useCreateDonor();
     const { mutateAsync: updateDonor } = useUpdateDonor();
+    const { mutateAsync: deleteDonor, isPending: isDeletingDonor } = useDeleteDonor();
 
     const [openModal, setOpenModal] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
     
     const handleSubmit = async (formData: DonorDTO) => {
@@ -53,6 +60,53 @@ export default function DonorsListPage() {
     const handleEdit = async (donor: Donor) => {
         setSelectedDonor(donor);
         setOpenModal(true);
+    }
+
+    const handleDelete = (donor: Donor) => {
+      setSelectedDonor(donor);
+      setOpenDeleteModal(true);
+    }
+
+    const handleConfirmDelete = async () => {
+      if (!selectedDonor) return;
+
+      try {
+        const result = await deleteDonor(selectedDonor.id);
+        toast.success(result?.message || "Donor eliminado correctamente");
+        setOpenDeleteModal(false);
+        setSelectedDonor(null);
+      } catch (error: any) {
+        const status = error?.response?.status;
+        const message = error?.response?.data?.message;
+
+        if (status === 409) {
+          toast.error(
+            message ||
+              "No se puede eliminar porque el donor esta relacionado a uno o mas proyectos."
+          );
+          setOpenDeleteModal(false);
+          return;
+        }
+
+        if (status === 404) {
+          toast.info("El donor ya no existe. Se actualizara la lista.");
+          queryClient.invalidateQueries({ queryKey: ["donors"] });
+          setOpenDeleteModal(false);
+          setSelectedDonor(null);
+          return;
+        }
+
+        if (status === 403) {
+          toast.error("No tienes permisos para eliminar donors.");
+          return;
+        }
+
+        if (status === 401) {
+          return;
+        }
+
+        toast.error(message || "Error al eliminar el donor.");
+      }
     }
 
     const handleSearchChange = (value: string) => {
@@ -113,10 +167,20 @@ export default function DonorsListPage() {
         </div>
         
         <CreateDonorModal open={openModal} donor={selectedDonor} onClose={()=> setOpenModal(false)} onSubmit={handleSubmit}/>
+
+        {selectedDonor && (
+          <DeleteDonorDialog
+            donor={selectedDonor}
+            open={openDeleteModal}
+            onOpenChange={setOpenDeleteModal}
+            onConfirm={handleConfirmDelete}
+            isLoading={isDeletingDonor}
+          />
+        )}
         
         {showSkeleton ? <TableSkeleton columns={2}/> :
         data && data.donors.length > 0 ?
-        <DonorTable donors={data.donors} pagination={data.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(donor) => console.log("DELETE", donor)} canWrite={canWrite}/>
+        <DonorTable donors={data.donors} pagination={data.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={handleDelete} canWrite={canWrite}/>
         :
         <EmptyState
           icon={Tag} title={searchTerm ? "No donor found" : "No donors available"}
