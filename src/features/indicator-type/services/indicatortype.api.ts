@@ -19,7 +19,7 @@ export async function getIndicatorTypesPaginated(page: number, perPage: number, 
 
 export async function createIndicatorType(dto: IndicatorTypeDTO): Promise<IndicatorType>{
     try{
-        const payload = { name: dto.name };
+        const payload = { name: dto.name, is_bottom_up: dto.is_bottom_up };
         const { data } = await apiClient.post("/indicator-types", payload);
 
         toast.success(data.message);
@@ -40,7 +40,7 @@ export async function createIndicatorType(dto: IndicatorTypeDTO): Promise<Indica
 
 export async function updateIndicatorType(id: number, dto: IndicatorTypeDTO): Promise<IndicatorType>{
     try{
-        const payload = { name: dto.name };
+        const payload = { name: dto.name, is_bottom_up: dto.is_bottom_up };
         const { data } = await apiClient.put(`/indicator-types/${id}`, payload);
 
         toast.success(data.message);

@@ -3,6 +3,8 @@ export interface IndicatorMeta {
   type?: string;
   type_id?: number;
   target?: number| string;
+  is_bottom_up?: boolean;
+  actual_value?: number | null;
 }
 
 export type NodeType = "country"|"ck"|"so"|"m"|"i"|"load-more";
