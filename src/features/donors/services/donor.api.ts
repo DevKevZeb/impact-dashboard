@@ -42,6 +42,11 @@ export async function updateDonor(id: number, dto: DonorDTO): Promise<Donor>{
     }
 }
 
+export async function deleteDonor(id: number): Promise<{ success: boolean; message: string; data: unknown[] }> {
+    const { data } = await apiClient.delete(`/donors/${id}`);
+    return data;
+}
+
 interface FetchParams {
   query: string;
   page: number;
