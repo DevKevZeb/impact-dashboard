@@ -99,23 +99,32 @@ export function RegisterForm() {
       return;
     }
 
-    recaptchaWidgetIdRef.current = window.grecaptcha.render("register-recaptcha", {
-      sitekey: RECAPTCHA_SITE_KEY,
-      callback: (token: string) => {
-        setValue("g-recaptcha-response", token, { shouldValidate: true });
-        clearErrors("g-recaptcha-response");
-      },
-      expired_callback: () => {
-        setValue("g-recaptcha-response", "", { shouldValidate: true });
-      },
-      error_callback: () => {
-        setValue("g-recaptcha-response", "", { shouldValidate: true });
-      },
-    });
+    try {
+      recaptchaWidgetIdRef.current = window.grecaptcha.render("register-recaptcha", {
+        sitekey: RECAPTCHA_SITE_KEY,
+        callback: (token: string) => {
+          setValue("g-recaptcha-response", token, { shouldValidate: true });
+          clearErrors("g-recaptcha-response");
+        },
+        expired_callback: () => {
+          setValue("g-recaptcha-response", "", { shouldValidate: true });
+        },
+        error_callback: () => {
+          setValue("g-recaptcha-response", "", { shouldValidate: true });
+        },
+      });
+    } catch {
+      setRecaptchaReady(false);
+      toast.error("Unable to load reCAPTCHA. Please refresh the page.");
+    }
 
     return () => {
-      if (recaptchaWidgetIdRef.current !== null && window.grecaptcha) {
-        window.grecaptcha.reset(recaptchaWidgetIdRef.current);
+      if (recaptchaWidgetIdRef.current !== undefined && window.grecaptcha) {
+        try {
+          window.grecaptcha.reset(recaptchaWidgetIdRef.current);
+        } catch {
+          // Ignore cleanup errors from third-party reCAPTCHA lifecycle.
+        }
       }
       recaptchaWidgetIdRef.current = undefined;
     };
