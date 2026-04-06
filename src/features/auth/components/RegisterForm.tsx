@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 export function RegisterForm() {
@@ -33,26 +33,41 @@ export function RegisterForm() {
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [recaptchaReady, setRecaptchaReady] = useState(false);
+  const recaptchaWidgetIdRef = useRef<number | undefined>(undefined);
   
   // Fetch countries for dropdown (no auth required)
   const { data: countriesData, isLoading: isLoadingCountries } = usePublicCountries();
 
   const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LekrposAAAAAKwvGRkvqbH3vA3IOsi-lwK9A5Zd";
 
-  // Load reCAPTCHA script
+  // Load reCAPTCHA script once and mark widget API as ready
   useEffect(() => {
+    const handleScriptLoad = () => setRecaptchaReady(true);
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[src="https://www.google.com/recaptcha/api.js?render=explicit"]'
+    );
+
+    if (window.grecaptcha) {
+      setRecaptchaReady(true);
+      return;
+    }
+
+    if (existingScript) {
+      existingScript.addEventListener("load", handleScriptLoad);
+      return () => {
+        existingScript.removeEventListener("load", handleScriptLoad);
+      };
+    }
+
     const script = document.createElement("script");
-    script.src = "https://www.google.com/recaptcha/api.js";
+    script.src = "https://www.google.com/recaptcha/api.js?render=explicit";
     script.async = true;
     script.defer = true;
-    script.onload = () => setRecaptchaReady(true);
+    script.onload = handleScriptLoad;
     document.head.appendChild(script);
 
     return () => {
-      // Cleanup: remove script when component unmounts
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
+      script.onload = null;
     };
   }, []);
 
@@ -62,6 +77,7 @@ export function RegisterForm() {
     formState: { errors },
     setValue,
     watch,
+    clearErrors,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -77,9 +93,39 @@ export function RegisterForm() {
 
   const watchedRoleName = watch("role_name");
 
+  // Render widget explicitly so callbacks can keep form state in sync.
+  useEffect(() => {
+    if (!recaptchaReady || !window.grecaptcha || recaptchaWidgetIdRef.current !== undefined) {
+      return;
+    }
+
+    recaptchaWidgetIdRef.current = window.grecaptcha.render("register-recaptcha", {
+      sitekey: RECAPTCHA_SITE_KEY,
+      callback: (token: string) => {
+        setValue("g-recaptcha-response", token, { shouldValidate: true });
+        clearErrors("g-recaptcha-response");
+      },
+      expired_callback: () => {
+        setValue("g-recaptcha-response", "", { shouldValidate: true });
+      },
+      error_callback: () => {
+        setValue("g-recaptcha-response", "", { shouldValidate: true });
+      },
+    });
+
+    return () => {
+      if (recaptchaWidgetIdRef.current !== null && window.grecaptcha) {
+        window.grecaptcha.reset(recaptchaWidgetIdRef.current);
+      }
+      recaptchaWidgetIdRef.current = undefined;
+    };
+  }, [recaptchaReady, RECAPTCHA_SITE_KEY, setValue, clearErrors]);
+
   const onSubmit = (data: RegisterFormData) => {
-    // Capture reCAPTCHA token before submission
-    const token = window.grecaptcha?.getResponse();
+    // Capture reCAPTCHA token before submission (explicit widget first)
+    const token = window.grecaptcha?.getResponse(
+      recaptchaWidgetIdRef.current ?? undefined
+    );
 
     if (!token) {
       toast.error("Please complete the reCAPTCHA verification");
@@ -95,7 +141,10 @@ export function RegisterForm() {
     register(payload, {
       onSuccess: () => {
         // Reset reCAPTCHA on success
-        window.grecaptcha?.reset();
+        if (recaptchaWidgetIdRef.current !== undefined) {
+          window.grecaptcha?.reset(recaptchaWidgetIdRef.current);
+        }
+        setValue("g-recaptcha-response", "", { shouldValidate: true });
         // Redirect to email verification pending page
         navigate("/email-verification-pending", {
           state: { email: data.email },
@@ -103,7 +152,10 @@ export function RegisterForm() {
       },
       onError: () => {
         // Reset reCAPTCHA on error
-        window.grecaptcha?.reset();
+        if (recaptchaWidgetIdRef.current !== undefined) {
+          window.grecaptcha?.reset(recaptchaWidgetIdRef.current);
+        }
+        setValue("g-recaptcha-response", "", { shouldValidate: true });
       },
     });
   };
@@ -281,10 +333,7 @@ export function RegisterForm() {
           {/* reCAPTCHA Checkbox */}
           <div className="space-y-2">
             {recaptchaReady ? (
-              <div
-                className="g-recaptcha"
-                data-sitekey={RECAPTCHA_SITE_KEY}
-              />
+              <div id="register-recaptcha" />
             ) : (
               <div className="p-4 bg-gray-100 rounded text-center text-sm text-gray-600">
                 Loading security verification...
