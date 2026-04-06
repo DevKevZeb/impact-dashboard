@@ -11,10 +11,12 @@ export function mapIndicator(raw: any): Indicator {
     id: raw.id, 
     name: raw.name,
     target: raw.target,
+    actual_value: raw.actual_value ?? 0,
     measure_id: raw.measure_id,
     type: {
       id: raw.type.id,
-      name: raw.type.name
+      name: raw.type.name,
+      is_bottom_up: raw.type.is_bottom_up ?? true,
     }
   }
 }

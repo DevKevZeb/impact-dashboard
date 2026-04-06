@@ -21,7 +21,9 @@ interface Props {
 }
 
 export default function ProjectsOfProgramTable({projects, pagination, page, perPage, setPage, setPerPage, onDelete }: Props){
-        const canWrite = useHasScope("projects:write");
+        const canEdit = useHasScope("projects:write");
+        const canDelete = useHasScope("projects:delete");
+        const showActions = canEdit || canDelete;
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       setPerPage(Number(e.target.value));
       setPage(1);
@@ -49,7 +51,7 @@ export default function ProjectsOfProgramTable({projects, pagination, page, perP
                         <th>END DATE</th> 
                         <th>PROGRESS</th>
                         <th>STATE</th> 
-                        {canWrite && <th>ACTIONS</th>}
+                        {showActions && <th>ACTIONS</th>}
                     </tr>
                 </thead>
 
@@ -81,20 +83,24 @@ export default function ProjectsOfProgramTable({projects, pagination, page, perP
                         <td className="table-cell">
                             {project.state.state}
                         </td>
-                        {canWrite && (
+                        {showActions && (
                         <td className="table-cell text-center space-x-2">
+                            {canEdit && (
                             <button className="btn-edit-table" onClick={() => navigate(`/app/projects/edit/${project.program_id}/${project.id}`)}>
                                 <SquarePen className="w-4 h-4" />
                             </button>
+                            )}
+                            {canDelete && (
                             <button className="btn-delete-table" onClick={() => onDelete(project)}>
                                 <Trash2 className="w-4 h-4" />
                             </button>
+                            )}
                         </td>)}
 
                     </tr>
                     ))}
                     <tr className="table-pagination-row">
-                        <td colSpan={canWrite ? 9 : 8} className="table-pagination-cell">
+                        <td colSpan={showActions ? 9 : 8} className="table-pagination-cell">
                             <div className="table-pagination-container">
                                 <div className="flex items-center gap-2 text-xs text-gray-600">
                                     <span>Rows per page:</span>
