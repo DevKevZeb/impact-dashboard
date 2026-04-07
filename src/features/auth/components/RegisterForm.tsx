@@ -28,12 +28,15 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 export function RegisterForm() {
+  const MAX_RECAPTCHA_RENDER_RETRIES = 5;
   const navigate = useNavigate();
   const { mutate: register, isPending } = useRegister();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [recaptchaReady, setRecaptchaReady] = useState(false);
   const recaptchaWidgetIdRef = useRef<number | undefined>(undefined);
+  const recaptchaRenderRetryRef = useRef<number>(0);
+  const recaptchaRetryTimeoutRef = useRef<number | undefined>(undefined);
   
   // Fetch countries for dropdown (no auth required)
   const { data: countriesData, isLoading: isLoadingCountries } = usePublicCountries();
@@ -99,26 +102,50 @@ export function RegisterForm() {
       return;
     }
 
-    try {
-      recaptchaWidgetIdRef.current = window.grecaptcha.render("register-recaptcha", {
-        sitekey: RECAPTCHA_SITE_KEY,
-        callback: (token: string) => {
-          setValue("g-recaptcha-response", token, { shouldValidate: true });
-          clearErrors("g-recaptcha-response");
-        },
-        expired_callback: () => {
-          setValue("g-recaptcha-response", "", { shouldValidate: true });
-        },
-        error_callback: () => {
-          setValue("g-recaptcha-response", "", { shouldValidate: true });
-        },
-      });
-    } catch {
-      setRecaptchaReady(false);
-      toast.error("Unable to load reCAPTCHA. Please refresh the page.");
-    }
+    const renderWidget = () => {
+      const container = document.getElementById("register-recaptcha");
+
+      if (!container || recaptchaWidgetIdRef.current !== undefined || !window.grecaptcha) {
+        return;
+      }
+
+      try {
+        recaptchaWidgetIdRef.current = window.grecaptcha.render("register-recaptcha", {
+          sitekey: RECAPTCHA_SITE_KEY,
+          callback: (token: string) => {
+            setValue("g-recaptcha-response", token, { shouldValidate: true });
+            clearErrors("g-recaptcha-response");
+          },
+          expired_callback: () => {
+            setValue("g-recaptcha-response", "", { shouldValidate: true });
+          },
+          error_callback: () => {
+            setValue("g-recaptcha-response", "", { shouldValidate: true });
+          },
+        });
+        recaptchaRenderRetryRef.current = 0;
+      } catch {
+        if (recaptchaRenderRetryRef.current < MAX_RECAPTCHA_RENDER_RETRIES) {
+          recaptchaRenderRetryRef.current += 1;
+          recaptchaRetryTimeoutRef.current = window.setTimeout(renderWidget, 250);
+          return;
+        }
+
+        setRecaptchaReady(false);
+        toast.error("Unable to load reCAPTCHA. Please refresh the page.");
+      }
+    };
+
+    window.grecaptcha.ready(() => {
+      // Delay one frame to ensure the container div is painted.
+      window.requestAnimationFrame(renderWidget);
+    });
 
     return () => {
+      if (recaptchaRetryTimeoutRef.current !== undefined) {
+        window.clearTimeout(recaptchaRetryTimeoutRef.current);
+      }
+
       if (recaptchaWidgetIdRef.current !== undefined && window.grecaptcha) {
         try {
           window.grecaptcha.reset(recaptchaWidgetIdRef.current);
@@ -127,6 +154,8 @@ export function RegisterForm() {
         }
       }
       recaptchaWidgetIdRef.current = undefined;
+      recaptchaRenderRetryRef.current = 0;
+      recaptchaRetryTimeoutRef.current = undefined;
     };
   }, [recaptchaReady, RECAPTCHA_SITE_KEY, setValue, clearErrors]);
 

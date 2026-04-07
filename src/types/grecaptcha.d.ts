@@ -5,6 +5,11 @@
 
 interface ReCaptchaV2 {
   /**
+   * Runs the callback when reCAPTCHA is fully initialized.
+   */
+  ready(callback: () => void): void;
+
+  /**
    * Renders an explicit reCAPTCHA widget
    * @param containerId ID of the div where the widget will be rendered
    * @param options Configuration options
