@@ -35,6 +35,7 @@ import ProgressPublicPage from "@/features/public/progress/page/ProgressPublicPa
 import PublicProjectDetailsPage from "@/features/public/projects/page/PublicProjectDetailsPage";
 import { ProgramInvitePage } from "@/features/programs/pages/ProgramInvitePage";
 import { RolesPermissionsPage } from "@/features/roles-permissions/pages/RolesPermissionsPage";
+import ProjectDetailsPage from "@/features/projects/pages/ProjectDetailsPage";
 
 export function AppRouter() {
     return (
@@ -100,6 +101,7 @@ export function AppRouter() {
             <Route path="projects" element={<ListProgramsWithProjects />}/>
             <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
             <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
+            <Route path="projects/view/:id" element={<ProjectDetailsPage/>}/>
             <Route path="projects/program/:programId" element={<ListProjectsOfProgramPage/>}/>
             <Route path="country-kpa" element={<CountryKpaListPage/>} />
             <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />

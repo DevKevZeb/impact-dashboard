@@ -14,7 +14,7 @@ import TableSkeleton from "@/components/ui/TableSkeleton";
 
 export default function ProjectStateListPage(){
 
-    const canWrite = useHasScope("project_state:write");
+    const canWrite = useHasScope("project_states:write");
 
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
