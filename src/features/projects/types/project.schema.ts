@@ -46,7 +46,10 @@ export const projectSchema = z.object({
         z.object({
             id: z.number( "A donor is required").min(1, "You must select an agency"),
             name: z.string( "A donor is required").min(1,  "A donor is required"),
-            url: z.string().url(),
+            url: z.string().optional().refine(
+                (value) => !value || /^(https?:\/\/).+/i.test(value),
+                { message: "The agency URL must start with http:// or https://." }
+            ),
             contribution: z.number().min(0, "Contribution must be ≥ 0").max(100, "Contribution must be ≤ 100"),
         }, "An agency is required")
     ).min(1, "At least one agency is required"),
@@ -69,11 +72,14 @@ export const projectSchema = z.object({
 
     contact: z.object({
         id: z.number().optional(),
-        first_name: z.string().min(1, "The contact first name must not be empty").min(2, "The contact first name must have at least 2 characters").max(50, "The contact first name must not exceed 50 characters").regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact first name contains invalid characters"),
-        last_name: z.string().min(1, "The contact last name must not be empty").min(2, "The contact last name must have at least 2 characters").max(50, "The contact last name must not exceed 50 characters").regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact last name contains invalid characters"),
-        title: z.string().min(1, "The contact title must not be empty").min(2, "The contact title must have at least 2 characters").max(100, "The contact title must not exceed 100 characters").regex(/^[A-Za-zÀ-ÿ\s'-]+$/, "The contact title contains invalid characters"),
+        first_name: z.string().min(1, "The contact first name must not be empty").min(2, "The contact first name must have at least 2 characters").max(50, "The contact first name must not exceed 50 characters"),
+        last_name: z.string().min(1, "The contact last name must not be empty").min(2, "The contact last name must have at least 2 characters").max(50, "The contact last name must not exceed 50 characters"),
+        title: z.string().min(1, "The contact title must not be empty").min(2, "The contact title must have at least 2 characters").max(100, "The contact title must not exceed 100 characters"),
         email: z.string().min(1, "The contact email must not be empty").email("The contact email must have a valid format").max(254, "The contact email exceeds the maximum allowed length (254 characters)"),
-        phone: z.string().regex(/^\+?[0-9]{7,15}$/, "The phone number format is not valid – use international format").min(7, "The phone number must have at least 7 digits").max(15, "The phone number must not exceed 15 digits"),
+        phone: z.string().optional().refine(
+            (value) => value === undefined || value === "" || /^\+?[0-9]{7,15}$/.test(value),
+            { message: "The phone number format is not valid – use international format" }
+        ),
     }),
 
     progress: z.number().min(0).max(100),

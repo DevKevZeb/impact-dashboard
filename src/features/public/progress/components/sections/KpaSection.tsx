@@ -7,8 +7,12 @@ const formatMillions = (value: number) => {
   return `$${(value / 1_000_000).toFixed(2)} million dollars`;
 };
 
-export default function KpaSection(){
-  const { data, isLoading, error } = useAllKpasImplementation();
+interface KpaSectionProps {
+  countryId?: number;
+}
+
+export default function KpaSection({ countryId }: KpaSectionProps){
+  const { data, isLoading, error } = useAllKpasImplementation(countryId);
 
   return (
     <div className="w-full flex flex-col justify-center items-center">
