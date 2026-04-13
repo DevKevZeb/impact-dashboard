@@ -131,6 +131,17 @@ export function LoginForm() {
             )}
           </div>
 
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => navigate("/forgot-password")}
+              className="text-sm font-medium text-blue-600 hover:underline disabled:opacity-50"
+              disabled={isPending}
+            >
+              Forgot your password?
+            </button>
+          </div>
+
           <Button
             type="submit"
             className="w-full"
