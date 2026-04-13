@@ -81,4 +81,5 @@ export interface ProjectTable {
     weight?: number;
     state: ProjectState;
     program_id: number;
+    can_edit?: boolean;
 }

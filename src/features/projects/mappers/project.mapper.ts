@@ -14,6 +14,7 @@ export function mapProjectTable(raw: any): ProjectTable{
         weight: raw.weight,
         state: raw.project_state,
         program_id: raw.program_id,
+        can_edit: Boolean(raw.can_edit),
     }
 }
 

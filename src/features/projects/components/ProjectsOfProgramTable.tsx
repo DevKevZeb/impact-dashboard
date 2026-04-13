@@ -1,6 +1,6 @@
 import type { ProjectTable } from "../types/project.types";
 import { useNavigate } from "react-router-dom";
-import { SquarePen, Trash2 } from "lucide-react";
+import { Eye, SquarePen, Trash2 } from "lucide-react";
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
 
 interface Pagination {
@@ -21,9 +21,9 @@ interface Props {
 }
 
 export default function ProjectsOfProgramTable({projects, pagination, page, perPage, setPage, setPerPage, onDelete }: Props){
-        const canEdit = useHasScope("projects:write");
-        const canDelete = useHasScope("projects:delete");
-        const showActions = canEdit || canDelete;
+    const canEdit = useHasScope("projects:write");
+    const canDelete = useHasScope("projects:delete");
+    const showActions = canEdit || canDelete;
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       setPerPage(Number(e.target.value));
       setPage(1);
@@ -81,16 +81,21 @@ export default function ProjectsOfProgramTable({projects, pagination, page, perP
                             </div>
                         </td>
                         <td className="table-cell">
-                            {project.state.state}
+                            {project.state?.state ?? "—"}
                         </td>
                         {showActions && (
                         <td className="table-cell text-center space-x-2">
-                            {canEdit && (
+                            {!Boolean(project.can_edit) && (
+                            <button className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-sky-600 hover:bg-sky-50 transition-colors" onClick={() => navigate(`/app/projects/view/${project.id}`)} title="View Project" >
+                                <Eye className="w-4 h-4" />
+                            </button>
+                            )}
+                            {canEdit && Boolean(project.can_edit) && (
                             <button className="btn-edit-table" onClick={() => navigate(`/app/projects/edit/${project.program_id}/${project.id}`)}>
                                 <SquarePen className="w-4 h-4" />
                             </button>
                             )}
-                            {canDelete && (
+                            {canDelete && Boolean(project.can_edit) && (
                             <button className="btn-delete-table" onClick={() => onDelete(project)}>
                                 <Trash2 className="w-4 h-4" />
                             </button>
