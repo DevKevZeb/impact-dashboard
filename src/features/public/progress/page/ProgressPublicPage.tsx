@@ -1,27 +1,27 @@
 import { Controller, useForm, useWatch  } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
 import Banner from "../../components/Banner"
 import { Button } from "@/components/ui/button"
 import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect"
 import type { KPA } from "../../projects/types/kpa.type"
-import { useEffect, useState } from "react"
+import type { Country } from "../../projects/types/country.type"
+import { useEffect, useState, useCallback } from "react"
 import { filterSchema } from "../types/chart.filter.schema";
 import type { StrategicOutput } from "../../projects/types/strategic.output.type";
 import { fetchMeasuresForSelect, fetchStrategicOutputsForSelect } from "../../projects/services/projects.filters.api";
 import { fetchKPAsForSelect } from "../services/progress.filters.api";
+import { fetchCountriesForPublicProgress, fetchKPAsForCountry } from "../services/progress.public.filters.api";
 import type { Measure } from "../../projects/types/measure.type";
 import OverallSection from "../components/sections/OverallSection";
 import SortSelect from "../../components/SortSelect";
 import KpaSection from "../components/sections/KpaSection";
+import CountrySelectedSection from "../components/sections/CountrySelectedSection";
 import KpaSelectedSection from "../components/sections/KpaSelectedSection";
 import StrategicOutputSelectedSection from "../components/sections/StrategicOutputSelectedSection";
 import MeasureSelectedSection from "../components/sections/MeasureSelectedSection";
 
-type ProgressFilters = {
-    kpa: KPA | null;
-    strategic_output: StrategicOutput | null;
-    measure: Measure | null;
-};
+type ProgressFilters = z.infer<typeof filterSchema>;
 
 const OPTIONS = [
   { value: "overall", label: "Overall Strategy" },
@@ -29,8 +29,9 @@ const OPTIONS = [
 ];
 
 export default function ProgressPublicPage(){
-        const [sort, setSort] = useState("overall");
+    const [sort, setSort] = useState("overall");
     const [submittedFilters, setSubmittedFilters] = useState<ProgressFilters>({
+        country: null,
         kpa: null,
         strategic_output: null,
         measure: null,
@@ -38,21 +39,37 @@ export default function ProgressPublicPage(){
 
     const form = useForm<ProgressFilters>({
         resolver: zodResolver(filterSchema),
-        defaultValues: {kpa: null, strategic_output: null, measure: null}
+        defaultValues: {country: null, kpa: null, strategic_output: null, measure: null}
     });
 
-    const kpa = useWatch({ control: form.control, name: "kpa" });
+    const country = useWatch({ control: form.control, name: "country" }) as Country | null;
+    const kpa = useWatch({ control: form.control, name: "kpa" }) as KPA | null;
     const strategicOutput = useWatch({ control: form.control, name: "strategic_output" });
     
+    // Función para obtener KPAs basada en si hay país seleccionado
+    const getKPAsForCountry = useCallback(() => {
+        if (country) {
+            return fetchKPAsForCountry(country.id);
+        }
+        return fetchKPAsForSelect();
+    }, [country]);
+
     useEffect(() => {
-        form.reset({kpa: null, strategic_output: null, measure: null});
+        form.reset({country: null, kpa: null, strategic_output: null, measure: null});
         setSubmittedFilters({
+            country: null,
             kpa: null,
             strategic_output: null,
             measure: null,
         });
     }, [sort, form]);
     
+    useEffect(() => {
+        form.setValue("kpa", null);
+        form.setValue("strategic_output", null);
+        form.setValue("measure", null);
+    }, [country?.id, form]);
+
     useEffect(() => {
         form.setValue("strategic_output", null);
         form.setValue("measure", null);
@@ -66,6 +83,7 @@ export default function ProgressPublicPage(){
 
     const onSubmit = (data: ProgressFilters) => {
         setSubmittedFilters({
+            country: data.country ?? null,
             kpa: data.kpa ?? null,
             strategic_output: data.strategic_output ?? null,
             measure: data.measure ?? null,
@@ -73,26 +91,22 @@ export default function ProgressPublicPage(){
     };
 
     const renderKpasInformationSection = () => {
-        if (submittedFilters.measure) {
-            return <MeasureSelectedSection measureId={submittedFilters.measure.id} measureName={submittedFilters.measure.name} />;
-        }
+        const { country, kpa, strategic_output, measure } = submittedFilters;
 
-        if (submittedFilters.strategic_output) {
+        if (measure) return <MeasureSelectedSection measureId={measure.id} measureName={measure.name} />;
+        
+        if (strategic_output) {
             return (
                 <StrategicOutputSelectedSection
-                    strategicOutputId={submittedFilters.strategic_output.id}
-                    strategicOutputName={submittedFilters.strategic_output.name}
+                    strategicOutputId={strategic_output.id}
+                    strategicOutputName={strategic_output.name}
                 />
             );
         }
-
-        if (submittedFilters.kpa) {
-            return <KpaSelectedSection kpaId={submittedFilters.kpa.id} kpaName={submittedFilters.kpa.name} />;
-        }
-
-        return <KpaSection/>;
+        if (kpa) return <KpaSelectedSection kpaId={kpa.id} kpaName={kpa.name} />;
+        if (country) return <CountrySelectedSection countryId={country.id} countryName={country.name} />;
+        return <KpaSection />;
     };
-
     return(
         <div className="mb-20">
             <Banner title="Progress" description="Find out where we are with our Pacific Regional E-commerce Strategy" image="https://pacificecommerce.org/wp-content/uploads/2022/04/banner-450.png"/>
@@ -106,12 +120,21 @@ export default function ProgressPublicPage(){
                     </div>
                     {sort === "kpas_information" && (
                         <div className="w-full flex flex-col lg:flex-row gap-4">
-                        <div className="w-11/12 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <div className="w-11/12 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+                            <Controller control={control} name="country"
+                                render={({field})=>(
+                                    <div>
+                                        <AsyncSearchSelect<Country> value={field.value} onChange={field.onChange} placeholder={"Search by Country"} fetchOptions={fetchCountriesForPublicProgress} getOptionLabel={(c) => c.name} getOptionKey={(c)=> c.id}/>
+                                        <p className="previous-message">Leave empty for all countries</p>
+                                    </div>
+                                )}
+                            />
                             <Controller control={control} name="kpa"
                                 render={({field})=>(
                                     <div>
-                                        <AsyncSearchSelect<KPA> value={field.value} onChange={field.onChange} placeholder={"Search by KPA"} fetchOptions={fetchKPAsForSelect()} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id}/>
-                                        <p className="previous-message">Leave empty for all information</p>
+                                        <AsyncSearchSelect<KPA> key={country?.id ?? "overall"} value={field.value} onChange={field.onChange} placeholder={"Search by KPA"} fetchOptions={getKPAsForCountry()} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!country}/>
+                                        {!country && <p className="previous-message">Select a Country first</p>}
+                                        {country && <p className="previous-message">KPAs for {country.name}</p>}
                                     </div>
                                 )}
                             />
@@ -141,7 +164,7 @@ export default function ProgressPublicPage(){
                     <span className="block w-full h-px mt-20 bg-slate-300"></span>
                 </form>
             </div>
-            {sort === "overall" && <OverallSection/>}
+            {sort === "overall" && <OverallSection countryId={submittedFilters.country?.id} />}
             {sort === "kpas_information" && renderKpasInformationSection()}
             
         </div>

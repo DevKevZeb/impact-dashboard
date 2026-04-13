@@ -18,7 +18,7 @@ export interface ProjectDonor{
 export interface ProjectAgency{
     id?: number;
     name: string;
-    url: string;
+    url?: string;
     contribution: number;
 }
 

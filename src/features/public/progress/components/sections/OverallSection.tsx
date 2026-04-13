@@ -3,9 +3,13 @@ import { HorizontalBarChart } from "../charts/HorizontalBarChart";
 import SimpleBarChart from "../charts/SimpleBarChart";
 import { StackBarChart } from "../charts/StackBarChart";
 
-export default function OverallSection(){
+interface OverallSectionProps {
+    countryId?: number;
+}
 
-    const { data, isLoading, error } = useOverall();
+export default function OverallSection({ countryId }: OverallSectionProps){
+
+    const { data, isLoading, error } = useOverall(countryId);
     return(
         <div className="w-full flex flex-col justify-center items-center">
             <div className="w-5/7 flex justify-center mb-20">

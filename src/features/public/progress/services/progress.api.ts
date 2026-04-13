@@ -1,13 +1,19 @@
 import { publicApiClient } from "@/shared/lib/axios.public";
 import type { ProgressSelectedData } from "../types/progress.selected.type";
 
-export async function getOverallData() {
-    const { data } = await publicApiClient.get("/overall-implementation");
+export async function getOverallData(countryId?: number) {
+    const endpoint = countryId 
+        ? `/country-overall-implementation/${countryId}` 
+        : "/overall-implementation";
+    const { data } = await publicApiClient.get(endpoint);
     return data.data;
 }
 
-export async function getAllKPAsImplementation(){
-    const {data} = await publicApiClient.get("/allkpas-implementation");
+export async function getAllKPAsImplementation(countryId?: number){
+    const endpoint = countryId 
+        ? `/country-allkpas-implementation/${countryId}` 
+        : "/allkpas-implementation";
+    const {data} = await publicApiClient.get(endpoint);
     return data.data;
 }
 
@@ -23,5 +29,10 @@ export async function getStrategicOutputImplementation(strategicOutputId: number
 
 export async function getMeasureImplementation(measureId: number): Promise<ProgressSelectedData> {
     const { data } = await publicApiClient.get(`/measure-implementation/${measureId}`);
+    return data.data;
+}
+
+export async function getCountryOverallImplementation(countryId: number): Promise<ProgressSelectedData> {
+    const { data } = await publicApiClient.get(`/country-overall-implementation/${countryId}`);
     return data.data;
 }
