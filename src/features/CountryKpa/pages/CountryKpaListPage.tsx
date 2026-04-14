@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import CountryKpaTable from "../components/CountryKpaTable";
 import { useCountries } from "@/features/country/hooks/country/useCountries";
@@ -6,12 +7,29 @@ import { useCreateCountryKpa } from "../hooks/useCreateCountryKpa";
 import { useUpdateCountryKpa } from "../hooks/useUpdateCountryKpa";
 import CreateCountryKpaModal from "../components/CreateCountryKpaModal";
 import type { Kpa } from "@/features/kpa/types/KpaType";
-import { Loader2, Plus, Search, Tag } from "lucide-react";
+import { Loader2, Plus, Search, Tag, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export default function CountryKpaListPage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  // Verify if user is admin
+  const isAdmin = user?.roles?.some((role) => role.name.toLowerCase() === 'admin') ?? false;
+  
+  // Redirect non-admin users to their country dashboard
+  useEffect(() => {
+    if (!isAdmin) {
+      if (user?.country_user_role?.country?.id) {
+        navigate(`/app/country-kpa/${user.country_user_role.country.id}`);
+      } else {
+        navigate('/app');
+      }
+    }
+  }, [isAdmin, user, navigate]);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [openModal, setOpenModal] = useState(false);
@@ -63,6 +81,18 @@ export default function CountryKpaListPage() {
       prevSearch.current = searchTerm;
       prevPage.current = page;
   }, [searchTerm, page]);
+
+  if (!isAdmin) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
+          <p className="text-red-600 font-medium">Access Denied</p>
+          <p className="text-sm text-gray-600">Only administrators can access this page</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

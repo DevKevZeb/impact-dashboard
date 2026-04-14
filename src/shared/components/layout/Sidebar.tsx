@@ -14,11 +14,13 @@ type MenuItem = {
   icon: React.ComponentType<{ className?: string }>;
   path?: string;
   requiredScopes?: string[];
+  requiredAllScopes?: string[];
   children?: {
     title: string;
     path: string;
     icon?: React.ComponentType<{ className?: string }>;
     requiredScopes?: string[];
+    requiredAllScopes?: string[];
   }[];
 };
 
@@ -33,7 +35,7 @@ const menuItems: MenuItem[] = [
       {
         title: "Country Dashboard",
         path: "/app/country-kpa",
-        requiredScopes: [SCOPES.COUNTRIES_READ, SCOPES.KPAS_READ],
+        requiredAllScopes: [SCOPES.COUNTRIES_READ, SCOPES.KPAS_READ, SCOPES.MEASURES_WRITE],
       },
     ],
   },
@@ -104,6 +106,10 @@ export function Sidebar({ isOpen }: SidebarProps) {
   const filterMenuItem = (item: MenuItem): MenuItem | null => {
     if (item.children) {
       const filteredChildren = item.children.filter((child) => {
+        if (child.requiredAllScopes?.length) {
+          return child.requiredAllScopes.every((scope) => hasScope(scope));
+        }
+
         if (child.requiredScopes?.length) {
           return child.requiredScopes.some((scope) => hasScope(scope));
         }
@@ -112,6 +118,10 @@ export function Sidebar({ isOpen }: SidebarProps) {
 
       if (filteredChildren.length === 0) return null;
       return { ...item, children: filteredChildren };
+    }
+
+    if (item.requiredAllScopes?.length) {
+      return item.requiredAllScopes.every((scope) => hasScope(scope)) ? item : null;
     }
 
     if (item.requiredScopes?.length) {

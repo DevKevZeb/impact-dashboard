@@ -28,26 +28,25 @@
       setInternalValue(value);
     }, [value]);
 
-    function updateNodeByKey(
-      nodes: TreeNode[],
-      key: string,
-      updater: (node: TreeNode) => TreeNode
-    ): TreeNode[] {
-      return nodes.map(node => {
-        if (node.key === key) {
-          return updater(node);
-        }
+    const updateNodeByKey = useCallback(
+      (nodes: TreeNode[], key: string, updater: (node: TreeNode) => TreeNode): TreeNode[] => {
+        return nodes.map(node => {
+          if (node.key === key) {
+            return updater(node);
+          }
 
-        if (node.children) {
-          return {
-            ...node,
-            children: updateNodeByKey(node.children, key, updater),
-          };
-        }
+          if (node.children) {
+            return {
+              ...node,
+              children: updateNodeByKey(node.children, key, updater),
+            };
+          }
 
-        return node;
-      });
-    }
+          return node;
+        });
+      },
+      []
+    );
 
 
     const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
@@ -121,7 +120,7 @@
       return newKeys;
     };
 
-    const refreshNode = async (key: string) => {
+    const refreshNode = useCallback(async (key: string) => {
       if (!loadChildren) return;
 
       setInternalValue(prev =>
@@ -149,7 +148,7 @@
       );
 
       setExpandedKeys(prev => ({ ...prev, [key]: true }));
-    };
+    }, [loadChildren, updateNodeByKey]);
 
 
     useEffect(() => {

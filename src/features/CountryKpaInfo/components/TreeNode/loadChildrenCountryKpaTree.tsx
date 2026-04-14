@@ -5,8 +5,19 @@ import { getStrategicOutputsByCountryKpaId } from "@/features/strategic-output/s
 import { getMeasuresByStrategicOutputId } from "@/features/measures/services/measure.api";
 import { getIndicatorsByMeasureId } from "@/features/indicator/services/indicator.api";
 
-export async function loadChildrenCountryKpaTree(nodeKey: string, page: number = 1, perPage: number = 20): Promise<TreeNode[]> {
-  const [type, id] = nodeKey.split("-");
+export async function loadChildrenCountryKpaTree(nodeKey: string | number | undefined, page: number = 1, perPage: number = 20): Promise<TreeNode[]> {
+  if (typeof nodeKey !== "string") {
+    console.warn("loadChildrenCountryKpaTree called with invalid nodeKey:", nodeKey);
+    return [];
+  }
+
+  const parts = nodeKey.split("-");
+  if (parts.length < 2) {
+    console.warn("loadChildrenCountryKpaTree received malformed nodeKey:", nodeKey);
+    return [];
+  }
+
+  const [type, id] = parts;
   const numericId = Number(id);
   
   switch (type) {
