@@ -46,11 +46,9 @@ export default function ProgressPublicPage(){
     const kpa = useWatch({ control: form.control, name: "kpa" }) as KPA | null;
     const strategicOutput = useWatch({ control: form.control, name: "strategic_output" });
     
-    // Función para obtener KPAs basada en si hay país seleccionado
     const getKPAsForCountry = useCallback(() => {
-        if (country) {
-            return fetchKPAsForCountry(country.id);
-        }
+        if (country) return fetchKPAsForCountry(country.id);
+        
         return fetchKPAsForSelect();
     }, [country]);
 
