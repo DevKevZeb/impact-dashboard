@@ -21,6 +21,8 @@ import { ActiveUsersPage } from "@/features/users/pages/ActiveUsersPage";
 import { UnverifiedUsersPage } from "@/features/users/pages/UnverifiedUsersPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/RegisterPage";
+import { ForgotPasswordPage } from "@/features/auth/pages/ForgotPasswordPage";
+import { ResetPasswordPage } from "@/features/auth/pages/ResetPasswordPage";
 import { EmailVerificationPendingPage } from "@/features/auth/pages/EmailVerificationPendingPage";
 import { VerifyEmailPage } from "@/features/auth/pages/VerifyEmailPage";
 import { PrivateRoute } from "./PrivateRoute";
@@ -68,6 +70,8 @@ export function AppRouter() {
             <Route path="team" element={<PlaceholderPage title="Team Page" />} />
             
             <Route path="login" element={<LoginPage />} />
+            <Route path="forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="reset-password" element={<ResetPasswordPage />} />
             <Route path="register" element={<RegisterPage />} />
             <Route path="email-verification-pending" element={<EmailVerificationPendingPage />} />
             <Route path="verify-email" element={<VerifyEmailPage />} />
