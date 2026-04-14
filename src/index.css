@@ -148,6 +148,12 @@
   --sidebar-ring: oklch(0.623 0.17 162.48);
 }
 
+
+body.embed-mode {
+  background: transparent;
+  overflow-x: hidden;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
