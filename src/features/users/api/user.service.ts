@@ -1,6 +1,6 @@
 import { apiClient, type ApiResponse } from "@/shared/lib/axios";
 import { mapUserListFromDTO, mapUserFromDTO, type UserDTO, type UserListResponseDTO } from "../mappers/user.mapper";
-import type { User, UserListResponse } from "../types/user.types";
+import type { CreateAdminInput, User, UserListResponse } from "../types/user.types";
 
 const USERS_ENDPOINT = "/users";
 
@@ -49,5 +49,27 @@ export const userService = {
       { state: newState }
     );
     return mapUserFromDTO(data.data);
+  },
+
+  createAdmin: async (input: CreateAdminInput): Promise<User> => {
+    const { data } = await apiClient.post<ApiResponse<UserDTO>>(
+      `${USERS_ENDPOINT}/admins`,
+      input
+    );
+    return mapUserFromDTO(data.data);
+  },
+
+  getAdminUsers: async (page: number = 1, perPage: number = 10): Promise<UserListResponse> => {
+    const { data } = await apiClient.get<ApiResponse<UserListResponseDTO>>(
+      `${USERS_ENDPOINT}/admins`,
+      {
+        params: { page, per_page: perPage },
+      }
+    );
+    return mapUserListFromDTO(data.data);
+  },
+
+  deleteAdmin: async (adminId: number): Promise<void> => {
+    await apiClient.delete(`${USERS_ENDPOINT}/admins/${adminId}`);
   },
 };
