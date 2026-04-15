@@ -16,15 +16,15 @@ export function PublicLayout() {
   return (
     <div className="min-h-screen bg-slate-50">
       <ScrollToTop/>
-      {isEmbedded && (
-        <header className="fixed top-0 w-full h-28 border-b bg-white z-50">
+      {!isEmbedded && (
+        <header className={`fixed top-0 w-full h-28 border-b bg-white z-50`}>
           <PublicNavbar/>
         </header>
       )}
-      <main className="pt-20 min-h-screen">
+      <main className={`${!isEmbedded ? 'pt-20' : 'pt-0'} min-h-screen`}>
         <Outlet />
       </main>
-      {isEmbedded && <Footer/>}
+      {!isEmbedded && <Footer/>}
     </div>
   );
 }

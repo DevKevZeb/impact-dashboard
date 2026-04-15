@@ -2,6 +2,7 @@ import useAllKpasImplementation from "../../hooks/useAllKpas"
 import { mapKpasResourcePercent } from "../../mappers/kpa.data.mapper";
 import HorizontalMultiBarChart from "../charts/HorizontalMultiBarChart";
 import { StackBarChart } from "../charts/StackBarChart";
+import countriesSvg from "@/assets/countries.svg";  
 
 const formatMillions = (value: number) => {
   return `$${(value / 1_000_000).toFixed(2)} million dollars`;
@@ -73,6 +74,14 @@ export default function KpaSection({ countryId }: KpaSectionProps){
           {error && <p>Error loading data</p>}
           {data && <StackBarChart data={data.kpas} />}
         </div>
+      </div>
+
+      <div className="w-full mt-10 px-4 sm:px-6 lg:px-8 flex justify-center">
+        <img
+          src={countriesSvg}
+          alt="Overall Strategy"
+          className="w-full h-auto max-w-6xl object-contain"
+        />
       </div>
     </div>
   );
