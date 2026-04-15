@@ -67,9 +67,9 @@ export const SCOPES = {
   KPAS_ALL: "kpas:*",
   
   // ===== Country-KPA =====
-  COUNTRY_KPA_READ: "country_kpa:read",
-  COUNTRY_KPA_WRITE: "country_kpa:write",
-  COUNTRY_KPA_ALL: "country_kpa:*",
+  COUNTRY_KPAS_READ: "country_kpas:read",
+  COUNTRY_KPAS_WRITE: "country_kpas:write",
+  COUNTRY_KPAS_ALL: "country_kpas:*",
   
   // ===== SDGs =====
   SDGS_READ: "sdgs:read",

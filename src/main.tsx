@@ -7,6 +7,9 @@ import { Toaster } from 'sonner'
 import { queryClient } from './shared/lib/queryClient'
 import './index.css'
 import App from './App.tsx'
+import { initEmbedMessenger } from './utils/embedMessenger';
+
+initEmbedMessenger();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

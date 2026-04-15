@@ -1,9 +1,9 @@
-import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useMemo, useState, useEffect, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { LazyTree } from "../components/TreeNode/Tree";
 import { loadChildrenCountryKpaTree } from "../components/TreeNode/loadChildrenCountryKpaTree";
 import { useCountryKpas } from "@/features/CountryKpa/hooks/useCountryKpas";
-import { Globe2, Flag } from "lucide-react";
+import { Globe2, Flag, AlertCircle } from "lucide-react";
 import type { TreeNode } from "../components/TreeNode/TreeType";
 import CreateStrategicOutputModal from "@/features/strategic-output/components/CreateStrategicOutputModal";
 import type {  UpdateStrategicOutputDTO } from "@/features/strategic-output/types/StrategicOutput";
@@ -26,8 +26,15 @@ import { useDeleteIndicator } from "@/features/indicator/hooks/useDeleteIndicato
 import CountryKpasTable from "../components/CountryKpasTable";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import { handleExportExcel } from "../utils/csvKPAsSaver";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export default function InfoCountryKpaPage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  // Verify if user is admin
+  const isAdmin = user?.roles?.some((role) => role.name.toLowerCase() === 'admin') ?? false;
+  const userCountryId = user?.country_user_role?.country?.id;
 
   const [tablePage, setTablePage] = useState(1);
   const [tablePerPage, setTablePerPage] = useState(10);
@@ -35,15 +42,55 @@ export default function InfoCountryKpaPage() {
   const { countryId } = useParams();
   const id = Number(countryId);
 
-  const { data, isLoading, refetch: refetchTree } = useCountryKpas(id, 1, -1, true);
-  const { data: dataTable, isLoading: isLoadingTable, refetch } = useCountryKpas(id, tablePage, tablePerPage, true);
+  // Check if user has access to this country
+  const hasAccess = isAdmin || (userCountryId === id);
+  
+  // Early return if non-admin user tries to access a different country
+  const [accessDenied, setAccessDenied] = useState(false);
+  useEffect(() => {
+    if (!hasAccess && userCountryId) {
+      setAccessDenied(true);
+    }
+  }, [hasAccess, userCountryId]);
+
+  if (accessDenied) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
+          <p className="text-red-600 font-medium">Access Denied</p>
+          <p className="text-sm text-gray-600">You don't have permission to access this country</p>
+          <button
+            onClick={() => {
+              if (userCountryId) {
+                navigate(`/app/country-kpa/${userCountryId}`);
+              } else {
+                navigate('/app');
+              }
+            }}
+            className="text-blue-600 hover:underline text-sm mt-4"
+          >
+            Go to your country
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Only fetch data if user has access
+  const { data, isLoading, refetch: refetchTree } = useCountryKpas(id, 1, -1, hasAccess);
+  const { data: dataTable, isLoading: isLoadingTable, refetch } = useCountryKpas(id, tablePage, tablePerPage, hasAccess);
 
   const kpasTable = !Array.isArray(dataTable) && dataTable?.kpas ? dataTable.kpas : [];
   const kpas = !Array.isArray(data) && data?.kpas ? data.kpas : [];
   const country = Array.isArray(data) ? undefined : data?.country;
 
   const [selected, setSelected] = useState<string | null>(null);
-  const [refreshNode, setRefreshNode] = useState<(key: string) => void>();
+  const [refreshNode, setRefreshNode] = useState<((key: string) => Promise<void>) | null>(null);
+
+  const handleRegisterRefreshNode = useCallback((fn: (key: string) => Promise<void>) => {
+    setRefreshNode(() => fn);
+  }, []);
 
   const [parentKpaId, setParentKpaId] = useState<number|null>(null);
   const [openStrategicOutputModal, setOpenStrategicOutputModal] = useState(false);
@@ -70,29 +117,32 @@ export default function InfoCountryKpaPage() {
   const [indicatorToDelete, setIndicatorToDelete] = useState<{ id: number; name: string; measureId: number } | null>(null);
   const { mutateAsync: deleteIndicatorMutation, isPending: isDeletingIndicator } = useDeleteIndicator(indicatorToDelete?.measureId);
 
-  const initial = useMemo<TreeNode[]>(() => [
-    {
-      key: `country-${id}`,
-      label: country?.name ?? `Country #${id}`,
-      icon: <Globe2 className="w-4 h-4 text-emerald-700" />,
-      lazy: false,
-      data: { type: "country", id, count: kpas.length },
-      children: [
-        ...kpas.map((k) => ({
-          key: `ck-${k.id_ck}`,
-          label: k.name,
-          icon: <Flag className="w-4 h-4 text-sky-600" />,
-          lazy: true,
-          leaf: false,
-          data: {
-            type: "ck" as const,
-            id: k.id_ck,
-            count: k.strategic_outputs_count,
-          },
-        })),
-      ],
-    },
-  ], [id, country, kpas ]);
+  const initial = useMemo<TreeNode[]>(() => {
+    if (!country || !kpas) return [];
+    return [
+      {
+        key: `country-${id}`,
+        label: country.name ?? `Country #${id}`,
+        icon: <Globe2 className="w-4 h-4 text-emerald-700" />,
+        lazy: false,
+        data: { type: "country", id, count: kpas.length },
+        children: [
+          ...kpas.map((k) => ({
+            key: `ck-${k.id_ck}`,
+            label: k.name,
+            icon: <Flag className="w-4 h-4 text-sky-600" />,
+            lazy: true,
+            leaf: false,
+            data: {
+              type: "ck" as const,
+              id: k.id_ck,
+              count: k.strategic_outputs_count,
+            },
+          })),
+        ],
+      },
+    ];
+  }, [id, country, kpas]);
 
 
   const handleCreateStrategicOutput = async (node: TreeNode) => {
@@ -273,7 +323,7 @@ export default function InfoCountryKpaPage() {
         <>
           <LazyTree 
             value={initial} 
-            onRefreshNode={(fn) => setRefreshNode(() => fn)} 
+            onRefreshNode={handleRegisterRefreshNode}
             selectionKey={selected} 
             onSelectionChange={(key) => setSelected(key)} 
             loadChildren={loadChildrenCountryKpaTree} 
