@@ -42,3 +42,10 @@ export interface UserListResponse {
 export interface UpdateUserStateInput {
   userStateId: number;
 }
+
+export interface CreateAdminInput {
+  name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+}

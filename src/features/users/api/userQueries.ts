@@ -1,12 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userService } from "./user.service";
 import { toast } from "sonner";
+import type { CreateAdminInput } from "../types/user.types";
 
 export const userKeys = {
   all: ["users"] as const,
   pending: () => [...userKeys.all, "pending"] as const,
   unverified: () => [...userKeys.all, "unverified"] as const,
   list: () => [...userKeys.all, "list"] as const,
+  admins: () => [...userKeys.all, "admins"] as const,
 };
 
 export function usePendingUsers(page: number = 1, perPage: number = 10) {
@@ -78,6 +80,54 @@ export function useChangeUserState() {
     onError: (error: Error) => {
       const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to change user state";
       toast.error(message);
+    },
+  });
+}
+
+export function useCreateAdminUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: CreateAdminInput) => userService.createAdmin(input),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      toast.success(`Administrator ${data.name} created successfully`);
+    },
+    onError: (error: Error) => {
+      const status = (error as { response?: { status?: number } }).response?.status;
+      if (status === 422) return;
+
+      const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to create administrator";
+      toast.error(message);
+    },
+  });
+}
+
+export function useAdminUsers(page: number = 1, perPage: number = 10) {
+  return useQuery({
+    queryKey: [...userKeys.admins(), page, perPage],
+    queryFn: () => userService.getAdminUsers(page, perPage),
+    staleTime: 1 * 60 * 1000,
+  });
+}
+
+export function useDeleteAdminUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (adminId: number) => userService.deleteAdmin(adminId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      toast.success("Administrator deleted successfully");
+    },
+    onError: (error: Error) => {
+      const status = (error as { response?: { status?: number } }).response?.status;
+      const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Failed to delete administrator";
+      toast.error(message);
+
+      if (status === 404) {
+        queryClient.invalidateQueries({ queryKey: userKeys.admins() });
+      }
     },
   });
 }
