@@ -12,7 +12,7 @@ export const handleExportExcel = (data: any, country: any) => {
     "STRATEGIC OUTPUTS": kpa.strategic_outputs_count,
     MEASURES: kpa.measures_count,
     INDICATORS: kpa.indicators_count,
-    TARGETS: kpa.indicators_count, // según tu ejemplo
+    TARGETS: kpa.indicators_count,
     IMPLEMENTATION: `${kpa.implementation}%`,
   }));
 

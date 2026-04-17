@@ -32,7 +32,6 @@ import {
     fetchProgramStrategicOutputsForSelect,
 } from "../services/project.catalog.api";
 import { useAuthStore } from "@/features/auth/store/authStore";
-import { useProgramWeightAvailability } from "../hooks/useProgramWeightAvailability";
 
 interface Props {
     mode: "create" | "edit";
@@ -44,7 +43,7 @@ interface Props {
     onInvalid: (errors: any) => void;
 }
  
-export default function ProjectFormView({ mode, programName, form, onSubmit, onInvalid, programId, projectId }: Props) {
+export default function ProjectFormView({ mode, programName, form, onSubmit, onInvalid, programId }: Props) {
     const hasCountryScope = useAuthStore((state) => state.hasCountryScope);
     const isAdmin = useAuthStore((state) => state.hasScope("*:*"));
     const canEditWeight = useAuthStore((state) => state.hasScope("projects:weight"));
@@ -59,12 +58,6 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
     const measure = useWatch({ control: form.form.control, name: "measure" });
     const project_state = useWatch({ control: form.form.control, name: "project_state" });
     const beneficiary = useWatch({ control: form.form.control, name: "beneficiary" });
-    const currentWeight = useWatch({ control: form.form.control, name: "weight" }) ?? 0;
-
-    const { data: weightAvailability } = useProgramWeightAvailability(programId, mode === "edit" ? projectId : undefined);
-    const maxWeightForProject = weightAvailability?.availableWeight ?? 0;
-    const isWeightExceeded = Number(currentWeight) > maxWeightForProject;
-    const weightDelta = Number(Math.abs(maxWeightForProject - Number(currentWeight || 0)).toFixed(4));
 
     const fetchKpas = useCallback(
         hasCountryScope ? fetchProgramKpasForSelect(programId ?? 0) : fetchKpasForSelect,
@@ -136,22 +129,6 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                         {form.form.formState.errors.weight && (
                             <p className="text-sm text-red-600"> {typeof form.form.formState.errors.weight.message === "string" ? form.form.formState.errors.weight.message : "Invalid input"} </p>
                         )}
-                        <div
-                            className={`rounded-md border px-3 py-2 text-sm ${
-                                isWeightExceeded
-                                    ? "border-red-200 bg-red-50 text-red-700"
-                                    : "border-emerald-200 bg-emerald-50 text-emerald-700"
-                            }`}
-                        >
-                            <p className="font-medium">
-                                Available weight in this program: {maxWeightForProject.toFixed(4)}
-                            </p>
-                            <p>
-                                {isWeightExceeded
-                                    ? `The entered weight exceeds the available amount by ${weightDelta.toFixed(4)}.`
-                                    : `After this value, ${weightDelta.toFixed(4)} will remain available in the program.`}
-                            </p>
-                        </div>
                     </div>
                 )}
                 <div className={`space-y-6${isCountryManager ? " pointer-events-none opacity-60 select-none" : ""}`}>

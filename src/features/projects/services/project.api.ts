@@ -75,31 +75,3 @@ export async function deleteProject(projectId: number): Promise<void> {
   const { data } = await apiClient.delete(`/projects/${projectId}`);
   toast.success(data?.message ?? "Project deleted successfully");
 }
-
-export async function getProgramWeightAvailability(programId: number, excludeProjectId?: number) {
-  const perPage = 100;
-  let page = 1;
-  let lastPage = 1;
-  let usedWeight = 0;
-
-  do {
-    const { data } = await apiClient.get(`/projects/program/${programId}?search=&page=${page}&per_page=${perPage}`);
-    const projects = data?.data?.projects ?? [];
-
-    projects.forEach((project: any) => {
-      if (excludeProjectId && Number(project.id) === Number(excludeProjectId)) return;
-      usedWeight += Number(project.weight ?? 0);
-    });
-
-    lastPage = Number(data?.data?.last_page ?? page);
-    page += 1;
-  } while (page <= lastPage);
-
-  const normalizedUsed = Number(usedWeight.toFixed(4));
-  const availableWeight = Number(Math.max(0, 1 - normalizedUsed).toFixed(4));
-
-  return {
-    usedWeight: normalizedUsed,
-    availableWeight,
-  };
-}

@@ -31,7 +31,11 @@ const menuItems: MenuItem[] = [
     icon: LayoutDashboard,
     children: [
       { title: "Admin Dashboard", path: "/app" },
-      { title: "Project Dashboard", path: "/app/dashboard" },
+      { 
+        title: "Project Dashboard", 
+        path: "/app/dashboard",
+        requiredAllScopes: [SCOPES.PROJECTS_READ, SCOPES.INDICATORS_READ, SCOPES.KPAS_READ],
+      },
       {
         title: "Country Dashboard",
         path: "/app/country-kpa",
