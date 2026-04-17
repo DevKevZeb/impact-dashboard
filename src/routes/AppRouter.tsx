@@ -39,8 +39,12 @@ import PublicProjectDetailsPage from "@/features/public/projects/page/PublicProj
 import { ProgramInvitePage } from "@/features/programs/pages/ProgramInvitePage";
 import { RolesPermissionsPage } from "@/features/roles-permissions/pages/RolesPermissionsPage";
 import ProjectDetailsPage from "@/features/projects/pages/ProjectDetailsPage";
+import { useAuthStore } from "@/features/auth/store/authStore";
 
 export function AppRouter() {
+    const user = useAuthStore((state) => state.user);
+    const isAdmin = (user?.roles ?? []).some((role) => role.name === "admin");
+
     return (
     <Routes>
         {/* Public Routes - Login & Register */}
@@ -103,13 +107,13 @@ export function AppRouter() {
             </Route>
 
             {/* Programs & Projects Routes */}
-            <Route path="programs" element={<ProgramsPage />} />
-            <Route path="programs/:programId/invite" element={<ProgramInvitePage />} />
-            <Route path="projects" element={<ListProgramsWithProjects />}/>
-            <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
-            <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
-            <Route path="projects/view/:id" element={<ProjectDetailsPage/>}/>
-            <Route path="projects/program/:programId" element={<ListProjectsOfProgramPage/>}/>
+            <Route path="programs" element={isAdmin ? <Navigate to="/app" replace /> : <ProgramsPage />} />
+            <Route path="programs/:programId/invite" element={isAdmin ? <Navigate to="/app" replace /> : <ProgramInvitePage />} />
+            <Route path="projects" element={isAdmin ? <Navigate to="/app" replace /> : <ListProgramsWithProjects />}/>
+            <Route path="projects/new/:programId" element={isAdmin ? <Navigate to="/app" replace /> : <CreateProjectPage mode="create"/>}/>
+            <Route path="projects/edit/:programId/:projectId" element={isAdmin ? <Navigate to="/app" replace /> : <CreateProjectPage mode="edit"/>}/>
+            <Route path="projects/view/:id" element={isAdmin ? <Navigate to="/app" replace /> : <ProjectDetailsPage/>}/>
+            <Route path="projects/program/:programId" element={isAdmin ? <Navigate to="/app" replace /> : <ListProjectsOfProgramPage/>}/>
             <Route path="country-kpa" element={<CountryKpaListPage/>} />
             <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
             

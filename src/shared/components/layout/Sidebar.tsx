@@ -94,7 +94,9 @@ const menuItems: MenuItem[] = [
 export function Sidebar({ isOpen }: SidebarProps) {
   const location = useLocation();
   const [expandedItems, setExpandedItems] = useState<string[]>(["Configuration"]);
+  const user = useAuthStore((state) => state.user);
   const hasScope = useAuthStore((state) => state.hasScope);
+  const isAdmin = (user?.roles ?? []).some((role) => role.name === "admin");
 
   const toggleExpand = (title: string) => {
     setExpandedItems((prev) =>
@@ -105,6 +107,10 @@ export function Sidebar({ isOpen }: SidebarProps) {
   };
 
   const filterMenuItem = (item: MenuItem): MenuItem | null => {
+    if (isAdmin && item.title === "Programs & Projects") {
+      return null;
+    }
+
     if (item.children) {
       const filteredChildren = item.children.filter((child) => {
         if (child.requiredAllScopes?.length) {
