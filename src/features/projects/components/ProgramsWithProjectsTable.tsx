@@ -207,7 +207,6 @@ function ProgramProjectsSubTable({ programId }: ProgramProjectsSubTableProps) {
                         <th className="px-4 py-2 text-left">START DATE</th>
                         <th className="px-4 py-2 text-left">END DATE</th>
                         <th className="px-4 py-2 text-left">PROGRESS</th>
-                        <th className="px-4 py-2 text-left">STATE</th>
                         <th className="px-4 py-2 text-left">ACTIONS</th>
                     </tr>
                 </thead>
@@ -230,7 +229,6 @@ function ProgramProjectsSubTable({ programId }: ProgramProjectsSubTableProps) {
                                     </span>
                                 </div>
                             </td>
-                            <td className="px-4 py-2">{project.state?.state ?? "—"}</td>
                             <td className="px-4 py-2">
                                 <div className="flex items-center gap-2">
                                     {!Boolean(project.can_edit) && (
