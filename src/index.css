@@ -149,9 +149,24 @@
 }
 
 
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+}
+
 body.embed-mode {
   background: transparent;
-  overflow-x: hidden;
+}
+
+html.embed-mode,
+body.embed-mode,
+body.embed-mode #root {
+  height: auto !important;
+  min-height: 100% !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 @layer base {

@@ -3,6 +3,9 @@ export function initEmbedMessenger(): void {
 
   if (params.get('embed') !== 'true') return;
 
+  document.body.classList.add('embed-mode');
+  document.documentElement.classList.add('embed-mode');
+
   const allowedOrigins = [
     'https://pacificecommerce.org',
     'https://orchid-alligator-247477.hostingersite.com'
