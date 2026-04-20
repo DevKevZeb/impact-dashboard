@@ -5,7 +5,7 @@ interface ProjectBannerProps {
 
 export default function ProjectBanner({ title, image }: ProjectBannerProps) {
   return (
-    <div className="relative bg-blue-900 h-[50vh] text-white">
+    <div className="relative bg-blue-900 min-h-[500px] max-h-[600px] h-[50dvh] text-white">
       <div className={`absolute inset-0 bg-cover bg-center`} style={{ backgroundImage: `url('${image}')`}}>
         <div className="absolute inset-0 bg-black opacity-2"/>
       </div>
