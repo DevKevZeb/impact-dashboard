@@ -56,6 +56,8 @@ export async function getPaginatedPrograms(
 export async function getProgramById(programId: number): Promise<PublicProgramDetails> {
   const { data } = await publicApiClient.get(`/programs/${programId}`);
   const summary = data.data.program_summary ?? {};
+  
+  console.log("API Response for Program Details:", data); // Debug log to inspect the API response structure
 
   return {
     id: data.data.id,
