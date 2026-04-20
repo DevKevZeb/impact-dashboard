@@ -1,4 +1,4 @@
-import { LayoutDashboard, Settings, Briefcase, Users, FileBarChart, ChevronDown, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Settings, Briefcase, Users, ChevronDown, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -30,16 +30,16 @@ const menuItems: MenuItem[] = [
     title: "Dashboard",
     icon: LayoutDashboard,
     children: [
-      { title: "Admin Dashboard", path: "/app" },
-      { 
+      { title: "Admin Dashboard", path: "/app", requiredAllScopes: [SCOPES.ADMIN_ALL] },
+      {
         title: "Project Dashboard", 
         path: "/app/dashboard",
-        requiredAllScopes: [SCOPES.PROJECTS_READ, SCOPES.INDICATORS_READ, SCOPES.KPAS_READ],
+        requiredAllScopes: [SCOPES.PROJECTS_READ, SCOPES.PROJECTS_WEIGHT],
       },
       {
         title: "Country Dashboard",
         path: "/app/country-kpa",
-        requiredAllScopes: [SCOPES.COUNTRIES_READ, SCOPES.KPAS_READ, SCOPES.MEASURES_WRITE],
+        requiredAllScopes: [SCOPES.PROJECTS_READ, SCOPES.PROJECTS_WEIGHT, SCOPES.PROJECTS_VIEW_BY_COUNTRY],
       },
     ],
   },
@@ -83,22 +83,15 @@ const menuItems: MenuItem[] = [
       { title: "Roles & Permissions", path: "/app/admin/roles-permissions", requiredScopes: [SCOPES.ROLES_READ, SCOPES.ROLES_WRITE] },
     ],
   },
-  {
-    title: "Reports",
-    icon: FileBarChart,
-    children: [
-      { title: "Performance", path: "/app/reports/performance" },
-      { title: "Budget Analysis", path: "/app/reports/budget" },
-      { title: "Impact Report", path: "/app/reports/impact" },
-    ],
-  },
 ];
 
 
 export function Sidebar({ isOpen }: SidebarProps) {
   const location = useLocation();
   const [expandedItems, setExpandedItems] = useState<string[]>(["Configuration"]);
+  const user = useAuthStore((state) => state.user);
   const hasScope = useAuthStore((state) => state.hasScope);
+  const isAdmin = (user?.roles ?? []).some((role) => role.name === "admin");
 
   const toggleExpand = (title: string) => {
     setExpandedItems((prev) =>
@@ -109,6 +102,10 @@ export function Sidebar({ isOpen }: SidebarProps) {
   };
 
   const filterMenuItem = (item: MenuItem): MenuItem | null => {
+    if (isAdmin && item.title === "Programs & Projects") {
+      return null;
+    }
+
     if (item.children) {
       const filteredChildren = item.children.filter((child) => {
         if (child.requiredAllScopes?.length) {
