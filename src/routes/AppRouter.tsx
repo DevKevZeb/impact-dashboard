@@ -30,7 +30,6 @@ import { PrivateRoute } from "./PrivateRoute";
 import HomePage from "@/features/public/Home/page/HomePage";
 import PublicRoute from "./PublicRoute";
 import { PublicLayout } from "@/shared/components/layout/PublicLayout";
-import ListProjectsOfProgramPage from "@/features/projects/pages/ListProjectsOfProgramPage";
 import ProgramsPublicPage from "@/features/public/programs/page/ProgramsPublicPage";
 import PublicProgramDetailsPage from "@/features/public/programs/page/PublicProgramDetailsPage";
 import ProjectsPublicPage from "@/features/public/projects/page/ProjectsPublicPage";
@@ -113,7 +112,6 @@ export function AppRouter() {
             <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
             <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
             <Route path="projects/view/:id" element={<ProjectDetailsPage/>}/>
-            <Route path="projects/program/:programId" element={<ListProjectsOfProgramPage/>}/>
             <Route path="dashboard" element={<ProjectDashboardPage/>} />
             <Route path="country-kpa" element={<CountryKpaListPage/>} />
             <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />

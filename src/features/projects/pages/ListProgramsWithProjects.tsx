@@ -3,7 +3,6 @@ import { BookOpenCheck, Loader2, Search } from "lucide-react";
 import { useState } from "react";
 import ProgramsWithProjectsTable from "../components/ProgramsWithProjectsTable";
 import { EmptyState } from "@/shared/components/EmptyState";
-//import { useDebounce } from "@/shared/hooks/useDebounce";
 
 export default function ListProgramsWithProjects(){
     const [page, setPage] = useState(1);
@@ -11,18 +10,21 @@ export default function ListProgramsWithProjects(){
 
     const [searchTerm, setSearchTerm] = useState("");
 
-    //const prevSearch = useRef(searchTerm);
-    //const prevPage = useRef(page);
-    //const searchChanged = prevSearch.current !== searchTerm;
-    //const pageChanged = prevPage.current !== page;
-
-    //const debouncedSearch = useDebounce(searchTerm, 400);
-
     const { programs, pagination, isLoading, error } = useMyPrograms(page, perPage);
+    const filteredPrograms = programs.filter((program) => {
+        const term = searchTerm.trim().toLowerCase();
+        if (!term) return true;
 
-    //const showSkeleton = isFetching && (searchChanged || pageChanged);
+        const roleLabel = program.can_edit === false ? "invited" : "editor";
+
+        return (
+            program.name.toLowerCase().includes(term) ||
+            roleLabel.includes(term)
+        );
+    });
 
     const handleSearchChange = (value: string) => {
+        setPage(1);
         setSearchTerm(value);
     };
 
@@ -55,8 +57,8 @@ export default function ListProgramsWithProjects(){
         <div className="page-container">
             <div className="title-container">
                 <div>
-                    <h1 className="page-title">Programs with Projects assigned</h1>   
-                    <p className="page-description">Use this page to view and manage programs with projects assigned.</p>
+                    <h1 className="page-title">Projects assigned</h1>   
+                    <p className="page-description">Click on a program row to expand and manage its projects.</p>
                 </div>
             </div>
 
@@ -65,12 +67,22 @@ export default function ListProgramsWithProjects(){
                 <input type="text" placeholder="Search by program name..." value={searchTerm} onChange={(e) => handleSearchChange(e.target.value)} className="search-default" />
             </div>
 
-            { programs.length > 0 && pagination ?
-            <ProgramsWithProjectsTable programs={programs} pagination={pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage}/>
-        : <EmptyState icon={BookOpenCheck} title={searchTerm ? "No Program found" : "No Programs available"}
-          description={
-            searchTerm && "Try adjusting your search terms"
-          } />}
+            {filteredPrograms.length > 0 && pagination ? (
+                <ProgramsWithProjectsTable
+                    programs={filteredPrograms}
+                    pagination={pagination}
+                    page={page}
+                    perPage={perPage}
+                    setPage={setPage}
+                    setPerPage={setPerPage}
+                />
+            ) : (
+                <EmptyState
+                    icon={BookOpenCheck}
+                    title={searchTerm ? "No Program found" : "No Programs available"}
+                    description={searchTerm && "Try adjusting your search terms"}
+                />
+            )}
         </div>
     )
 }

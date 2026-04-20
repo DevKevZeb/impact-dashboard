@@ -59,12 +59,12 @@ export default function ProjectDetailsPage() {
           <h1 className="page-title">Project details</h1>
           <p className="page-description">Read-only project information view.</p>
         </div>
-        <BackArrow backTo={`/app/projects/program/${data.program_id}`} />
+        <BackArrow backTo="/app/projects" />
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <p className="text-xs uppercase tracking-wide text-gray-500">Name</p>
+          <p className="text-xs uppercase tracking-wide text-gray-500">Project Name</p>
           <p className="text-base font-medium text-gray-900">{data.name}</p>
         </div>
         <div>
