@@ -1,26 +1,35 @@
 export function initEmbedMessenger(): void {
   const params = new URLSearchParams(window.location.search);
 
-  if (params.get('embed') !== 'true') return;
+  if (params.get("embed") !== "true") return;
 
-  document.body.classList.add('embed-mode');
-  document.documentElement.classList.add('embed-mode');
+  document.body.classList.add("embed-mode");
+  document.documentElement.classList.add("embed-mode");
 
   const allowedOrigins = [
-    'https://pacificecommerce.org',
-    'https://orchid-alligator-247477.hostingersite.com'
+    "https://orchid-alligator-247477.hostingersite.com", 
+    "https://pacificecommerce.org"
   ];
 
   const sendHeight = (): void => {
     const height = Math.max(
       document.body.scrollHeight,
-      document.documentElement.scrollHeight
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight,
+      document.body.clientHeight,
+      document.documentElement.clientHeight
     );
 
+    console.log("[EMBED] sendHeight ejecutado");
+    console.log("[EMBED] altura calculada:", height);
+
     allowedOrigins.forEach((origin) => {
+      console.log("[EMBED] enviando a:", origin);
+
       window.parent.postMessage(
         {
-          type: 'pei-resize',
+          type: "pei-resize",
           height,
         },
         origin
@@ -29,6 +38,12 @@ export function initEmbedMessenger(): void {
   };
 
   sendHeight();
+
+  window.addEventListener("load", () => {
+    setTimeout(sendHeight, 500);
+    setTimeout(sendHeight, 1500);
+    setTimeout(sendHeight, 3000);
+  });
 
   const observer = new MutationObserver(() => {
     sendHeight();
@@ -40,5 +55,6 @@ export function initEmbedMessenger(): void {
     attributes: true,
   });
 
-  window.addEventListener('resize', sendHeight);
+  // resize manual
+  window.addEventListener("resize", sendHeight);
 }
