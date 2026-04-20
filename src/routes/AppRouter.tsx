@@ -116,13 +116,6 @@ export function AppRouter() {
             <Route path="projects/new/:programId" element={isAdmin ? <Navigate to="/app" replace /> : <CreateProjectPage mode="create"/>}/>
             <Route path="projects/edit/:programId/:projectId" element={isAdmin ? <Navigate to="/app" replace /> : <CreateProjectPage mode="edit"/>}/>
             <Route path="projects/view/:id" element={isAdmin ? <Navigate to="/app" replace /> : <ProjectDetailsPage/>}/>
-            <Route path="projects/program/:programId" element={isAdmin ? <Navigate to="/app" replace /> : <ListProjectsOfProgramPage/>}/>
-            <Route path="programs" element={<ProgramsPage />} />
-            <Route path="programs/:programId/invite" element={<ProgramInvitePage />} />
-            <Route path="projects" element={<ListProgramsWithProjects />}/>
-            <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
-            <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
-            <Route path="projects/view/:id" element={<ProjectDetailsPage/>}/>
             <Route path="dashboard" element={<ProjectDashboardPage/>} />
             <Route path="country-kpa" element={<CountryKpaListPage/>} />
             <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
@@ -131,11 +124,6 @@ export function AppRouter() {
             <Route path="resources">
                 <Route path="beneficiaries" element={<BeneficiariesListPage/>} />
                 <Route path="donors" element={<DonorsListPage/>} />
-            </Route>
-
-            {/* Administration Routes */}
-            <Route path="admin">
-                <Route path="users" element={<UsersPage />} />
             </Route>
 
             {/* Reports Routes */}
