@@ -9,22 +9,38 @@ export function PublicLayout() {
   const isEmbedded = useEmbedMode();
 
   useEffect(() => {
-    if (isEmbedded) document.body.classList.add('embed-mode');
-    return () => document.body.classList.remove('embed-mode');
+    if (isEmbedded) {
+      document.body.classList.add("embed-mode");
+      document.documentElement.classList.add("embed-mode");
+    }
+
+    return () => {
+      document.body.classList.remove("embed-mode");
+      document.documentElement.classList.remove("embed-mode");
+    };
   }, [isEmbedded]);
-  
+
   return (
-    <div className="min-h-screen bg-slate-50">
-      <ScrollToTop/>
+    <div className={isEmbedded ? "bg-slate-50" : "min-h-screen bg-slate-50"}>
+      <ScrollToTop />
+
       {!isEmbedded && (
-        <header className={`fixed top-0 w-full h-28 border-b bg-white z-50`}>
-          <PublicNavbar/>
+        <header className="fixed top-0 w-full h-28 border-b bg-white z-50">
+          <PublicNavbar />
         </header>
       )}
-      <main className={`${!isEmbedded ? 'pt-20' : 'pt-0'} min-h-screen`}>
+
+      <main
+        className={
+          isEmbedded
+            ? "pt-0"
+            : "pt-20 min-h-screen"
+        }
+      >
         <Outlet />
       </main>
-      {!isEmbedded && <Footer/>}
+
+      {!isEmbedded && <Footer />}
     </div>
   );
 }
