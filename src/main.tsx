@@ -9,10 +9,6 @@ import './index.css'
 import App from './App.tsx'
 import { initEmbedMessenger } from './utils/embedMessenger';
 
-console.log("INIT EMBED MESSENGER EJECUTADO");
-console.log("URL actual:", window.location.href);
-console.log("Search params:", window.location.search);
-console.log("embed =", new URLSearchParams(window.location.search).get("embed"));
 initEmbedMessenger();
 
 createRoot(document.getElementById('root')!).render(
