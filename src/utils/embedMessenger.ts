@@ -20,10 +20,7 @@ export function initEmbedMessenger(): void {
       document.body.clientHeight,
       document.documentElement.clientHeight
     );
-
-    console.log("[EMBED] sendHeight ejecutado");
-    console.log("[EMBED] altura calculada:", height);
-
+    
     allowedOrigins.forEach((origin) => {
       console.log("[EMBED] enviando a:", origin);
 
