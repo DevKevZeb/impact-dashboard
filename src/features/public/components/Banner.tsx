@@ -6,7 +6,7 @@ interface BannerProps{
 
 export default function Banner({title,description, image}: BannerProps){
     return(
-        <div className="relative h-[50vh] w-full overflow-hidden">
+        <div className="relative min-h-[500px] h-[50dvh] w-full overflow-hidden">
             <div className={`absolute inset-0 bg-cover bg-center`} style={{ backgroundImage: `url('${image}')`}}>
                 <div className="absolute inset-0 bg-black opacity-2"/>
             </div>
