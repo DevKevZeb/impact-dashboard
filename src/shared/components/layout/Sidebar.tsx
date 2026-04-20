@@ -79,6 +79,7 @@ const menuItems: MenuItem[] = [
       { title: "Unverified Email Users", path: "/app/admin/users/unverified", requiredScopes: [SCOPES.USERS_READ] },
       { title: "Pending Approvals", path: "/app/admin/users", requiredScopes: [SCOPES.USERS_READ] },
       { title: "User Management", path: "/app/admin/users/active", requiredScopes: [SCOPES.USERS_READ] },
+      { title: "Admin Management", path: "/app/admin/users/admins", requiredScopes: [SCOPES.USERS_WRITE] },
       { title: "Roles & Permissions", path: "/app/admin/roles-permissions", requiredScopes: [SCOPES.ROLES_READ, SCOPES.ROLES_WRITE] },
     ],
   },

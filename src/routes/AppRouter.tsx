@@ -19,6 +19,7 @@ import CreateProjectPage from "@/features/projects/pages/CreateProjectPage";
 import { UsersPage } from "@/features/users/pages/UsersPage";
 import { ActiveUsersPage } from "@/features/users/pages/ActiveUsersPage";
 import { UnverifiedUsersPage } from "@/features/users/pages/UnverifiedUsersPage";
+import { CreateAdminPage } from "@/features/users/pages/CreateAdminPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/RegisterPage";
 import { ForgotPasswordPage } from "@/features/auth/pages/ForgotPasswordPage";
@@ -88,6 +89,8 @@ export function AppRouter() {
                 <Route path="users" element={<UsersPage />} />
                 <Route path="users/active" element={<ActiveUsersPage />} />
                 <Route path="users/unverified" element={<UnverifiedUsersPage />} />
+                <Route path="users/admins" element={<CreateAdminPage />} />
+                <Route path="users/create-admin" element={<CreateAdminPage />} />
                 <Route path="roles-permissions" element={<RolesPermissionsPage />} />
             </Route>
 
