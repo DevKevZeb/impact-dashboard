@@ -8,7 +8,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://pacificecommerce.org https://orchid-alligator-247477.hostingersite.com"
+          "value": "frame-ancestors 'self' https://orchid-alligator-247477.hostingersite.com https://pacificecommerce.org"
         }
       ]
     }

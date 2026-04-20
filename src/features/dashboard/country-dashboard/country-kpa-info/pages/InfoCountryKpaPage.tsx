@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { LazyTree } from "../components/TreeNode/Tree";
 import { loadChildrenCountryKpaTree } from "../components/TreeNode/loadChildrenCountryKpaTree";
-import { useCountryKpas } from "@/features/CountryKpa/hooks/useCountryKpas";
+
 import { Globe2, Flag, AlertCircle } from "lucide-react";
 import type { TreeNode } from "../components/TreeNode/TreeType";
 import CreateStrategicOutputModal from "@/features/strategic-output/components/CreateStrategicOutputModal";
@@ -27,6 +27,7 @@ import CountryKpasTable from "../components/CountryKpasTable";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import { handleExportExcel } from "../utils/csvKPAsSaver";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useCountryKpas } from "../../country-kpa/hooks/useCountryKpas";
 
 export default function InfoCountryKpaPage() {
   const navigate = useNavigate();

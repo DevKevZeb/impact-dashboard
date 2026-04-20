@@ -7,9 +7,9 @@ import { ProgramsPage } from "@/features/programs/pages/ProgramsPage";
 import { PlaceholderPage } from "@/shared/components/PlaceholderPage";
 import AgencyListPage from "@/features/agency/pages/AgencyListPage";
 import CountryListPage from "@/features/country/pages/CountryListPage";
-import CountryKpaListPage from "@/features/CountryKpa/pages/CountryKpaListPage";
+
 import KpasListPage from "@/features/kpa/pages/KpasListPage";
-import InfoCountryKpaPage from "@/features/CountryKpaInfo/pages/InfoCountryKpaPage";
+
 import IndicatorTypesListPage from "@/features/indicator-type/pages/IndicatorTypesListPage";
 import ProjectStateListPage from "@/features/project-states/pages/ProjectStateListPage";
 import ListProgramsWithProjects from "@/features/projects/pages/ListProgramsWithProjects";
@@ -40,6 +40,10 @@ import { ProgramInvitePage } from "@/features/programs/pages/ProgramInvitePage";
 import { RolesPermissionsPage } from "@/features/roles-permissions/pages/RolesPermissionsPage";
 import ProjectDetailsPage from "@/features/projects/pages/ProjectDetailsPage";
 import { useAuthStore } from "@/features/auth/store/authStore";
+import CountryKpaListPage from "@/features/dashboard/country-dashboard/country-kpa/pages/CountryKpaListPage";
+import InfoCountryKpaPage from "@/features/dashboard/country-dashboard/country-kpa-info/pages/InfoCountryKpaPage";
+import ProjectDashboardPage from "@/features/dashboard/project-dashboard/pages/ProjectDashboardPage";
+
 
 export function AppRouter() {
     const user = useAuthStore((state) => state.user);
@@ -114,6 +118,14 @@ export function AppRouter() {
             <Route path="projects/edit/:programId/:projectId" element={isAdmin ? <Navigate to="/app" replace /> : <CreateProjectPage mode="edit"/>}/>
             <Route path="projects/view/:id" element={isAdmin ? <Navigate to="/app" replace /> : <ProjectDetailsPage/>}/>
             <Route path="projects/program/:programId" element={isAdmin ? <Navigate to="/app" replace /> : <ListProjectsOfProgramPage/>}/>
+            <Route path="programs" element={<ProgramsPage />} />
+            <Route path="programs/:programId/invite" element={<ProgramInvitePage />} />
+            <Route path="projects" element={<ListProgramsWithProjects />}/>
+            <Route path="projects/new/:programId" element={<CreateProjectPage mode="create"/>}/>
+            <Route path="projects/edit/:programId/:projectId" element={<CreateProjectPage mode="edit"/>}/>
+            <Route path="projects/view/:id" element={<ProjectDetailsPage/>}/>
+            <Route path="projects/program/:programId" element={<ListProjectsOfProgramPage/>}/>
+            <Route path="dashboard" element={<ProjectDashboardPage/>} />
             <Route path="country-kpa" element={<CountryKpaListPage/>} />
             <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
             
