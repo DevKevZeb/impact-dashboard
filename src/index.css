@@ -164,7 +164,7 @@ html.embed-mode,
 body.embed-mode,
 body.embed-mode #root {
   height: auto !important;
-  min-height: 100% !important;
+  min-height: auto !important;
   max-height: none !important;
   overflow: visible !important;
   overflow-x: hidden !important;
