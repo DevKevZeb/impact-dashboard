@@ -1,7 +1,24 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, DollarSign, Users, Briefcase } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useAuthStore } from "@/features/auth/store/authStore";
 
 export function DashboardPage() {
+  const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = (user?.roles ?? []).some((role) => role.name === "admin");
+
+  useEffect(() => {
+    if (!isAdmin) {
+      navigate("/app/dashboard");
+    }
+  }, [isAdmin, navigate]);
+
+  if (!isAdmin) {
+    return null;
+  }
+
   return (
     <div className="space-y-6">
       <div>

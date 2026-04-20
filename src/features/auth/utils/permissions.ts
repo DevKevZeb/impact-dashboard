@@ -18,6 +18,8 @@ export const SCOPES = {
   PROJECTS_CREATE: "projects:create",
   PROJECTS_DELETE: "projects:delete",
   PROJECTS_WEIGHT: "projects:weight",
+  PROJECTS_PROGRESS: "projects:progress",
+  PROJECTS_VIEW_BY_COUNTRY: "projects:view_by_country",
   PROJECTS_ALL: "projects:*",
   
   // ===== Programs =====
