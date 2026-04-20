@@ -20,9 +20,8 @@ export function initEmbedMessenger(): void {
       document.body.clientHeight,
       document.documentElement.clientHeight
     );
-    
+
     allowedOrigins.forEach((origin) => {
-      console.log("[EMBED] enviando a:", origin);
 
       window.parent.postMessage(
         {
@@ -52,6 +51,5 @@ export function initEmbedMessenger(): void {
     attributes: true,
   });
 
-  // resize manual
   window.addEventListener("resize", sendHeight);
 }

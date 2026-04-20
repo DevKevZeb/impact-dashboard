@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useEmbedMode } from "@/hooks/useEmbedMode";
 
 interface ProgramCardProps {
   id: number | string;
@@ -8,6 +9,9 @@ interface ProgramCardProps {
 
 export default function ProgramCard({ id, name, description }: ProgramCardProps) {
   const navigate = useNavigate();
+  const isEmbedded = useEmbedMode();
+
+  const href = isEmbedded ? `/development/programs/${id}?embed=true` : `/development/programs/${id}`;
 
   return (
     <div
@@ -22,12 +26,12 @@ export default function ProgramCard({ id, name, description }: ProgramCardProps)
         />
       </div>
       <div className="flex flex-1 flex-col p-5 px-10">
-        <Link to={`/development/programs/${id}`} className="mb-2 line-clamp-2 text-xl font-bold text-secondary hover:text-primary">
+        <Link to={href} className="mb-2 line-clamp-2 text-xl font-bold text-secondary hover:text-primary">
           {name}
         </Link>
         <p className="mb-6 line-clamp-5 text-gray-600">{description}</p>
         <div className="mt-auto">
-          <button className="btn-secondary w-full" onClick={() => navigate(`/development/programs/${id}`)}>
+          <button className="btn-secondary w-full" onClick={() => navigate(href)}>
             VIEW PROGRAM
           </button>
         </div>
