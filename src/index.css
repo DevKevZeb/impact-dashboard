@@ -167,6 +167,7 @@ body.embed-mode #root {
   min-height: 100% !important;
   max-height: none !important;
   overflow: visible !important;
+  overflow-x: hidden !important;
 }
 
 @layer base {
