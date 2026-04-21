@@ -1,6 +1,5 @@
 import useKpaSelected from "../../hooks/useKpaSelected";
 import { HorizontalBarChart } from "../charts/HorizontalBarChart";
-import countriesSvg from "@/assets/countries.svg";
 
 type Props = { kpaId: number; kpaName: string; sort?: string; };
 
@@ -46,19 +45,6 @@ export default function KpaSelectedSection({ kpaId, kpaName }: Props) {
 						</span>
 					)}
 				</div>
-			</div>
-			<div className="w-full flex justify-center py-7">
-				<div className="w-5/7">
-					<h1 className="third-head-label">Beneficiaries</h1>
-                    <h3 className="mt-6">{`The visual representations below indicate the Forum Island Countries that have benefited from at least one project implementing KPA: ${kpaName}.`}</h3>
-				</div>
-			</div>
-			<div className="w-full mt-10 px-4 sm:px-6 lg:px-8 flex justify-center">
-				<img
-					src={countriesSvg}
-					alt="Overall Strategy"
-					className="w-full h-auto max-w-6xl object-contain"
-				/>
 			</div>
 		</div>
 	);
