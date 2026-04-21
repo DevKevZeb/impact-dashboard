@@ -15,7 +15,7 @@ import { RefreshCw } from "lucide-react";
 export function LoginForm() {
   const navigate = useNavigate();
   const { mutate: login, isPending } = useLogin();
-  const [error403Message, setError403Message] = useState<string>("");
+  const [authMessage, setAuthMessage] = useState<string>("");
   const [showResendButton, setShowResendButton] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
@@ -48,7 +48,7 @@ export function LoginForm() {
 
   const onSubmit = (data: LoginFormData) => {
     setLoginEmail(data.email);
-    setError403Message("");
+    setAuthMessage("");
     setShowResendButton(false);
 
     login(data, {
@@ -57,27 +57,33 @@ export function LoginForm() {
         const status = axiosError.response?.status;
         const message = axiosError.response?.data?.message || "";
 
+        if (status === 401) {
+          setAuthMessage("Invalid email or password. If you just changed your password, use the new one.");
+          setShowResendButton(false);
+          return;
+        }
+
         if (status === 403) {
           // Handle different 403 scenarios
           // Never expose backend messages directly - use generic user-friendly messages
           const lowerMessage = message.toLowerCase();
           
           if (lowerMessage.includes("verify") || lowerMessage.includes("email")) {
-            setError403Message("Please verify your email before logging in.");
+            setAuthMessage("Please verify your email before logging in.");
             setShowResendButton(true);
           } else if (lowerMessage.includes("pending") || lowerMessage.includes("approval")) {
-            setError403Message(
+            setAuthMessage(
               "Your account is pending administrator approval. You'll receive an email notification when approved."
             );
             setShowResendButton(false);
           } else if (lowerMessage.includes("inactive") || lowerMessage.includes("deactivated")) {
-            setError403Message(
+            setAuthMessage(
               "Your account is not currently active. Please contact support for assistance."
             );
             setShowResendButton(false);
           } else {
             // Generic message - never expose backend details
-            setError403Message(
+            setAuthMessage(
               "Access denied. Please contact support if you need assistance."
             );
             setShowResendButton(false);
@@ -152,10 +158,10 @@ export function LoginForm() {
         </form>
 
         {/* 403 Error Message Display */}
-        {error403Message && (
+        {authMessage && (
           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-sm text-red-800 text-center mb-3">
-              {error403Message}
+              {authMessage}
             </p>
             {showResendButton && (
               <Button

@@ -34,3 +34,13 @@ export interface RefreshTokenResponse {
   token_type: string;
   expires_in: number;
 }
+
+export interface UpdateProfileInput {
+  name: string;
+}
+
+export interface ChangePasswordInput {
+  current_password: string;
+  password: string;
+  password_confirmation: string;
+}

@@ -26,6 +26,7 @@ import { ForgotPasswordPage } from "@/features/auth/pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "@/features/auth/pages/ResetPasswordPage";
 import { EmailVerificationPendingPage } from "@/features/auth/pages/EmailVerificationPendingPage";
 import { VerifyEmailPage } from "@/features/auth/pages/VerifyEmailPage";
+import { ProfilePage } from "@/features/auth/pages/ProfilePage";
 import { PrivateRoute } from "./PrivateRoute";
 import HomePage from "@/features/public/Home/page/HomePage";
 import PublicRoute from "./PublicRoute";
@@ -88,6 +89,7 @@ export function AppRouter() {
         {/* Protected Routes - Require Authentication */}
         <Route path="/app" element={<PrivateRoute><MainLayout /></PrivateRoute>}>
             <Route index element={<DashboardPage />} />
+            <Route path="profile" element={<ProfilePage />} />
             {/* Administration Routes */}
             <Route path="admin">
                 <Route path="users" element={<UsersPage />} />
