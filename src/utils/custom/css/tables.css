@@ -12,14 +12,14 @@
   @apply bg-[#1E3291] border-b border-gray-100 ;
 }
 .table-head th {
-  @apply px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wide;
+  @apply px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wide whitespace-nowrap;
 }
 
 .table-row {
   @apply border-b border-gray-100 hover:bg-sky-100 transition;
 }
 .table-cell {
-  @apply px-4 py-3 text-sm text-gray-700;
+  @apply px-4 py-3 text-sm text-gray-700 align-middle;
 }
 
 .badge-yes {
