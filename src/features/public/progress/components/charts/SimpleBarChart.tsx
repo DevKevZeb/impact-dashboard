@@ -6,6 +6,39 @@ import { Menu } from "lucide-react";
 interface Data {id: number; name: string; contribution:number}
 interface SimpleBarChartProps{ data:Data[]}
 
+const X_TICK_FONT_SIZE = 11;
+const X_TICK_MAX_CHARS = 14;
+
+const truncateLabel = (value: string) => {
+    if (value.length <= X_TICK_MAX_CHARS) {
+        return value;
+    }
+
+    return `${value.slice(0, X_TICK_MAX_CHARS - 1)}…`;
+};
+
+const CustomXAxisTick = ({ x, y, payload }: { x?: number; y?: number; payload?: { value?: string } }) => {
+    const fullLabel = String(payload?.value ?? "");
+    const shortLabel = truncateLabel(fullLabel);
+
+    return (
+        <g transform={`translate(${x ?? 0},${y ?? 0})`}>
+            <text
+                x={0}
+                y={0}
+                dy={16}
+                textAnchor="end"
+                fill="#6B7280"
+                fontSize={X_TICK_FONT_SIZE}
+                transform="rotate(-35)"
+            >
+                <title>{fullLabel}</title>
+                {shortLabel}
+            </text>
+        </g>
+    );
+};
+
 export default function SimpleBarChart({data}:SimpleBarChartProps){
     const containerRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -86,7 +119,14 @@ export default function SimpleBarChart({data}:SimpleBarChartProps){
             <ResponsiveContainer width="100%" height={400}  >
                 <BarChart responsive data={data} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
                     <CartesianGrid strokeDasharray="3 3"/>
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} interval={0} />
+                    <XAxis
+                        dataKey="name"
+                        axisLine={false}
+                        tickLine={false}
+                        interval={0}
+                        height={74}
+                        tick={<CustomXAxisTick />}
+                    />
                     <YAxis width="auto" axisLine={false} tickLine={false} tick={{ fill: "#9CA3AF", fontSize: 12 }} allowDecimals={false} domain={[0,100]} tickFormatter={(value) => `${value}%`}/>
                     <Tooltip formatter={(value) => `${value}%`} contentStyle={{borderRadius: "8px", border: "1px solid #E5E7EB", boxShadow: "0 4px 12px rgba(0,0,0,0.08)", fontSize: 12}}  cursor={{ fill: "rgba(0,0,0,0.04)" }}/>
                     <Legend formatter={() => "Contribution percent"}/>

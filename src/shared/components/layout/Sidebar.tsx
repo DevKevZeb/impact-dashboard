@@ -7,6 +7,8 @@ import { SCOPES } from "@/features/auth/utils/permissions";
 
 interface SidebarProps {
   isOpen: boolean;
+  /** When true, the sidebar collapses to w-0 on all screen sizes (no mini-sidebar). */
+  collapseToZero?: boolean;
 }
 
 type MenuItem = {
@@ -86,7 +88,7 @@ const menuItems: MenuItem[] = [
 ];
 
 
-export function Sidebar({ isOpen }: SidebarProps) {
+export function Sidebar({ isOpen, collapseToZero = false }: SidebarProps) {
   const location = useLocation();
   const [expandedItems, setExpandedItems] = useState<string[]>(["Configuration"]);
   const user = useAuthStore((state) => state.user);
@@ -142,7 +144,7 @@ export function Sidebar({ isOpen }: SidebarProps) {
       className={cn(
         "fixed left-0 top-16 bottom-0 z-40 transition-all duration-300 overflow-y-auto",
         "bg-white border-r",
-        isOpen ? "w-64" : "w-0 lg:w-20"
+        isOpen ? "w-64" : collapseToZero ? "w-0" : "w-0 lg:w-20"
       )}
       style={{ borderColor: "var(--color-border)" }}
     >
