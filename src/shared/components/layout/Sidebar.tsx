@@ -17,12 +17,15 @@ type MenuItem = {
   path?: string;
   requiredScopes?: string[];
   requiredAllScopes?: string[];
+  requiredRoles?: string[];
   children?: {
     title: string;
     path: string;
     icon?: React.ComponentType<{ className?: string }>;
     requiredScopes?: string[];
     requiredAllScopes?: string[];
+    requiredRoles?: string[];
+    hideForAdmin?: boolean;
   }[];
 };
 
@@ -37,11 +40,12 @@ const menuItems: MenuItem[] = [
         title: "Project Dashboard", 
         path: "/app/dashboard",
         requiredAllScopes: [SCOPES.PROJECTS_READ, SCOPES.PROJECTS_WEIGHT],
+        hideForAdmin: true,
       },
       {
         title: "Country Dashboard",
         path: "/app/country-kpa",
-        requiredAllScopes: [SCOPES.PROJECTS_READ, SCOPES.PROJECTS_WEIGHT, SCOPES.PROJECTS_VIEW_BY_COUNTRY],
+        requiredRoles: ["country-manager"],
       },
     ],
   },
@@ -110,6 +114,15 @@ export function Sidebar({ isOpen, collapseToZero = false }: SidebarProps) {
 
     if (item.children) {
       const filteredChildren = item.children.filter((child) => {
+        if (isAdmin) {
+          return !child.hideForAdmin;
+        }
+
+        if (child.requiredRoles?.length) {
+          const userRoles = (user?.roles ?? []).map((role) => role.name);
+          return child.requiredRoles.some((role) => userRoles.includes(role));
+        }
+
         if (child.requiredAllScopes?.length) {
           return child.requiredAllScopes.every((scope) => hasScope(scope));
         }

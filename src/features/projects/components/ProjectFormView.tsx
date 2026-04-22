@@ -49,7 +49,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
     const canEditWeight = useAuthStore((state) => state.hasScope("projects:weight"));
     const canViewByCountry = useAuthStore((state) => state.hasScope("projects:view_by_country"));
     const isCountryManager = canViewByCountry && !isAdmin;
-    const canShowWeight = mode === "edit" && canEditWeight;
+    const canShowWeight = mode === "edit" && canEditWeight && isCountryManager;
 
 
     const [totalDonors, setTotalDonors] = useState<number | null>(null);
