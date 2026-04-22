@@ -35,7 +35,12 @@ export async function createProject(projectData: ProjectDTO): Promise<Project>{
 export async function updateProject(id: number, projectData: ProjectDTO): Promise<Project>{
     try{
         console.log("Updating project with data:", projectData);
-        const { data } = await apiClient.put(`/projects/${id}`, projectData);
+        const payload = {
+          ...projectData,
+          start_date: formatDateToYMD(projectData.start_date),
+          end_date: formatDateToYMD(projectData.end_date),
+        };
+        const { data } = await apiClient.put(`/projects/${id}`, payload);
         toast.success(data.message);
 
         return mapProject(data.data);
