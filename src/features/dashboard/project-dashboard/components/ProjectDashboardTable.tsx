@@ -3,6 +3,7 @@ import type { ProjectDashboardRow } from "../types/projectDashboard.types";
 import { ProjectProgressModal } from "./ProjectProgressModal";
 import { ProjectWeightModal } from "./ProjectWeightModal";
 import { ProjectCommentModal } from "./ProjectCommentModal";
+import { TruncatedCell } from "@/shared/components/table";
 
 interface Pagination {
   total: number;
@@ -204,7 +205,7 @@ export default function ProjectDashboardTable({
     <>
       <div className="table-wrapper">
         <table className="table-default">
-          <thead className="table-head">
+          <thead className="table-head sticky top-0 z-10">
             <tr>
               <th>#</th>
               {!isCountryTable && <th>COUNTRY</th>}
@@ -217,7 +218,7 @@ export default function ProjectDashboardTable({
               <th>START DATE</th>
               <th>END DATE</th>
               <th>PROGRESS</th>
-              {isCountryTable && <th>ICV/W (WEIGHT)</th>}
+              {isCountryTable && <th>ICV/W</th>}
               <th>COMMENT</th>
             </tr>
           </thead>
@@ -226,12 +227,12 @@ export default function ProjectDashboardTable({
             {rows.map((row, index) => (
               <tr key={row.id} className="table-row">
                 <td className="table-cell">{index + 1}</td>
-                {!isCountryTable && <td className="table-cell">{row.country ?? "—"}</td>}
-                <td className="table-cell">{row.measure ?? "—"}</td>
-                <td className="table-cell">{row.program_title ?? "—"}</td>
-                <td className="table-cell">{row.project_title}</td>
-                <td className="table-cell">{row.lead_project_manager ?? "—"}</td>
-                <td className="table-cell">{row.lead_implementing_agency ?? "—"}</td>
+                {!isCountryTable && <td className="table-cell max-w-[120px]"><TruncatedCell text={row.country ?? "—"} maxWidth="max-w-[100px]" /></td>}
+                <td className="table-cell max-w-[140px]"><TruncatedCell text={row.measure ?? "—"} maxWidth="max-w-[120px]" /></td>
+                <td className="table-cell max-w-40"><TruncatedCell text={row.program_title ?? "—"} maxWidth="max-w-[160px]" /></td>
+                <td className="table-cell max-w-40"><TruncatedCell text={row.project_title} maxWidth="max-w-[160px]" /></td>
+                <td className="table-cell max-w-[150px]"><TruncatedCell text={row.lead_project_manager ?? "—"} maxWidth="max-w-[130px]" /></td>
+                <td className="table-cell max-w-[150px]"><TruncatedCell text={row.lead_implementing_agency ?? "—"} maxWidth="max-w-[130px]" /></td>
                 <td className="table-cell">{formatCurrency(row.budget)}</td>
                 <td className="table-cell">{formatDate(row.start_date)}</td>
                 <td className="table-cell">{formatDate(row.end_date)}</td>
@@ -243,11 +244,13 @@ export default function ProjectDashboardTable({
                           className="bg-[#1E3291] h-4 rounded-full transition-all duration-500"
                           style={{ width: `${row.progress}%` }}
                         />
-                        <span className="absolute inset-0 flex items-center justify-center text-[12px] font-semibold text-white">
+                        <span className="absolute inset-0 flex items-center justify-center text-[12px] font-semibold text-white transition-opacity group-hover:opacity-0">
                           {row.progress}%
                         </span>
+                        <span className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100 bg-[#1E3291]/50 rounded-full">
+                          ✎ Edit
+                        </span>
                       </div>
-                      <span className="text-[11px] text-[#1E3291] group-hover:underline">Click to edit</span>
                     </button>
                   ) : (
                     <div className="w-full bg-[#61C8E7]/70 rounded-full h-4 relative overflow-hidden min-w-[120px]">

@@ -68,8 +68,9 @@ export default function ProjectDashboardPage() {
   }
 
   return (
-    <div className="page-container">
-      <div className="title-container">
+    <div className="p-6 flex flex-col gap-4 h-full overflow-hidden">
+
+      <div className="title-container shrink-0">
         <div>
           <h1 className="page-title">Project Dashboard</h1>
           <p className="page-description">
@@ -78,7 +79,7 @@ export default function ProjectDashboardPage() {
         </div>
       </div>
 
-      <div className="relative max-w-md">
+      <div className="relative max-w-md shrink-0">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         <input
           type="text"
@@ -88,6 +89,8 @@ export default function ProjectDashboardPage() {
           className="search-default"
         />
       </div>
+
+      <div className="flex-1 min-h-0">
 
       {showSkeleton ? (
         <TableSkeleton columns={12} />
@@ -118,6 +121,7 @@ export default function ProjectDashboardPage() {
           description={searchTerm ? "Try adjusting your search terms" : "No project dashboard data is currently available."}
         />
       )}
+      </div>
     </div>
   );
 }
