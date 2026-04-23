@@ -5,10 +5,14 @@ import {
   updateProjectDashboardWeight,
 } from "../services/projectDashboard.api";
 import { toast } from "sonner";
+import { useAuthStore } from "@/features/auth/store/authStore";
 
 export function useProjectDashboard(page: number, perPage: number, search: string) {
+  const userId = useAuthStore((state) => state.user?.id ?? 0);
+  const countryUserRoleId = useAuthStore((state) => state.countryUserRoleId ?? 0);
+
   return useQuery({
-    queryKey: ["project-dashboard", page, perPage, search],
+    queryKey: ["project-dashboard", userId, countryUserRoleId, page, perPage, search],
     queryFn: () => getProjectDashboardPaginated(page, perPage, search),
     placeholderData: (prev) => prev,
     staleTime: 1000 * 10,

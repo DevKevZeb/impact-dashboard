@@ -8,13 +8,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User, Settings } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 
 export function UserMenu() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  if (!user) return null;
+  if (!user) return <></>;
 
   const handleLogout = () => {
     logout();
@@ -60,14 +60,9 @@ export function UserMenu() {
         
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem disabled className="cursor-not-allowed opacity-50">
+        <DropdownMenuItem onClick={() => navigate("/app/profile")} className="cursor-pointer">
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
-        </DropdownMenuItem>
-        
-        <DropdownMenuItem disabled className="cursor-not-allowed opacity-50">
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Settings</span>
         </DropdownMenuItem>
         
         <DropdownMenuSeparator />

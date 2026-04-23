@@ -49,6 +49,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
     const canEditWeight = useAuthStore((state) => state.hasScope("projects:weight"));
     const canViewByCountry = useAuthStore((state) => state.hasScope("projects:view_by_country"));
     const isCountryManager = canViewByCountry && !isAdmin;
+    const canShowWeight = mode === "edit" && canEditWeight && isCountryManager;
 
 
     const [totalDonors, setTotalDonors] = useState<number | null>(null);
@@ -115,7 +116,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                         Your role only allows editing the project weight. All other fields are read-only.
                     </div>
                 )}
-                {canEditWeight && (
+                {canShowWeight && (
                     <div className="flex flex-col space-y-2">
                         <Label className="text-gray-700">PROJECT WEIGHT (0 TO 1)</Label>
                         <Input
