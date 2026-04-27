@@ -43,6 +43,7 @@ import { useAuthStore } from "@/features/auth/store/authStore";
 import CountryKpaListPage from "@/features/dashboard/country-dashboard/country-kpa/pages/CountryKpaListPage";
 import InfoCountryKpaPage from "@/features/dashboard/country-dashboard/country-kpa-info/pages/InfoCountryKpaPage";
 import ProjectDashboardPage from "@/features/dashboard/project-dashboard/pages/ProjectDashboardPage";
+import CountryDashboardSharePage from "@/features/dashboard/country-dashboard/country-dashboard-share/pages/CountryDashboardSharePage";
 
 
 export function AppRouter() {
@@ -121,6 +122,7 @@ export function AppRouter() {
             <Route path="dashboard" element={<ProjectDashboardPage/>} />
             <Route path="country-kpa" element={<CountryKpaListPage/>} />
             <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
+            <Route path="country-dashboard-share" element={<CountryDashboardSharePage/>} />
             
             {/* Resources Routes */}
             <Route path="resources">

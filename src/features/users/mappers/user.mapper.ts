@@ -5,6 +5,7 @@ export interface UserDTO {
   id: number;
   name: string;
   email: string;
+  user_role_id?: number;
   roles: Array<{ id: number; name: string; guard_name?: string }> | null;
   userState?: { id: number; name: string } | null;   // camelCase (some endpoints)
   user_state?: { id: number; name: string } | null;  // snake_case (standard Laravel)
@@ -28,6 +29,7 @@ export function mapUserFromDTO(dto: UserDTO): User {
     id: dto.id,
     name: dto.name,
     email: dto.email,
+    userRoleId: dto.user_role_id ?? 0,
     roles: (dto.roles ?? []).map(role => ({
       id: role.id,
       name: role.name,

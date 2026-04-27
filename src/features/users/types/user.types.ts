@@ -20,6 +20,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  userRoleId: number;
   roles: UserRole[];
   userState: UserStateInfo;
   countries: Country[]; // Backend envía array de países

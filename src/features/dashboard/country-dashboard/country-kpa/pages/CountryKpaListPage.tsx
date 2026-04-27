@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import CountryKpaTable from "../components/CountryKpaTable";
 import { useCountries } from "@/features/country/hooks/country/useCountries";
+import { useSharedCountriesForAdmin } from "../hooks/useSharedCountriesForAdmin";
 import { useCreateCountryKpa } from "../hooks/useCreateCountryKpa";
 import { useUpdateCountryKpa } from "../hooks/useUpdateCountryKpa";
 import CreateCountryKpaModal from "../components/CreateCountryKpaModal";
@@ -46,7 +47,17 @@ export default function CountryKpaListPage() {
   const [selectedKpa, setSelectedKpa] = useState<Kpa | null>(null);
   const [selectedCountryId, setSelectedCountryId] = useState<number | null>(null);
 
-  const { data, isLoading, isFetching, error } = useCountries(page, perPage, debouncedSearch);
+  // Admins only see countries that country-managers have shared with them
+  const { data: allCountriesData, isLoading, isFetching, error } = useCountries(page, perPage, debouncedSearch);
+  const { data: sharedCountriesData } = useSharedCountriesForAdmin(1, 200, debouncedSearch);
+
+  const sharedCountryIds = new Set((sharedCountriesData?.countries ?? []).map((country) => country.id));
+  const data = allCountriesData
+    ? {
+        countries: allCountriesData.countries.filter((country) => sharedCountryIds.has(country.id)),
+        pagination: allCountriesData.pagination,
+      }
+    : undefined;
 
   const showSkeleton = isFetching && (searchChanged || pageChanged);
 
