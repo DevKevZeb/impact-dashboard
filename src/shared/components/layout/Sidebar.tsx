@@ -35,7 +35,7 @@ const menuItems: MenuItem[] = [
     title: "Dashboard",
     icon: LayoutDashboard,
     children: [
-      { title: "Admin Dashboard", path: "/app", requiredAllScopes: [SCOPES.ADMIN_ALL] },
+      { title: "Admin Dashboard", path: "/app", requiredRoles: ["admin"] },
       {
         title: "Project Dashboard", 
         path: "/app/dashboard",
@@ -45,7 +45,13 @@ const menuItems: MenuItem[] = [
       {
         title: "Country Dashboard",
         path: "/app/country-kpa",
+        requiredRoles: ["admin", "country-manager"],
+      },
+      {
+        title: "Share Dashboard",
+        path: "/app/country-dashboard-share",
         requiredRoles: ["country-manager"],
+        hideForAdmin: true,
       },
     ],
   },
@@ -114,8 +120,8 @@ export function Sidebar({ isOpen, collapseToZero = false }: SidebarProps) {
 
     if (item.children) {
       const filteredChildren = item.children.filter((child) => {
-        if (isAdmin) {
-          return !child.hideForAdmin;
+        if (isAdmin && child.hideForAdmin) {
+          return false;
         }
 
         if (child.requiredRoles?.length) {

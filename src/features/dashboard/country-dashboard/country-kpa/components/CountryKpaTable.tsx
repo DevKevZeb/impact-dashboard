@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Info, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Country } from "@/features/country/types/CountryType";
@@ -74,10 +74,9 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
                   {country.indicators_count}
                 </td>
                 <td className="table-cell text-left">
-                  {(country.kpas_count ?? 0) > 0 && 
                   <button title="More info" className="btn-warning-table" onClick={(e) => { e.stopPropagation(); navigate(`/app/country-kpa/${country.id}`, { state: {country}}); }} >
                     <Info className="w-4 h-4" />
-                  </button>}
+                  </button>
                 </td>
               </tr>
 
@@ -124,8 +123,6 @@ export default function CountryKpaTable({ countries, pagination, page, perPage, 
     </div>
   );
 }
-
-import { Fragment } from "react";
 
 function SubKpaTable({ countryId }: { countryId: number; onEdit: (kpa: Kpa, relationId: number) => void; }) {
   const [page, setPage] = useState(1);

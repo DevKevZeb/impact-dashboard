@@ -1,0 +1,169 @@
+import { useMemo } from "react";
+import { Navigate } from "react-router-dom";
+import { Loader2, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableHead,
+  DataTableHeader,
+  DataTableRow,
+} from "@/shared/components/table";
+import { EmptyState } from "@/shared/components/EmptyState";
+import { useAuthStore } from "@/features/auth/store/authStore";
+import {
+  useCountryDashboardShareAdminCandidates,
+  useCreateCountryDashboardShare,
+  useDeleteCountryDashboardShare,
+  useMyCountryDashboardShares,
+} from "../api/countryDashboardShare.queries";
+
+export default function CountryDashboardSharePage() {
+  const user = useAuthStore((state) => state.user);
+  const isCountryManager = (user?.roles ?? []).some((r) => r.name === "country-manager");
+  const countryId = user?.country_user_role?.country?.id;
+
+  const {
+    data: adminsData,
+    isLoading: isLoadingAdmins,
+    error: adminsError,
+  } = useCountryDashboardShareAdminCandidates(1, 100);
+  const { data: mySharesData, isLoading: isLoadingShares } = useMyCountryDashboardShares(1, 200);
+
+  const createShareMutation = useCreateCountryDashboardShare();
+  const deleteShareMutation = useDeleteCountryDashboardShare();
+
+  const approvedByAdminUserId = useMemo(() => {
+    const map = new Map<number, number>();
+    (mySharesData?.shares ?? []).forEach((share) => {
+      const adminUserId = share.shared_user_role?.user?.id;
+      if (adminUserId) {
+        map.set(adminUserId, share.id);
+      }
+    });
+    return map;
+  }, [mySharesData]);
+
+  if (!isCountryManager) {
+    return <Navigate to="/app" replace />;
+  }
+
+  if (!countryId) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <EmptyState
+          icon={Share2}
+          title="Country not assigned"
+          description="Your account needs an assigned country before sharing the dashboard."
+        />
+      </div>
+    );
+  }
+
+  if (isLoadingAdmins || isLoadingShares) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4">
+          <Loader2 className="loader-default" />
+          <p className="text-gray-500">Loading administrators...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (adminsError) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4 max-w-md">
+          <span className="text-2xl">⚠️</span>
+          <p className="text-red-600 font-medium">Failed to load administrators</p>
+          <p className="text-sm text-gray-600">
+            {(adminsError as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+              "Please try again in a moment."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const admins = adminsData?.users ?? [];
+
+  return (
+    <div className="space-y-6 p-6">
+      <div>
+        <h1 className="page-title">Share Country Dashboard</h1>
+        <p className="mt-2 text-gray-500">
+          Approve or revoke administrator access to your country dashboard.
+        </p>
+      </div>
+
+      {admins.length === 0 ? (
+        <EmptyState
+          icon={Share2}
+          title="No administrators found"
+          description="There are no administrator accounts available to share with."
+        />
+      ) : (
+        <DataTable>
+          <DataTableHeader>
+            <tr>
+              <DataTableHead className="min-w-[220px]">Name</DataTableHead>
+              <DataTableHead className="min-w-[200px]">Status</DataTableHead>
+              <DataTableHead className="min-w-[180px]">Actions</DataTableHead>
+            </tr>
+          </DataTableHeader>
+          <DataTableBody>
+            {admins.map((admin) => {
+              const shareId = approvedByAdminUserId.get(admin.id);
+              const isApproved = !!shareId;
+
+              return (
+                <DataTableRow key={admin.id}>
+                  <DataTableCell className="font-medium text-gray-900">{admin.name}</DataTableCell>
+                  <DataTableCell>
+                    <span className={isApproved ? "text-green-700 font-medium" : "text-amber-700 font-medium"}>
+                      {isApproved ? "Approved" : "Pending"}
+                    </span>
+                  </DataTableCell>
+                  <DataTableCell>
+                    {isApproved ? (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        disabled={deleteShareMutation.isPending}
+                        onClick={() => {
+                          if (shareId) {
+                            deleteShareMutation.mutate(shareId);
+                          }
+                        }}
+                      >
+                        Unapprove
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        size="sm"
+                        disabled={createShareMutation.isPending || !admin.userRoleId}
+                        onClick={() => {
+                          if (!admin.userRoleId) return;
+                          createShareMutation.mutate({
+                            country_id: countryId,
+                            shared_user_role_id: admin.userRoleId,
+                          });
+                        }}
+                      >
+                        Approve
+                      </Button>
+                    )}
+                  </DataTableCell>
+                </DataTableRow>
+              );
+            })}
+          </DataTableBody>
+        </DataTable>
+      )}
+    </div>
+  );
+}
