@@ -92,7 +92,7 @@ export default function CountryDashboardSharePage() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="page-title">Share Country Dashboard</h1>
+        <h1 className="page-title">Manage Users</h1>
         <p className="mt-2 text-gray-500">
           Approve or revoke administrator access to your country dashboard.
         </p>

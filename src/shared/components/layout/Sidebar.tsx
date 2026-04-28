@@ -48,7 +48,7 @@ const menuItems: MenuItem[] = [
         requiredRoles: ["admin", "country-manager"],
       },
       {
-        title: "Share Dashboard",
+        title: "Manage Users",
         path: "/app/country-dashboard-share",
         requiredRoles: ["country-manager"],
         hideForAdmin: true,
