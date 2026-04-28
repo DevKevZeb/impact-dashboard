@@ -43,6 +43,11 @@ export async function updateBeneficiary(id: number, dto: BeneficiaryDTO): Promis
   }
 }
 
+export async function deleteBeneficiary(id: number): Promise<{ success: boolean; message: string; data: unknown[] }> {
+  const { data } = await apiClient.delete(`/beneficiaries/${id}`);
+  return data;
+}
+
 
 function showErrors(error: any){
     const status = error.response?.status;

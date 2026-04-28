@@ -1,18 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { useBeneficiaries } from "../hooks/useBeneficiaries";
 import { useCreateBeneficiary } from "../hooks/useCreateBeneficiary";
+import { useDeleteBeneficiary } from "../hooks/useDeleteBeneficiary";
 import { useUpdateBeneficiary } from "../hooks/useUpdateBeneficiary";
 import type { Beneficiary, BeneficiaryDTO } from "../types/beneficiaries.types";
 import { Loader2, Plus, Search, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CreateBeneficiaryModal from "../components/CreateBeneficiaryModal";
+import DeleteBeneficiaryDialog from "../components/DeleteBeneficiaryDialog";
 import BeneficiariesTable from "../components/BeneficiariesTable";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function BeneficiariesListPage(){
+    const queryClient = useQueryClient();
     const canWrite = useHasScope("beneficiaries:write");
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
@@ -32,8 +37,10 @@ export default function BeneficiariesListPage(){
 
     const { mutateAsync: createBeneficiary} = useCreateBeneficiary();
     const { mutateAsync: updateBeneficiary } = useUpdateBeneficiary();
+    const { mutateAsync: deleteBeneficiary, isPending: isDeletingBeneficiary } = useDeleteBeneficiary();
 
     const [openModal, setOpenModal] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null);
 
     const  handleSubmit = async (formData: BeneficiaryDTO) => {
@@ -53,6 +60,50 @@ export default function BeneficiariesListPage(){
     const handleEdit = async (beneficiary: Beneficiary) => {
         setSelectedBeneficiary(beneficiary);
         setOpenModal(true);
+    }
+
+    const handleDelete = (beneficiary: Beneficiary) => {
+        setSelectedBeneficiary(beneficiary);
+        setOpenDeleteModal(true);
+    }
+
+    const handleConfirmDelete = async () => {
+        if (!selectedBeneficiary) return;
+
+        try {
+            const result = await deleteBeneficiary(selectedBeneficiary.id);
+            toast.success(result?.message || "Beneficiary deleted successfully");
+            setOpenDeleteModal(false);
+            setSelectedBeneficiary(null);
+        } catch (error: any) {
+            const status = error?.response?.status;
+            const message = error?.response?.data?.message;
+
+            if (status === 409) {
+                toast.error(message || "Cannot delete beneficiary because it is related to other records.");
+                setOpenDeleteModal(false);
+                return;
+            }
+
+            if (status === 404) {
+                toast.info("The beneficiary no longer exists. The list will be refreshed.");
+                queryClient.invalidateQueries({ queryKey: ["beneficiaries"] });
+                setOpenDeleteModal(false);
+                setSelectedBeneficiary(null);
+                return;
+            }
+
+            if (status === 403) {
+                toast.error("You do not have permission to delete beneficiaries.");
+                return;
+            }
+
+            if (status === 401) {
+                return;
+            }
+
+            toast.error(message || "Error deleting beneficiary.");
+        }
     }
 
     const handleSearchChange = (value: string) => {
@@ -109,10 +160,20 @@ export default function BeneficiariesListPage(){
             </div>
 
             <CreateBeneficiaryModal beneficiary={selectedBeneficiary} open={openModal} onClose={() => setOpenModal(false)} onSubmit={handleSubmit} />
+
+            {selectedBeneficiary && (
+                <DeleteBeneficiaryDialog
+                    beneficiary={selectedBeneficiary}
+                    open={openDeleteModal}
+                    onOpenChange={setOpenDeleteModal}
+                    onConfirm={handleConfirmDelete}
+                    isLoading={isDeletingBeneficiary}
+                />
+            )}
             
             {showSkeleton ? <TableSkeleton columns={2}/> :
             data && data?.beneficiaries.length > 0 ? (
-                <BeneficiariesTable beneficiaries={data?.beneficiaries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(beneficiary) => console.log("DELETE", beneficiary)} canWrite={canWrite}/>
+                <BeneficiariesTable beneficiaries={data?.beneficiaries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={handleDelete} canWrite={canWrite}/>
             ) : (
                 <EmptyState
                     icon={Tag}
