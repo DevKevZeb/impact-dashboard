@@ -10,10 +10,19 @@ export function DashboardPage() {
   const isAdmin = (user?.roles ?? []).some((role) => role.name === "admin");
 
   useEffect(() => {
+    if (isAdmin) {
+      navigate("/app/country-kpa", { replace: true });
+      return;
+    }
+
     if (!isAdmin) {
       navigate("/app/dashboard");
     }
   }, [isAdmin, navigate]);
+
+  if (isAdmin) {
+    return null;
+  }
 
   if (!isAdmin) {
     return null;

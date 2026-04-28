@@ -1,6 +1,7 @@
 export const SCOPES = {
   // ===== Admin =====
   ADMIN_ALL: "*:*",
+  ADMIN_DASHBOARD: "admin_dashboard:read",
   
   // ===== Donors =====
   DONORS_READ: "donors:read",

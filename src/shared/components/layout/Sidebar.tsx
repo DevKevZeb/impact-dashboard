@@ -35,7 +35,7 @@ const menuItems: MenuItem[] = [
     title: "Dashboard",
     icon: LayoutDashboard,
     children: [
-      { title: "Admin Dashboard", path: "/app", requiredRoles: ["admin"] },
+      { title: "Admin Dashboard", path: "/app", requiredScopes: [SCOPES.ADMIN_DASHBOARD] },
       {
         title: "Project Dashboard", 
         path: "/app/dashboard",
@@ -48,7 +48,7 @@ const menuItems: MenuItem[] = [
         requiredRoles: ["admin", "country-manager"],
       },
       {
-        title: "Share Dashboard",
+        title: "Manage Users",
         path: "/app/country-dashboard-share",
         requiredRoles: ["country-manager"],
         hideForAdmin: true,
