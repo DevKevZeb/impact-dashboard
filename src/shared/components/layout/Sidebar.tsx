@@ -35,7 +35,7 @@ const menuItems: MenuItem[] = [
     title: "Dashboard",
     icon: LayoutDashboard,
     children: [
-      { title: "Admin Dashboard", path: "/app", requiredRoles: ["admin"] },
+      { title: "Admin Dashboard", path: "/app", requiredScopes: [SCOPES.ADMIN_DASHBOARD] },
       {
         title: "Project Dashboard", 
         path: "/app/dashboard",
