@@ -58,6 +58,11 @@ export const programStateService = {
     return data.data;
   },
 
+  delete: async (id: number): Promise<{ success: boolean; message: string; data: unknown[] }> => {
+    const { data } = await apiClient.delete(`${PROGRAM_STATES_ENDPOINT}/${id}`);
+    return data;
+  },
+
   search: async (name: string): Promise<ProgramState> => {
     const { data } = await apiClient.get<ApiResponse<ProgramState>>(
       `${PROGRAM_STATES_ENDPOINT}/search`,

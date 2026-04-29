@@ -75,14 +75,14 @@ export function useCreateProgramState(): UseMutationResult<
     mutationFn: programStateService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: programStateKeys.lists() });
-      toast.success("Program state created successfully");
+      toast.success("Program status created successfully");
     },
     onError: (error: AxiosError) => {
       const apiError = error as ApiError;
       const errorMessage =
         apiError.response?.data?.errors?.name?.[0] ||
         apiError.response?.data?.message ||
-        "Failed to create program state";
+        "Failed to create program status";
       toast.error(errorMessage);
     },
   });
@@ -103,15 +103,33 @@ export function useUpdateProgramState(): UseMutationResult<
       queryClient.invalidateQueries({
         queryKey: programStateKeys.detail(variables.id),
       });
-      toast.success("Program state updated successfully");
+      toast.success("Program status updated successfully");
     },
     onError: (error: AxiosError) => {
       const apiError = error as ApiError;
       const errorMessage =
         apiError.response?.data?.errors?.name?.[0] ||
         apiError.response?.data?.message ||
-        "Failed to update program state";
+        "Failed to update program status";
       toast.error(errorMessage);
+    },
+  });
+}
+
+export function useDeleteProgramState(): UseMutationResult<
+  { success: boolean; message: string; data: unknown[] },
+  AxiosError,
+  number
+> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: programStateService.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: programStateKeys.lists() });
+    },
+    onError: () => {
+      // Error toasts are handled in ProgramStatesPage for status-specific UX.
     },
   });
 }

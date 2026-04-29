@@ -59,9 +59,9 @@ export function ProgramStateCreateDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Create New Program State</DialogTitle>
+          <DialogTitle>Create New Program Status</DialogTitle>
           <DialogDescription>
-            Add a new state for program lifecycle management. This state will
+            Add a new status for program lifecycle management. This status will
             be available when creating or updating programs.
           </DialogDescription>
         </DialogHeader>
@@ -72,7 +72,7 @@ export function ProgramStateCreateDialog({
               htmlFor="name"
               className="text-sm font-medium text-gray-700 block"
             >
-              State Name <span className="text-red-500">*</span>
+                Status Name <span className="text-red-500">*</span>
             </label>
             <input
               id="name"
@@ -101,7 +101,7 @@ export function ProgramStateCreateDialog({
               disabled={isSubmitting}
               className="btn-modal-submit"
             >
-              {isSubmitting ? "Creating..." : "Create State"}
+              {isSubmitting ? "Creating..." : "Create Status"}
             </Button>
           </DialogFooter>
         </form>
