@@ -1,10 +1,11 @@
-import { SquarePen } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import type { ProgramState } from "../types/programState.types";
 
 interface ProgramStateTableRowProps {
   programState: ProgramState;
   index: number;
   onEdit: (programState: ProgramState) => void;
+  onDelete: (programState: ProgramState) => void;
   canWrite?: boolean;
 }
 
@@ -12,11 +13,17 @@ export function ProgramStateTableRow({
   programState,
   index,
   onEdit,
+  onDelete,
   canWrite,
 }: ProgramStateTableRowProps) {
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(programState);
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete(programState);
   };
 
   return (
@@ -34,13 +41,22 @@ export function ProgramStateTableRow({
       {/* Actions */}
       <td className="px-4 py-3 text-sm text-gray-700">
         {canWrite && (
-          <button
-            onClick={handleEdit}
-            className="btn-edit-table"
-            title="Edit Program State"
-          >
-            <SquarePen className="w-4 h-4" />
-          </button>
+          <div className="space-x-2">
+            <button
+              onClick={handleEdit}
+              className="btn-edit-table"
+              title="Edit Program Status"
+            >
+              <SquarePen className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleDelete}
+              className="btn-delete-table"
+              title="Delete Program Status"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
         )}
       </td>
     </tr>

@@ -74,10 +74,10 @@ export function ProgramStateEditDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Edit Program State</DialogTitle>
+          <DialogTitle>Edit Program Status</DialogTitle>
           <DialogDescription>
-            Update the program state name. This will affect all programs
-            currently using this state.
+            Update the program status name. This will affect all programs
+            currently using this status.
           </DialogDescription>
         </DialogHeader>
 
@@ -87,7 +87,7 @@ export function ProgramStateEditDialog({
               htmlFor="name"
               className="text-sm font-medium text-gray-700 block"
             >
-              State Name <span className="text-red-500">*</span>
+                Status Name <span className="text-red-500">*</span>
             </label>
             <input
               id="name"
@@ -116,7 +116,7 @@ export function ProgramStateEditDialog({
               disabled={isSubmitting}
               className="btn-modal-submit"
             >
-              {isSubmitting ? "Updating..." : "Update State"}
+              {isSubmitting ? "Updating..." : "Update Status"}
             </Button>
           </DialogFooter>
         </form>
