@@ -63,6 +63,11 @@ export async function updateCountry(id: number, dto: UpdateCountryDTO): Promise<
   }
 }
 
+export async function deleteCountry(id: number): Promise<{ success: boolean; message: string; data: unknown[] }> {
+  const { data } = await apiClient.delete(`/countries/${id}`);
+  return data;
+}
+
 export async function fetchSearchCountries(search: string, page: number, limit: number){
   const { data } = await apiClient.get(`/countries?search=${encodeURIComponent(search)}&page=${page}&per_page=${limit}`);
   return {

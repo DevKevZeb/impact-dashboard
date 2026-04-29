@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCountries } from "../hooks/country/useCountries";
 import { useCreateCountry } from "../hooks/country/useCreateCountry.ts";
+import { useDeleteCountry } from "../hooks/country/useDeleteCountry.ts";
 
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import CountryTable from "../components/CountryTable";
 import CreateCountryModal from "../components/CreateCountryModal";
+import DeleteCountryDialog from "../components/DeleteCountryDialog";
 import { useCurrencies } from "../hooks/currency/useCurrency.ts";
 
 import type { Country } from "../types/CountryType.tsx";
@@ -14,14 +17,18 @@ import { Button } from "@/components/ui/button.tsx";
 import { EmptyState } from "@/shared/components/EmptyState.tsx";
 import { useHasScope } from "@/features/auth/hooks/useHasScope.ts";
 import { useDebounce } from "@/shared/hooks/useDebounce.ts";
+import { toast } from "sonner";
 
 export default function CountryListPage() {
+  const queryClient = useQueryClient();
   const canWrite = useHasScope("countries:write");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
   const [openModal, setOpenModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [editingCountry, setEditingCountry] = useState<Country | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const prevSearch = useRef(searchTerm);
@@ -40,6 +47,7 @@ export default function CountryListPage() {
 
   const { mutateAsync: createCountry } = useCreateCountry();
   const { mutateAsync: updateCountry} = useUpdateCountry();
+  const { mutateAsync: deleteCountry, isPending: isDeletingCountry } = useDeleteCountry();
 
   const handleCreate = () => {
     setEditingCountry(null);
@@ -51,6 +59,11 @@ export default function CountryListPage() {
     setOpenModal(true);
   }
 
+  const handleDelete = (country: Country) => {
+    setSelectedCountry(country);
+    setOpenDeleteModal(true);
+  }
+
   const handleSubmit  = async (dto: any) => {
     if(editingCountry) await updateCountry( { id: editingCountry.id, dto: dto} );
     else{
@@ -59,6 +72,45 @@ export default function CountryListPage() {
     }
 
     setOpenModal(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedCountry) return;
+
+    try {
+      const result = await deleteCountry(selectedCountry.id);
+      toast.success(result?.message || "Country deleted successfully");
+      setOpenDeleteModal(false);
+      setSelectedCountry(null);
+    } catch (error: any) {
+      const status = error?.response?.status;
+      const message = error?.response?.data?.message;
+
+      if (status === 409) {
+        toast.error(message || "Cannot delete country because it is related to other records.");
+        setOpenDeleteModal(false);
+        return;
+      }
+
+      if (status === 404) {
+        toast.info("The country no longer exists. The list will be refreshed.");
+        queryClient.invalidateQueries({ queryKey: ["countries"] });
+        setOpenDeleteModal(false);
+        setSelectedCountry(null);
+        return;
+      }
+
+      if (status === 403) {
+        toast.error("You do not have permission to delete countries.");
+        return;
+      }
+
+      if (status === 401) {
+        return;
+      }
+
+      toast.error(message || "Error deleting country.");
+    }
   };
 
   const handleSearchChange = (value: string) => {
@@ -117,9 +169,19 @@ export default function CountryListPage() {
         <input type="text" placeholder="Search by country name..." value={searchTerm} onChange={(e) => handleSearchChange(e.target.value)} className="search-default" />
       </div>
 
+      {selectedCountry && (
+        <DeleteCountryDialog
+          country={selectedCountry}
+          open={openDeleteModal}
+          onOpenChange={setOpenDeleteModal}
+          onConfirm={handleConfirmDelete}
+          isLoading={isDeletingCountry}
+        />
+      )}
+
       {showSkeleton ? <TableSkeleton columns={3}  /> : 
       data && data.countries.length > 0 ? (
-        <CountryTable countries={data?.countries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(country) => console.log("DELETE", country)} canWrite={canWrite} />
+        <CountryTable countries={data?.countries} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={handleDelete} canWrite={canWrite} />
       ): (
         <EmptyState
           icon={Tag}
