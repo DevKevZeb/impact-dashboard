@@ -14,12 +14,6 @@ const kpaSchema = z.object({
   name: z
     .string()
     .min(2, "The KPA name is required"),
-  implementation: z
-    .number({
-      message: "Implementation must be a number",
-    })
-    .min(0, "Minimum value is 0")
-    .max(100, "Maximum value is 100"),
 });
 
 interface Props {
@@ -35,7 +29,6 @@ export default function CreateKpaModal({ open, kpa, onClose, onSubmit }: Props) 
     resolver: zodResolver(kpaSchema),
     defaultValues: {
       name: "",
-      implementation: 0,
     },
   });
 
@@ -49,11 +42,9 @@ export default function CreateKpaModal({ open, kpa, onClose, onSubmit }: Props) 
         kpa
           ? {
               name: kpa.name,
-              implementation: kpa.implementation,
             }
           : {
               name: "",
-              implementation: 0,
             }
       );
     }
@@ -86,21 +77,6 @@ export default function CreateKpaModal({ open, kpa, onClose, onSubmit }: Props) 
             />
             {errors.name && (
               <p className="text-sm text-red-600">{errors.name.message}</p>
-            )}
-          </div>
-          <div className="flex flex-col space-y-1">
-            <Label className="text-gray-700">IMPLEMENTATION (%)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              className="input-default"
-              placeholder="0 - 100"
-              {...register("implementation", { valueAsNumber: true })}
-            />
-            {errors.implementation && (
-              <p className="text-sm text-red-600">
-                {errors.implementation.message}
-              </p>
             )}
           </div>
           <div className="mt-6 flex justify-end gap-3">
