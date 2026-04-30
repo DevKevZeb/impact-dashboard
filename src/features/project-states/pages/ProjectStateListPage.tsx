@@ -4,13 +4,16 @@ import type { ProjectState, ProjectStateDTO } from "../types/projectstate.types"
 import { useProjectStates } from "../hooks/useProjectStates";
 import { useCreateProjectState } from "../hooks/useCreateProjectState";
 import { useUpdateProjectState } from "../hooks/useUpdateProjectState";
+import { useDeleteProjectState } from "../hooks/useDeleteProjectState";
 import CreateProjectStateModal from "../components/CreateProjectStateModal";
+import DeleteProjectStateDialog from "../components/DeleteProjectStateDialog";
 import { EmptyState } from "@/shared/components/EmptyState";
 import ProjectStateTable from "../components/ProjectStateTable";
 import { Button } from "@/components/ui/button";
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import { toast } from "sonner";
 
 export default function ProjectStateListPage(){
 
@@ -33,9 +36,12 @@ export default function ProjectStateListPage(){
 
     const { mutateAsync: createProjectState} = useCreateProjectState();
     const { mutateAsync: updateProjectState } = useUpdateProjectState();
+    const { mutateAsync: deleteProjectState, isPending: isDeleting } = useDeleteProjectState();
 
     const [openModal, setOpenModal] = useState(false);
     const [selectedProjectState, setSelectedProjectState] = useState<ProjectState | null>(null);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [selectedForDelete, setSelectedForDelete] = useState<ProjectState | null>(null);
     
 
     const  handleSubmit = async (formData: ProjectStateDTO) => {
@@ -57,6 +63,49 @@ export default function ProjectStateListPage(){
         setOpenModal(true);
     }
 
+    const handleDeleteClick = (projectState: ProjectState) => {
+        setSelectedForDelete(projectState);
+        setOpenDeleteDialog(true);
+    }
+
+    const handleConfirmDelete = async () => {
+        if (!selectedForDelete) return;
+
+        try {
+            await deleteProjectState(selectedForDelete.id);
+            toast.success("Project status deleted successfully");
+            setOpenDeleteDialog(false);
+            setSelectedForDelete(null);
+        } catch (error: any) {
+            const status = error?.response?.status;
+            const message = error?.response?.data?.message;
+
+            if (status === 409) {
+                toast.error(message || "Cannot delete project status because it is related to other records.");
+                setOpenDeleteDialog(false);
+                return;
+            }
+
+            if (status === 404) {
+                toast.info("The project status no longer exists.");
+                setOpenDeleteDialog(false);
+                setSelectedForDelete(null);
+                return;
+            }
+
+            if (status === 403) {
+                toast.error("You do not have permission to delete project statuses.");
+                return;
+            }
+
+            if (status === 401) {
+                return;
+            }
+
+            toast.error(message || "Error deleting project status.");
+        }
+    }
+
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
         setPage(1);
@@ -71,7 +120,7 @@ export default function ProjectStateListPage(){
     <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
             <Loader2 className="loader-default" />
-            <p className="text-gray-500">Loading Project States...</p>
+            <p className="text-gray-500">Loading Project Status...</p>
         </div>
     </div>
     );
@@ -81,7 +130,7 @@ export default function ProjectStateListPage(){
         <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center space-y-4 max-w-md">
                 <span className="text-2xl">⚠️</span>
-                <p className="text-red-600 font-medium">Error loading project states</p>
+                <p className="text-red-600 font-medium">Error loading project status</p>
                 <p className="text-sm text-gray-600">
                     {error instanceof Error ? error.message : "Unknown error"}
                 </p>
@@ -94,32 +143,44 @@ export default function ProjectStateListPage(){
         <div className="page-container">
             <div className="title-container">
                 <div>
-                    <h1 className="page-title">Project States</h1>   
+                    <h1 className="page-title">Project Status</h1>   
                     <p className="page-description">
-                        Manage the Project States
+                        Manage project statuses
                     </p> 
                 </div>
                 {canWrite && (<Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
                     <Plus className="w-5 h-5 mr-2"/>
-                    New Project State
+                    New Project Status
                 </Button>)}
                 </div>
                 
                 <div className="relative max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input type="text" placeholder="Search by state ..." value={searchTerm} onChange={(e) => handleSearchChange(e.target.value)} className="search-default" />
+                    <input type="text" placeholder="Search by status ..." value={searchTerm} onChange={(e) => handleSearchChange(e.target.value)} className="search-default" />
                 </div>
 
             <CreateProjectStateModal open={openModal} projectState={selectedProjectState} onClose={() => setOpenModal(false)} onSubmit={handleSubmit}/>
+            {selectedForDelete && (
+                <DeleteProjectStateDialog 
+                    projectState={selectedForDelete} 
+                    open={openDeleteDialog} 
+                    onOpenChange={(open) => {
+                        setOpenDeleteDialog(open);
+                        if (!open) setSelectedForDelete(null);
+                    }} 
+                    onConfirm={handleConfirmDelete} 
+                    isLoading={isDeleting}
+                />
+            )}
 
             {showSkeleton ? <TableSkeleton columns={3} />:
             data && data.project_states.length > 0 ? 
-                <ProjectStateTable projectStates={data?.project_states} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={(projectState) => console.log("DELETE", projectState)} canWrite={canWrite}/>
+                <ProjectStateTable projectStates={data?.project_states} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={handleDeleteClick} canWrite={canWrite}/>
                 :
                 <EmptyState 
-                icon={Tag} title={searchTerm ? "No project States found" : "No project states available"}
+                icon={Tag} title={searchTerm ? "No project statuses found" : "No project statuses available"}
                 description={
-                    searchTerm ? "Try adjusting your search terms" : "Click 'New Project State' to create your first Project State"
+                    searchTerm ? "Try adjusting your search terms" : "Click 'New Project Status' to create your first project status"
                 }/>
             }
         </div>

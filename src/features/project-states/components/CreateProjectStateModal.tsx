@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const projectStateSchema = z.object({
-    state: z.string("The state must be a string").min(3, "The state must contain a minimum of 3 characters.").max(100, "The state must contain a maximum of 3 characters.")
+    state: z.string("The status must be a string").min(3, "The status must contain a minimum of 3 characters.").max(100, "The status must contain a maximum of 100 characters.")
 })
 
 interface Props {
@@ -56,12 +56,12 @@ export default function CreateProjectStateModal({open, projectState, onClose, on
             <DialogContent className="rounded-xl">
                 <DialogHeader>
                     <DialogTitle className="modal-title">
-                        {isEditing ? "Edit Project State": "Create Project State"}
+                        {isEditing ? "Edit Project Status": "Create Project Status"}
                     </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
                     <div className="space-y-4">
-                        <Label className="text-gray-700">STATE</Label>
+                        <Label className="text-gray-700">STATUS</Label>
                         <Input className="input-default" placeholder="E.G.: Approved" {...register("state")}/>
                         {errors.state && (
                           <p className="text-sm text-red-600">{errors.state.message}</p>
