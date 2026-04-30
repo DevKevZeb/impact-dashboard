@@ -64,7 +64,7 @@ const menuItems: MenuItem[] = [
       { title: "Indicator Types", path: "/app/config/indicator-types", requiredScopes: [SCOPES.INDICATOR_TYPES_READ] },
       { title: "KPAs", path: "/app/config/kpas", requiredScopes: [SCOPES.KPAS_READ] },
       { title: "Program Status", path: "/app/config/program-states", requiredScopes: [SCOPES.PROGRAM_STATES_READ] },
-      { title: "Project States", path: "/app/config/project-states", requiredScopes: [SCOPES.PROJECT_STATES_READ] },
+      { title: "Project Status", path: "/app/config/project-states", requiredScopes: [SCOPES.PROJECT_STATES_READ] },
       { title: "SDGs", path: "/app/config/sdgs", requiredScopes: [SCOPES.SDGS_READ] },
     ],
   },

@@ -86,3 +86,13 @@ export async function fetchProjectStatesForSelector(params: { query: string, pag
     hasMore: data.pagination.current_page < data.pagination.last_page
   }
 }
+
+export async function deleteProjectState(id: number): Promise<void> {
+  try {
+    await apiClient.delete(`/project-states/${id}`);
+    return;
+  } catch (error: any) {
+    // Let callers handle user-facing notifications; rethrow for caller handling
+    throw error;
+  }
+}
