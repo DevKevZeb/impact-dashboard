@@ -47,7 +47,14 @@ export interface ProgramUpdateInput {
   description: string;
   banner_img?: File;
   program_url?: string;
-  contact_id: number;
+  contact: {
+    id?: number;
+    first_name: string;
+    last_name: string;
+    title: string;
+    email: string;
+    phone?: string;
+  };
   program_state_id: number;
   sdg_ids?: number[];
 }

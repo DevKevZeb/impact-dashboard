@@ -311,7 +311,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                     )}
                 </div>
                 </div>
-                <Button type="submit" className="btn-secondary">{mode === "edit" ? 'Edit' : 'Create'}</Button>
+                                <Button type="submit" className="btn-secondary">{mode === "edit" ? 'Update Project' : 'Create'}</Button>
             </form>
         </div>
   );
