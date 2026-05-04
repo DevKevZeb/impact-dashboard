@@ -42,6 +42,71 @@ interface Props {
     onSubmit: (data: any) => void;
     onInvalid: (errors: any) => void;
 }
+
+function ProgressPercentInput({
+    value,
+    max,
+    onCommit,
+}: {
+    value: number | undefined;
+    max: number;
+    onCommit: (nextValue: number) => void;
+}) {
+    const [inputValue, setInputValue] = useState(value === 0 || value == null ? "0" : String(value));
+    const [isFocused, setIsFocused] = useState(false);
+
+    const commitValue = (rawValue: string) => {
+        const normalizedValue = rawValue.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+
+        if (normalizedValue === "") {
+            setInputValue("0");
+            onCommit(0);
+            return;
+        }
+
+        const clamped = Math.min(Number(normalizedValue), max);
+        setInputValue(String(clamped));
+        onCommit(clamped);
+    };
+
+    const displayValue = isFocused ? inputValue : value === 0 || value == null ? "0" : String(value);
+
+    return (
+        <div className="relative w-[90px]">
+            <Input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                min={0}
+                max={max}
+                value={displayValue}
+                onFocus={(e) => {
+                    setIsFocused(true);
+                    if (e.currentTarget.value === "0") {
+                        e.currentTarget.select();
+                        setInputValue("");
+                    }
+                }}
+                onChange={(e) => {
+                    const nextValue = e.target.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+                    setInputValue(nextValue);
+                    onCommit(nextValue === "" ? 0 : Math.min(Number(nextValue), max));
+                }}
+                onBlur={() => commitValue(inputValue)}
+                onBlurCapture={() => setIsFocused(false)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        commitValue(inputValue);
+                    }
+                }}
+                placeholder="0"
+                className="pr-7 text-center input-default no-spinner"
+            />
+            <Percent className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+        </div>
+    );
+}
  
 export default function ProjectFormView({ mode, programName, form, onSubmit, onInvalid, programId }: Props) {
     const hasCountryScope = useAuthStore((state) => state.hasCountryScope);
@@ -283,10 +348,11 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                         render={({ field }) => (
                             <div className="flex items-center gap-4">
                                 <Slider value={[field.value ?? 0]} max={100} step={1} onValueChange={(value) => field.onChange(value[0])} className="flex-1" />
-                                <div className="relative w-[90px]">
-                                    <Input type="number" min={0} max={100} value={field.value} onChange={(e) => { const val = Number(e.target.value); if (!Number.isNaN(val)) { field.onChange(Math.min(100, Math.max(0, val))); } }} className="pr-7 text-center input-default no-spinner" />
-                                    <Percent className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
-                                </div>
+                                <ProgressPercentInput
+                                    value={field.value}
+                                    max={100}
+                                    onCommit={field.onChange}
+                                />
                             </div>
                         )}
                     />
