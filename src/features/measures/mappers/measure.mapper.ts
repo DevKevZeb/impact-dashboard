@@ -9,6 +9,7 @@ export function mapMeasure(raw: any): Measure {
   return {
     id: raw.id,
     name: raw.name,
+    numbering: raw.numbering,
     strategic_output_id: raw.strategic_output_id,
     indicators_count: raw.indicators_count ?? 0
   }

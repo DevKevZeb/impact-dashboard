@@ -16,6 +16,7 @@ export function mapKpaProject(raw: any): KpaProject {
     return {
         id: raw.id,
         name: raw.name,
+        numbering: raw.numbering,
         strategic_outputs_count: raw.strategic_outputs_count
     }
 }

@@ -7,6 +7,7 @@ export interface Kpa{
 export interface KpaProject{
     id: number,
     name: string,
+    numbering?: string,
     strategic_outputs_count: number,
 }
 

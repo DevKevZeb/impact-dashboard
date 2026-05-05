@@ -1,6 +1,7 @@
 export interface StrategicOutput {
     id: number,
     name: string,
+    numbering?: string,
     country_kpa_id: number
     measures_count: number
 }
@@ -8,6 +9,7 @@ export interface StrategicOutput {
 export interface StrategicOutputCountry{
     id: number,
     name: string,
+    numbering?: string,
     country: {
         id: number,
         name: string,
