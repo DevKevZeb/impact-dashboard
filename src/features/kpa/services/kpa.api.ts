@@ -19,7 +19,7 @@ export async function getKpasPaginated(page: number, perPage: number, search: st
 
 export async function createKpa(dto: CreateKpaDto): Promise<Kpa>{
     try{
-        const payload = { name: dto.name, implementation: dto.implementation };
+        const payload = { name: dto.name };
         const { data } = await apiClient.post("/kpas", payload);
 
         toast.success(data.message);
@@ -41,7 +41,7 @@ export async function createKpa(dto: CreateKpaDto): Promise<Kpa>{
 
 export async function updateKpa(id: number, dto: UpdateKpaDto): Promise<Kpa>{
     try{
-        const payload = { name: dto.name, implementation: dto.implementation };
+    const payload = { name: dto.name };
         const { data } = await apiClient.put(`kpas/${id}`, payload);
 
         toast.success(data.message);

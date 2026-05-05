@@ -11,16 +11,9 @@ export interface KpaProject{
 }
 
 export interface CreateKpaDto{
-    name: string, 
-    implementation:number
-}
-
-export interface CreateKpaDto{
-    name: string, 
-    implementation:number
+    name: string
 }
 
 export interface UpdateKpaDto{
-    name?: string, 
-    implementation?:number
+    name?: string
 }
