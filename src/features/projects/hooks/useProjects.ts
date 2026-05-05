@@ -1,12 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { getProjectPaginatedByProgramId, getProjectsByProjectId } from "../services/project.api";
 
-export function useProjects( page: number, perPage: number, programId: number, search: string ) {
+export function useProjects(
+  page: number,
+  perPage: number,
+  programId: number,
+  search: string,
+  enabled = true
+) {
   return useQuery({
     queryKey: ["projects", programId, page, perPage, search],
     queryFn: () => getProjectPaginatedByProgramId(page, perPage, programId, search),
     placeholderData: (prev) => prev,
     staleTime: 1000 * 10,
+    enabled,
   });
 }
 
