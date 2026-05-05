@@ -91,3 +91,8 @@ export async function fetchCountriesForSelect(params: { query: string; page: num
   };
 }
 
+export async function activateCountry(id: number): Promise<void> {
+  const { data } = await apiClient.patch(`/countries/${id}/activate`);
+  toast.success(data.message ?? 'Country activated');
+}
+

@@ -1,5 +1,5 @@
   import React, { useState, useCallback, useEffect } from "react";
-  import { ChevronRight, ChevronDown, Edit2, Trash2, Eye } from "lucide-react";
+  import { ChevronRight, ChevronDown, Edit2, Trash2, Eye, Snowflake } from "lucide-react";
   import type { TreeNode } from "./TreeType";
 
   interface LazyTreeProps {
@@ -16,11 +16,12 @@
     onAddIndicator?: (node: TreeNode) => void;
     onEditIndicator?: (node: TreeNode) => void;
     onDeleteIndicator?: (node: TreeNode) => void;
-
+    countryActive?: boolean;
+    onFreezeCountry?: () => void;
     onRefreshNode?: (refreshFn: (key: string) => Promise<void>) => void;
   }
 
-  export const LazyTree: React.FC<LazyTreeProps> = ({ value, selectionKey, onSelectionChange, loadChildren, onAddStrategicOutput, onEditStrategicOutput, onAddMeasure, onEditMeasure, onRefreshNode, onAddIndicator, onEditIndicator, onDeleteIndicator, onDeleteMeasure, onDeleteStrategicOutput }) => {
+  export const LazyTree: React.FC<LazyTreeProps> = ({ value, selectionKey, onSelectionChange, loadChildren, onAddStrategicOutput, onEditStrategicOutput, onAddMeasure, onEditMeasure, onRefreshNode, onAddIndicator, onEditIndicator, onDeleteIndicator, onDeleteMeasure, onDeleteStrategicOutput, countryActive, onFreezeCountry }) => {
 
     const [internalValue, setInternalValue] = useState<TreeNode[]>(value);
 
@@ -177,6 +178,8 @@
             onDeleteIndicator={onDeleteIndicator}
             onDeleteMeasure={onDeleteMeasure}
             onDeleteStrategicOutput={onDeleteStrategicOutput}
+            countryActive={countryActive}
+            onFreezeCountry={onFreezeCountry}
           />
         ))}
       </ul>
@@ -202,9 +205,11 @@
     onDeleteStrategicOutput?: (node: TreeNode) => void;
     onDeleteMeasure?: (node: TreeNode) => void;
     onDeleteIndicator?: (node: TreeNode) => void;
+    countryActive?: boolean;
+    onFreezeCountry?: () => void;
   }
 
-  const Item: React.FC<ItemProps> = ({ node, level, path, index, expandedKeys, onToggle, onSelect, selectedKey, onAddStrategicOutput, onEditStrategicOutput, onAddMeasure, onEditMeasure, onAddIndicator, onEditIndicator, onDeleteMeasure, onDeleteIndicator, onDeleteStrategicOutput }) => {
+  const Item: React.FC<ItemProps> = ({ node, level, path, index, expandedKeys, onToggle, onSelect, selectedKey, onAddStrategicOutput, onEditStrategicOutput, onAddMeasure, onEditMeasure, onAddIndicator, onEditIndicator, onDeleteMeasure, onDeleteIndicator, onDeleteStrategicOutput, countryActive, onFreezeCountry }) => {
 
     const isStructural = !node.isTitle && node.data?.type !== "i" && node.data?.type !== "country";
     const isNumbered = isStructural;
@@ -218,8 +223,23 @@
 
     const getActionButtons = (node: TreeNode) => {
       const type = node.data?.type;
-      if (!type || type === "country" || node.isTitle) return null;
+      if (!type || node.isTitle) return null;
+
+      if (type === "country") {
+        if (countryActive) return null;
+        return (
+          <button
+            type="button"
+            className="flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer transition"
+            onClick={(e) => { e.stopPropagation(); onFreezeCountry?.(); }}
+          >
+            <Snowflake className="w-3.5 h-3.5" />
+            Freeze
+          </button>
+        );
+      }
       if (type === "ck") {
+        if (countryActive) return null;
         return (
           <button type="button" className="btn-tree" onClick={(e) => { e.stopPropagation(); onAddStrategicOutput?.(node); }} >
             + Strategic Output
@@ -256,6 +276,7 @@
       };
 
       const extraAction = (() => {
+        if (countryActive) return null;
         switch (type) {
           case "so":
             return (
@@ -281,9 +302,11 @@
           <button type="button" className="btn-edit-tree cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEdit(); }} >
             <Edit2 className="w-4" />
           </button>
-          <button type="button" className="btn-delete-tree cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDelete(); }} >
-            <Trash2 className="w-4" />
-          </button>
+          {!countryActive && (
+            <button type="button" className="btn-delete-tree cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDelete(); }} >
+              <Trash2 className="w-4" />
+            </button>
+          )}
           {extraAction}
         </>
       );
@@ -395,6 +418,8 @@
                   onDeleteIndicator={onDeleteIndicator}
                   onDeleteMeasure={onDeleteMeasure}
                   onDeleteStrategicOutput={onDeleteStrategicOutput}
+                  countryActive={countryActive}
+                  onFreezeCountry={onFreezeCountry}
                 />
               );
           })}

@@ -1,6 +1,7 @@
 export interface Country {
     id: number,
     name: string,
+    active?: boolean,
     currency: {
         id: number,
         code: string
