@@ -109,12 +109,12 @@ function ProgressPercentInput({
 }
  
 export default function ProjectFormView({ mode, programName, form, onSubmit, onInvalid, programId }: Props) {
-    const hasCountryScope = useAuthStore((state) => state.hasCountryScope);
     const isAdmin = useAuthStore((state) => state.hasScope("*:*"));
     const canEditWeight = useAuthStore((state) => state.hasScope("projects:weight"));
     const canViewByCountry = useAuthStore((state) => state.hasScope("projects:view_by_country"));
     const isCountryManager = canViewByCountry && !isAdmin;
     const canShowWeight = mode === "edit" && canEditWeight && isCountryManager;
+    const useProgramContext = Boolean(programId);
 
 
     const [totalDonors, setTotalDonors] = useState<number | null>(null);
@@ -127,23 +127,26 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
     const beneficiary = useWatch({ control: form.form.control, name: "beneficiary" });
 
     const fetchKpas = useCallback(
-        hasCountryScope ? fetchProgramKpasForSelect(programId ?? 0) : fetchKpasForSelect,
-        [hasCountryScope, programId]
+        useProgramContext ? fetchProgramKpasForSelect(programId ?? 0) : fetchKpasForSelect,
+        [useProgramContext, programId]
     );
 
     const fetchStrategicOutputs = useCallback(
-        hasCountryScope
+        useProgramContext
             ? fetchProgramStrategicOutputsForSelect(programId ?? 0, kpa?.id ?? 0)
             : fetchStrategicOutputsForSelect(kpa?.id ?? 0),
-        [hasCountryScope, programId, kpa?.id]
+        [useProgramContext, programId, kpa?.id]
     );
 
     const fetchMeasures = useCallback(
-        hasCountryScope
+        useProgramContext
             ? fetchProgramMeasuresForSelect(programId ?? 0, strategicOutput?.id ?? 0)
             : fetchMeasuresForSelect(strategicOutput?.id ?? 0),
-        [hasCountryScope, programId, strategicOutput?.id]
+        [useProgramContext, programId, strategicOutput?.id]
     );
+
+    const formatNumberedLabel = (numbering: string | undefined, label: string) =>
+        numbering ? `${numbering} ${label}`.trim() : label;
 
     useEffect(() => {
         fetchDonorsForSelect([])({ query: "", page: 1, limit: 1 })
@@ -215,7 +218,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 </div>
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A KPA</Label>
-                    <AsyncSearchSelect<KpaProject> enab={false} value={kpa} onChange={(v) => { form.form.setValue("kpa", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("strategicOutput", null); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchKpas} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a KPA" emptyMessage="No KPAs found"/>
+                    <AsyncSearchSelect<KpaProject> enab={false} value={kpa} onChange={(v) => { form.form.setValue("kpa", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("strategicOutput", null); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchKpas} getOptionLabel={(k) => formatNumberedLabel(k.numbering, k.name ?? "")} getOptionKey={(k)=> k.id} placeholder="Select a KPA" emptyMessage="No KPAs found"/>
                         {form.form.formState.errors.kpa && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.kpa.message === 'string' ? form.form.formState.errors.kpa.message : 'Invalid input'}</p>
                     )}
@@ -224,7 +227,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 {kpa && kpa !==null && kpa.strategic_outputs_count > 0 ? 
                 (<div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A STRATEGIC OUTPUT</Label>
-                    <AsyncSearchSelect<StrategicOutputCountry> enab={false} value={strategicOutput} onChange={(v) => { form.form.setValue("strategicOutput", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchStrategicOutputs} getOptionLabel={(k) => `${k?.name ?? ""} - ${k?.country?.name ?? ""}`} getOptionKey={(k)=> k.id} placeholder="Select a Strategic Output" emptyMessage="No Strategic Outputs found"/>
+                    <AsyncSearchSelect<StrategicOutputCountry> enab={false} value={strategicOutput} onChange={(v) => { form.form.setValue("strategicOutput", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchStrategicOutputs} getOptionLabel={(k) => formatNumberedLabel(k?.numbering, `${k?.name ?? ""} - ${k?.country?.name ?? ""}`)} getOptionKey={(k)=> k.id} placeholder="Select a Strategic Output" emptyMessage="No Strategic Outputs found"/>
                     {form.form.formState.errors.strategicOutput && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.strategicOutput.message === 'string' ? form.form.formState.errors.strategicOutput.message : 'Invalid input'}</p>
                     )}
@@ -235,7 +238,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 {strategicOutput && (strategicOutput.measures_count > 0 ? 
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A MEASURE</Label>
-                    <AsyncSearchSelect<Measure> enab={false} value={measure} onChange={(v) => { form.form.setValue("measure", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("indicators", []); }} fetchOptions={fetchMeasures} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a Measure" emptyMessage="No Measure found"/>
+                    <AsyncSearchSelect<Measure> enab={false} value={measure} onChange={(v) => { form.form.setValue("measure", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("indicators", []); }} fetchOptions={fetchMeasures} getOptionLabel={(k) => formatNumberedLabel(k.numbering, k.name ?? "")} getOptionKey={(k)=> k.id} placeholder="Select a Measure" emptyMessage="No Measure found"/>
                     {form.form.formState.errors.measure && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.measure.message === 'string' ? form.form.formState.errors.measure.message : 'Invalid input'}</p>
                     )}
@@ -244,7 +247,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
 
                 {measure && (
                     measure.indicators_count > 0 ? (
-                        <IndicatorSection form={form} measure={measure} useProgramContext={hasCountryScope} />
+                        <IndicatorSection form={form} measure={measure} useProgramContext={useProgramContext} />
                     ) : (
                         <AlertBox message="The selected measure has no indicators. Please select another one." />
                     )
