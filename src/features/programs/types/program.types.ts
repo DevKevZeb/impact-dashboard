@@ -10,6 +10,18 @@ export interface Contact {
   phone?: string;
 }
 
+export interface ProgramSummaryItem {
+  id: number;
+  name: string;
+  url?: string;
+}
+
+export interface ProgramSummary {
+  donors: ProgramSummaryItem[];
+  implementing_agencies: ProgramSummaryItem[];
+  budget: number;
+}
+
 export interface Program {
   id: number;
   name: string;
@@ -19,6 +31,7 @@ export interface Program {
   contact: Contact;
   program_state: ProgramState;
   sdgs: Sdg[];
+  program_summary?: ProgramSummary;
   created_at?: string;
   updated_at?: string;
   projects_count?: number;
