@@ -7,20 +7,14 @@ export interface Kpa{
 export interface KpaProject{
     id: number,
     name: string,
+    numbering?: string,
     strategic_outputs_count: number,
 }
 
 export interface CreateKpaDto{
-    name: string, 
-    implementation:number
-}
-
-export interface CreateKpaDto{
-    name: string, 
-    implementation:number
+    name: string
 }
 
 export interface UpdateKpaDto{
-    name?: string, 
-    implementation?:number
+    name?: string
 }

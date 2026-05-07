@@ -4,6 +4,7 @@ export function mapStrategicOutput(raw: any): StrategicOutput {
   return {
     id: raw.id,
     name: raw.name,
+    numbering: raw.numbering,
     country_kpa_id: raw.id_ck,
     measures_count: raw.measures_count ?? 0,
   }
@@ -18,6 +19,7 @@ export function mapStrategicOutputWithCountry(raw: any): StrategicOutputCountry{
   return{
     id: raw.id,
     name: raw.name,
+    numbering: raw.numbering,
     country: {
       id: raw.country_kpa.country.id,
       name: raw.country_kpa.country.name,

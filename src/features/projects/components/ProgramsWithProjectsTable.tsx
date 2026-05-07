@@ -23,9 +23,10 @@ interface Props {
     perPage: number;
     setPage: (page: number) => void;
     setPerPage: (perPage: number) => void;
+    searchTerm: string;
 }
 
-export default function ProgramsWithProjectsTable({ programs, pagination, page, perPage, setPage, setPerPage }: Props) {
+export default function ProgramsWithProjectsTable({ programs, pagination, page, perPage, setPage, setPerPage, searchTerm }: Props) {
     const canCreate = useHasScope("projects:create");
     const user = useAuthStore((s) => s.user);
     const isCountryActive = user?.country_user_role?.country?.active ?? true;
@@ -61,76 +62,16 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                 <tbody>
                     {programs.map((program, index) => {
                         const isExpanded = expandedPrograms.includes(program.id);
-                        const isEditor = program.can_edit !== false;
-
                         return (
-                            <Fragment key={program.id}>
-                                <tr className="table-row cursor-pointer" onClick={() => toggleExpand(program.id)}>
-                                    <td className="table-cell">{index + 1}</td>
-                                    <td className="table-cell font-medium">
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                type="button"
-                                                className="p-1 rounded hover:bg-sky-100 cursor-pointer"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    toggleExpand(program.id);
-                                                }}
-                                            >
-                                                {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                                            </button>
-                                            <span>{program.name}</span>
-                                        </div>
-                                    </td>
-                                    <td className="table-cell">
-                                        {program.country_user_roles && program.country_user_roles.length > 0 ? (
-                                            <div className="flex flex-wrap gap-1">
-                                                {program.country_user_roles
-                                                    .filter((cur) => cur.country)
-                                                    .map((cur) => (
-                                                        <span key={cur.id} className="inline-flex rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700">
-                                                            {cur.country!.name}
-                                                        </span>
-                                                    ))}
-                                            </div>
-                                        ) : (
-                                            <span className="text-xs text-gray-400">—</span>
-                                        )}
-                                    </td>
-                                    <td className="table-cell">
-                                        <span
-                                            className={
-                                                isEditor
-                                                    ? "inline-flex rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700"
-                                                    : "inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700"
-                                            }
-                                        >
-                                            {isEditor ? "Editor" : "Invited"}
-                                        </span>
-                                    </td>
-                                    <td className="table-cell text-center font-medium">{program.projects_count ?? 0}</td>
-                                    <td className="table-cell" onClick={(e) => e.stopPropagation()}>
-                                        {canCreate && isCountryActive && isEditor && (
-                                            <Link
-                                                to={`/app/projects/new/${program.id}`}
-                                                className="btn-secondary-table inline-flex items-center gap-1"
-                                                title="Add Project"
-                                            >
-                                                <Plus className="w-4 h-4" />
-                                                Project
-                                            </Link>
-                                        )}
-                                    </td>
-                                </tr>
-
-                                {isExpanded && (
-                                    <tr className="bg-sky-50/50">
-                                        <td colSpan={6} className="p-0">
-                                            <ProgramProjectsSubTable programId={program.id} />
-                                        </td>
-                                    </tr>
-                                )}
-                            </Fragment>
+                            <ProgramRow
+                                key={program.id}
+                                program={program}
+                                index={index}
+                                isExpanded={isExpanded}
+                                canCreate={canCreate}
+                                searchTerm={searchTerm}
+                                onToggleExpand={toggleExpand}
+                            />
                         );
                     })}
 
@@ -167,9 +108,10 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
 
 interface ProgramProjectsSubTableProps {
     programId: number;
+    searchTerm: string;
 }
 
-function ProgramProjectsSubTable({ programId }: ProgramProjectsSubTableProps) {
+function ProgramProjectsSubTable({ programId, searchTerm }: ProgramProjectsSubTableProps) {
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const [selectedProject, setSelectedProject] = useState<ProjectTable | null>(null);
@@ -181,7 +123,7 @@ function ProgramProjectsSubTable({ programId }: ProgramProjectsSubTableProps) {
     const user = useAuthStore((s) => s.user);
     const isCountryActive = user?.country_user_role?.country?.active ?? true;
 
-    const { data, isLoading } = useProjects(page, perPage, programId, "");
+    const { data, isLoading } = useProjects(page, perPage, programId, searchTerm);
     const deleteProjectMutation = useDeleteProject(programId);
 
     const projects = data?.projects ?? [];
@@ -220,6 +162,11 @@ function ProgramProjectsSubTable({ programId }: ProgramProjectsSubTableProps) {
 
     return (
         <div className="p-3">
+            {searchTerm && (
+                <div className="mb-3 text-xs text-gray-600">
+                    Filtering projects by: <span className="font-medium">{searchTerm}</span>
+                </div>
+            )}
             <table className="w-full text-xs bg-white">
                 <thead>
                     <tr className="bg-sky-100/70 text-[#1E3291]">
@@ -355,5 +302,73 @@ function ProgramProjectsSubTable({ programId }: ProgramProjectsSubTableProps) {
                 />
             )}
         </div>
+    );
+}
+
+interface ProgramRowProps {
+    program: Program;
+    index: number;
+    isExpanded: boolean;
+    canCreate: boolean;
+    searchTerm: string;
+    onToggleExpand: (programId: number) => void;
+}
+
+function ProgramRow({ program, index, isExpanded, canCreate, searchTerm, onToggleExpand }: ProgramRowProps) {
+    const isEditor = program.can_edit !== false;
+
+    return (
+        <Fragment>
+            <tr className="table-row cursor-pointer" onClick={() => onToggleExpand(program.id)}>
+                <td className="table-cell">{index + 1}</td>
+                <td className="table-cell font-medium">
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            className="p-1 rounded hover:bg-sky-100 cursor-pointer"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onToggleExpand(program.id);
+                            }}
+                        >
+                            {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                        </button>
+                        <span>{program.name}</span>
+                    </div>
+                </td>
+                <td className="table-cell">
+                    <span
+                        className={
+                            isEditor
+                                ? "inline-flex rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700"
+                                : "inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700"
+                        }
+                    >
+                        {isEditor ? "Editor" : "Invited"}
+                    </span>
+                </td>
+                <td className="table-cell text-center font-medium">{program.projects_count ?? 0}</td>
+                <td className="table-cell" onClick={(e) => e.stopPropagation()}>
+                    {canCreate && (
+                        <Link
+                            to={`/app/projects/new/${program.id}`}
+                            className="btn-secondary-table inline-flex items-center gap-1"
+                            title="Add Project"
+                        >
+                            <Plus className="w-4 h-4" />
+                            Project
+                        </Link>
+                    )}
+                </td>
+            </tr>
+
+            {isExpanded && (
+                <tr className="bg-sky-50/50">
+                    <td colSpan={5} className="p-0">
+                        <ProgramProjectsSubTable programId={program.id} searchTerm={searchTerm} />
+                    </td>
+                </tr>
+            )}
+        </Fragment>
     );
 }
