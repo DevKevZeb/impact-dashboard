@@ -30,6 +30,8 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useAuthStore } from "@/features/auth/store/authStore";
 import { useCountryKpas } from "../../country-kpa/hooks/useCountryKpas";
 import { useActivateCountry } from "@/features/country/hooks/country/useActivateCountry";
+import { ConfirmationDialog } from "@/shared/components/ConfirmationDialog";
+import { Snowflake } from "lucide-react";
 
 export default function InfoCountryKpaPage() {
   const navigate = useNavigate();
@@ -120,10 +122,16 @@ export default function InfoCountryKpaPage() {
   const [indicatorToDelete, setIndicatorToDelete] = useState<{ id: number; name: string; measureId: number } | null>(null);
   const { mutateAsync: deleteIndicatorMutation, isPending: isDeletingIndicator } = useDeleteIndicator(indicatorToDelete?.measureId);
 
-  const { mutateAsync: activateCountryMutation } = useActivateCountry();
+  const { mutateAsync: activateCountryMutation, isPending: isActivating } = useActivateCountry();
   const { user: storeUser, setUser } = useAuthStore();
 
-  const handleFreezeCountry = async () => {
+  const [freezeConfirmOpen, setFreezeConfirmOpen] = useState(false);
+
+  const handleFreezeCountry = () => {
+    setFreezeConfirmOpen(true);
+  };
+
+  const handleConfirmFreeze = async () => {
     await activateCountryMutation(id);
     // Update auth store so isCountryActive reflects immediately across all views
     if (storeUser?.country_user_role?.country) {
@@ -138,6 +146,7 @@ export default function InfoCountryKpaPage() {
         },
       });
     }
+    setFreezeConfirmOpen(false);
     await refetchTree();
     await refetch();
   };
@@ -393,6 +402,23 @@ export default function InfoCountryKpaPage() {
       <DeleteIndicatorDialog indicatorName={indicatorToDelete?.name ?? ""} open={!!indicatorToDelete} onOpenChange={(open) => { if (!open) setIndicatorToDelete(null); }} onConfirm={handleConfirmDeleteIndicator} isLoading={isDeletingIndicator} />
       <DeleteMeasureDialog measureName={measureToDelete?.name ?? ""} open={!!measureToDelete} onOpenChange={(open) => { if (!open) setMeasureToDelete(null); }} onConfirm={handleConfirmDeleteMeasure} isLoading={isDeletingMeasure} />
       <DeleteStrategicOutputDialog strategicOutputName={strategicOutputToDelete?.name ?? ""} open={!!strategicOutputToDelete} onOpenChange={(open) => { if (!open) setStrategicOutputToDelete(null); }} onConfirm={handleConfirmDeleteStrategicOutput} isLoading={isDeletingStrategicOutput} />
+
+      <ConfirmationDialog
+        open={freezeConfirmOpen}
+        onOpenChange={setFreezeConfirmOpen}
+        onConfirm={handleConfirmFreeze}
+        isLoading={isActivating}
+        title="Freeze Country"
+        description={
+          <span>
+            Are you sure you want to freeze <strong>{country?.name}</strong>? Once active, you will not be able to add, edit or delete strategic outputs, measures or indicators.
+          </span>
+        }
+        confirmText="Freeze"
+        cancelText="Cancel"
+        variant="warning"
+        icon={Snowflake}
+      />
 
     </div>
   );
