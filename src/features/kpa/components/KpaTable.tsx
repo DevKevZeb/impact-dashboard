@@ -38,7 +38,6 @@ export default function KpaTable({ kpas, pagination, page, perPage, setPage, set
           <tr>
             <th>#</th>
             <th>NAME</th>
-            <th>IMPLEMENTATION</th>
             {canWrite && <th>ACTIONS</th>}
           </tr>
         </thead>
@@ -48,7 +47,6 @@ export default function KpaTable({ kpas, pagination, page, perPage, setPage, set
             <tr key={kpa.id} className="table-row">
               <td className="table-cell">{index+1}</td>
               <td className="table-cell">{kpa.name}</td>
-              <td className="table-cell">{kpa.implementation}%</td>
 
               {canWrite && (<td className="table-cell space-x-2">
                 <button className="btn-edit-table" onClick={() => onEdit(kpa)}>
@@ -63,7 +61,7 @@ export default function KpaTable({ kpas, pagination, page, perPage, setPage, set
 
           {/* Pagination */}
           <tr className="table-pagination-row">
-            <td colSpan={canWrite ? 4 : 3} className="table-pagination-cell">
+            <td colSpan={canWrite ? 3 : 2} className="table-pagination-cell">
               <div className="table-pagination-container">
 
                 <div className="flex items-center gap-2 text-xs text-gray-600">
@@ -103,7 +101,7 @@ export default function KpaTable({ kpas, pagination, page, perPage, setPage, set
 
           {kpas.length === 0 && (
             <tr>
-              <td colSpan={4} className="px-4 py-6 text-center text-gray-500">
+              <td colSpan={canWrite ? 3 : 2} className="px-4 py-6 text-center text-gray-500">
                 No KPAs registered
               </td>
             </tr>

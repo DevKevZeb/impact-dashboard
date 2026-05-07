@@ -49,6 +49,31 @@ export function ProgramTableRow({
     onInvite?.(program);
   };
 
+  const donors = program.program_summary?.donors ?? [];
+  const agencies = program.program_summary?.implementing_agencies ?? [];
+  const budget = program.program_summary?.budget ?? 0;
+
+  const renderSummaryList = (items: { id: number; name: string }[]) => {
+    if (items.length === 0) {
+      return <span className="text-xs text-gray-400">-</span>;
+    }
+
+    const visibleItems = items.slice(0, 2);
+
+    return (
+      <div className="space-y-1">
+        {visibleItems.map((item) => (
+          <div key={item.id} className="text-sm font-medium text-gray-900 truncate max-w-[11rem]" title={item.name}>
+            {item.name}
+          </div>
+        ))}
+        {items.length > 2 && (
+          <div className="text-xs text-gray-500">+{items.length - 2} more</div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <DataTableRow>
       <DataTableCell>
@@ -90,30 +115,17 @@ export function ProgramTableRow({
       </DataTableCell>
 
       <DataTableCell>
-        <span className="px-2 py-1 text-xs rounded-full bg-sky-100 text-sky-700 font-medium">
-          {program.program_state.name}
-        </span>
+        {renderSummaryList(donors)}
       </DataTableCell>
 
       <DataTableCell>
-        {program.sdgs && program.sdgs.length > 0 ? (
-          <div className="flex gap-1">
-            {program.sdgs.slice(0, 3).map((sdg) => (
-              <img
-                key={sdg.id}
-                src={`${import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '')}/storage/${sdg.image}`}
-                alt={sdg.filename}
-                className="w-8 h-8 rounded"
-                title={sdg.filename}
-              />
-            ))}
-            {program.sdgs.length > 3 && (
-              <span className="text-xs text-gray-500">+{program.sdgs.length - 3}</span>
-            )}
-          </div>
-        ) : (
-          <span className="text-xs text-gray-400">-</span>
-        )}
+        {renderSummaryList(agencies)}
+      </DataTableCell>
+
+      <DataTableCell>
+        <span className="text-sm font-semibold text-gray-900">
+          ${budget.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+        </span>
       </DataTableCell>
 
       <DataTableCell>

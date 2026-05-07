@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -27,6 +27,33 @@ export const DonorRow = React.memo(
 
     const contribution = donor.contribution ?? 0;
     const max = getMaxForDonor(index);
+    const [contributionInput, setContributionInput] = useState(
+      contribution === 0 ? "0" : String(contribution)
+    );
+
+    useEffect(() => {
+      setContributionInput(contribution === 0 ? "0" : String(contribution));
+    }, [contribution]);
+
+    const commitContribution = (rawValue: string) => {
+      const normalizedValue = rawValue.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+
+      if (normalizedValue === "") {
+        setContributionInput("0");
+        setValue(`donors.${index}.contribution`, 0, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+        return;
+      }
+
+      const clamped = Math.min(Number(normalizedValue), max);
+      setContributionInput(String(clamped));
+      setValue(`donors.${index}.contribution`, clamped, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    };
 
     return (
       <div className="grid lg:grid-cols-2 gap-3">
@@ -65,18 +92,36 @@ export const DonorRow = React.memo(
 
           <div className="relative w-[90px] flex items-center">
             <Input
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               min={0}
               max={max}
-              value={contribution}
+              value={contributionInput}
+              onFocus={(e) => {
+                if (e.currentTarget.value === "0") {
+                  e.currentTarget.select();
+                  setContributionInput("");
+                }
+              }}
               onChange={(e) => {
-                const val = Number(e.target.value);
-                const clamped = Math.min(Math.max(val, 0), max);
-                setValue(`donors.${index}.contribution`, clamped, {
+                const nextValue = e.target.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+                setContributionInput(nextValue);
+
+                const numericValue = nextValue === "" ? 0 : Math.min(Number(nextValue), max);
+                setValue(`donors.${index}.contribution`, numericValue, {
                   shouldDirty: true,
                   shouldValidate: true,
                 });
               }}
+              onBlur={() => commitContribution(contributionInput)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  commitContribution(contributionInput);
+                }
+              }}
+              placeholder="0"
               className="w-20 text-center input-default no-spinner"
             />
             <Percent className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />

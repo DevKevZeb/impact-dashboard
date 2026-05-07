@@ -37,7 +37,6 @@ export function ProgramDetailDialog({
                 <span className="px-3 py-1 text-xs rounded-full bg-sky-100 text-sky-700 font-medium">
                   {program.program_state.name}
                 </span>
-                <span className="text-sm text-gray-500">ID: {program.id}</span>
               </div>
             </div>
           </div>
@@ -119,6 +118,50 @@ export function ProgramDetailDialog({
               )}
             </div>
           </div>
+
+          {/* Summary */}
+          {program.program_summary && (
+            <div className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">Budget</div>
+                  <div className="mt-2 text-lg font-bold text-gray-900">
+                    ${program.program_summary.budget.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">Donors</div>
+                  <div className="mt-2 space-y-1">
+                    {program.program_summary.donors.length > 0 ? (
+                      program.program_summary.donors.map((donor) => (
+                        <div key={donor.id} className="text-sm text-gray-700">
+                          {donor.name}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-sm text-gray-500">N/A</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">Implementing Agencies</div>
+                  <div className="mt-2 space-y-1">
+                    {program.program_summary.implementing_agencies.length > 0 ? (
+                      program.program_summary.implementing_agencies.map((agency) => (
+                        <div key={agency.id} className="text-sm text-gray-700">
+                          {agency.name}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-sm text-gray-500">N/A</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* SDGs */}
           {program.sdgs && program.sdgs.length > 0 && (
