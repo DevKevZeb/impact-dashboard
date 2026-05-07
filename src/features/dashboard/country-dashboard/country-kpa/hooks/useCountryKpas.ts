@@ -9,7 +9,7 @@ async function fetchCountryKpas(countryId: number, page: number, perPage: number
     if (!Array.isArray(kpas)) return [];
 
     return {
-      country: country,
+      country: country ? { ...country, active: country.active ?? false } : country,
       kpas: kpas.map((item: any) => ({
         id_kpa: item.id_kpa,
         id_ck: item.id_ck,

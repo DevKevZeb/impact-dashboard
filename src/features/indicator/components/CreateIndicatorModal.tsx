@@ -59,9 +59,10 @@ interface Props {
   parentMeasureId: number;
   onClose: () => void;
   onSubmit: (dto: CreateIndicatorDTO) => void;
+  disableTypeChange?: boolean;
 }
 
-export default function CreateIndicatorModal({ open, indicator, parentMeasureId, onClose, onSubmit }: Props) {
+export default function CreateIndicatorModal({ open, indicator, parentMeasureId, onClose, onSubmit, disableTypeChange }: Props) {
   const isEditing = !!indicator;
 
   const form = useForm<FormValues>({
@@ -166,6 +167,7 @@ export default function CreateIndicatorModal({ open, indicator, parentMeasureId,
                 fetchOptions={fetchIndicatorTypesForSelect}
                 getOptionLabel={(k) => k.name}
                 getOptionKey={(k) => k.id}
+                disabled={isEditing && !!disableTypeChange}
               />
             )}
           />

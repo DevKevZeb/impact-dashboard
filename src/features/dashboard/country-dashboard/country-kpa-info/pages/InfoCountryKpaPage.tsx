@@ -28,6 +28,7 @@ import TableSkeleton from "@/components/ui/TableSkeleton";
 import { handleExportExcel } from "../utils/csvKPAsSaver";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useCountryKpas } from "../../country-kpa/hooks/useCountryKpas";
+import { useActivateCountry } from "@/features/country/hooks/country/useActivateCountry";
 
 export default function InfoCountryKpaPage() {
   const navigate = useNavigate();
@@ -117,6 +118,14 @@ export default function InfoCountryKpaPage() {
 
   const [indicatorToDelete, setIndicatorToDelete] = useState<{ id: number; name: string; measureId: number } | null>(null);
   const { mutateAsync: deleteIndicatorMutation, isPending: isDeletingIndicator } = useDeleteIndicator(indicatorToDelete?.measureId);
+
+  const { mutateAsync: activateCountryMutation } = useActivateCountry();
+
+  const handleFreezeCountry = async () => {
+    await activateCountryMutation(id);
+    await refetchTree();
+    await refetch();
+  };
 
   const initial = useMemo<TreeNode[]>(() => {
     if (!country || !kpas) return [];
@@ -328,6 +337,8 @@ export default function InfoCountryKpaPage() {
             selectionKey={selected} 
             onSelectionChange={(key) => setSelected(key)} 
             loadChildren={loadChildrenCountryKpaTree} 
+            countryActive={country?.active ?? false}
+            onFreezeCountry={handleFreezeCountry}
             onAddStrategicOutput={handleCreateStrategicOutput} 
             onEditStrategicOutput={handleEditStrategicOutput}
             onDeleteStrategicOutput={handleDeleteStrategicOutput} 
@@ -361,7 +372,7 @@ export default function InfoCountryKpaPage() {
       )}  
 
       {parentMeasureId !== null && (
-        <CreateIndicatorModal open={openIndicatorModal} indicator={editIndicator} parentMeasureId={parentMeasureId} onClose={() => setOpenIndicatorModal(false)} onSubmit={handleSubmitIndicator}/>
+        <CreateIndicatorModal open={openIndicatorModal} indicator={editIndicator} parentMeasureId={parentMeasureId} onClose={() => setOpenIndicatorModal(false)} onSubmit={handleSubmitIndicator} disableTypeChange={country?.active ?? false}/>
       )}
 
       <DeleteIndicatorDialog indicatorName={indicatorToDelete?.name ?? ""} open={!!indicatorToDelete} onOpenChange={(open) => { if (!open) setIndicatorToDelete(null); }} onConfirm={handleConfirmDeleteIndicator} isLoading={isDeletingIndicator} />
