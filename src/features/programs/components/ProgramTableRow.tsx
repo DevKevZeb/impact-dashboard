@@ -12,6 +12,7 @@ interface ProgramTableRowProps {
   onDelete?: (program: Program) => void;
   onInvite?: (program: Program) => void;
   canInvite?: boolean;
+  isCountryActive?: boolean;
 }
 
 export function ProgramTableRow({
@@ -22,6 +23,7 @@ export function ProgramTableRow({
   onDelete,
   onInvite,
   canInvite = false,
+  isCountryActive = true,
 }: ProgramTableRowProps) {
   const bannerUrl = program.banner_img
     ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '')}/storage/${program.banner_img}`
@@ -125,7 +127,7 @@ export function ProgramTableRow({
             <Eye className="w-4 h-4" />
           </button>
           <Can scope={SCOPES.PROGRAMS_WRITE}>
-            {canInvite && program.can_edit !== false && onInvite ? (
+            {canInvite && isCountryActive && program.can_edit !== false && onInvite ? (
               <button
                 onClick={handleInvite}
                 className="inline-flex hover:cursor-pointer items-center justify-center w-8 h-8 rounded-md text-emerald-600 hover:bg-emerald-50 transition-colors"
@@ -140,7 +142,7 @@ export function ProgramTableRow({
 
           {/* Row 2: Edit + Delete */}
           <Can scope={SCOPES.PROGRAMS_WRITE}>
-            {program.can_edit !== false ? (
+            {isCountryActive && program.can_edit !== false ? (
               <button
                 onClick={handleEdit}
                 className="btn-edit-table"
@@ -151,7 +153,7 @@ export function ProgramTableRow({
             ) : (
               <span className="w-8 h-8" />
             )}
-            {program.can_edit !== false && onDelete ? (
+            {program.can_edit !== false && onDelete && isCountryActive ? (
               <button
                 onClick={handleDelete}
                 className="btn-delete-table"

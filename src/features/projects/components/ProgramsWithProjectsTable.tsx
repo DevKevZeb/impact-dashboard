@@ -1,4 +1,5 @@
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
+import { useAuthStore } from "@/features/auth/store/authStore";
 import type { Program } from "@/features/programs/types/program.types";
 import { useDeleteProject } from "../hooks/useDeleteProject";
 import { useProjects } from "../hooks/useProjects";
@@ -26,6 +27,8 @@ interface Props {
 
 export default function ProgramsWithProjectsTable({ programs, pagination, page, perPage, setPage, setPerPage }: Props) {
     const canCreate = useHasScope("projects:create");
+    const user = useAuthStore((s) => s.user);
+    const isCountryActive = user?.country_user_role?.country?.active ?? true;
     const [expandedPrograms, setExpandedPrograms] = useState<number[]>([]);
 
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -49,6 +52,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                     <tr>
                         <th>#</th>
                         <th>PROGRAM NAME</th>
+                        <th>COUNTRY</th>
                         <th>ROLE</th>
                         <th className="text-center!">PROJECTS ASSIGNED</th>
                         <th>ACTIONS</th>
@@ -79,6 +83,21 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                                         </div>
                                     </td>
                                     <td className="table-cell">
+                                        {program.country_user_roles && program.country_user_roles.length > 0 ? (
+                                            <div className="flex flex-wrap gap-1">
+                                                {program.country_user_roles
+                                                    .filter((cur) => cur.country)
+                                                    .map((cur) => (
+                                                        <span key={cur.id} className="inline-flex rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700">
+                                                            {cur.country!.name}
+                                                        </span>
+                                                    ))}
+                                            </div>
+                                        ) : (
+                                            <span className="text-xs text-gray-400">—</span>
+                                        )}
+                                    </td>
+                                    <td className="table-cell">
                                         <span
                                             className={
                                                 isEditor
@@ -91,7 +110,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                                     </td>
                                     <td className="table-cell text-center font-medium">{program.projects_count ?? 0}</td>
                                     <td className="table-cell" onClick={(e) => e.stopPropagation()}>
-                                        {canCreate && (
+                                        {canCreate && isCountryActive && isEditor && (
                                             <Link
                                                 to={`/app/projects/new/${program.id}`}
                                                 className="btn-secondary-table inline-flex items-center gap-1"
@@ -106,7 +125,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
 
                                 {isExpanded && (
                                     <tr className="bg-sky-50/50">
-                                        <td colSpan={5} className="p-0">
+                                        <td colSpan={6} className="p-0">
                                             <ProgramProjectsSubTable programId={program.id} />
                                         </td>
                                     </tr>
@@ -116,7 +135,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                     })}
 
                     <tr className="table-pagination-row">
-                        <td colSpan={5} className="table-pagination-cell">
+                        <td colSpan={6} className="table-pagination-cell">
                             <div className="table-pagination-container">
                                 <div className="flex items-center gap-2 text-xs text-gray-600">
                                     <span>Rows per page:</span>
@@ -159,6 +178,8 @@ function ProgramProjectsSubTable({ programId }: ProgramProjectsSubTableProps) {
     const canEdit = useHasScope("projects:write");
     const canDelete = useHasScope("projects:delete");
     const navigate = useNavigate();
+    const user = useAuthStore((s) => s.user);
+    const isCountryActive = user?.country_user_role?.country?.active ?? true;
 
     const { data, isLoading } = useProjects(page, perPage, programId, "");
     const deleteProjectMutation = useDeleteProject(programId);
@@ -242,7 +263,7 @@ function ProgramProjectsSubTable({ programId }: ProgramProjectsSubTableProps) {
                                         </button>
                                     )}
 
-                                    {canEdit && Boolean(project.can_edit) && (
+                                    {canEdit && Boolean(project.can_edit) && isCountryActive && (
                                         <button
                                             type="button"
                                             className="btn-edit-table"
@@ -253,7 +274,18 @@ function ProgramProjectsSubTable({ programId }: ProgramProjectsSubTableProps) {
                                         </button>
                                     )}
 
-                                    {canDelete && Boolean(project.can_edit) && (
+                                    {canEdit && Boolean(project.can_edit) && !isCountryActive && (
+                                        <button
+                                            type="button"
+                                            className="btn-primary-table"
+                                            onClick={() => navigate(`/app/projects/view/${project.id}`)}
+                                            title="View Project"
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                        </button>
+                                    )}
+
+                                    {canDelete && Boolean(project.can_edit) && isCountryActive && (
                                         <button
                                             type="button"
                                             className="btn-delete-table"

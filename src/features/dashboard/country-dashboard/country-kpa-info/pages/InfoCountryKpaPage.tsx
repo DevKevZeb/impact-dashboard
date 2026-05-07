@@ -27,6 +27,7 @@ import CountryKpasTable from "../components/CountryKpasTable";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import { handleExportExcel } from "../utils/csvKPAsSaver";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuthStore } from "@/features/auth/store/authStore";
 import { useCountryKpas } from "../../country-kpa/hooks/useCountryKpas";
 import { useActivateCountry } from "@/features/country/hooks/country/useActivateCountry";
 
@@ -120,9 +121,23 @@ export default function InfoCountryKpaPage() {
   const { mutateAsync: deleteIndicatorMutation, isPending: isDeletingIndicator } = useDeleteIndicator(indicatorToDelete?.measureId);
 
   const { mutateAsync: activateCountryMutation } = useActivateCountry();
+  const { user: storeUser, setUser } = useAuthStore();
 
   const handleFreezeCountry = async () => {
     await activateCountryMutation(id);
+    // Update auth store so isCountryActive reflects immediately across all views
+    if (storeUser?.country_user_role?.country) {
+      setUser({
+        ...storeUser,
+        country_user_role: {
+          ...storeUser.country_user_role,
+          country: {
+            ...storeUser.country_user_role.country,
+            active: true,
+          },
+        },
+      });
+    }
     await refetchTree();
     await refetch();
   };

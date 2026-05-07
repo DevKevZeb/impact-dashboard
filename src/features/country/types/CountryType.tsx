@@ -14,6 +14,7 @@ export interface Country {
 
 export interface  CreateCountryDTO {
     name: string,
+    active: boolean,
     currency: {
         id?: number,
         code: string

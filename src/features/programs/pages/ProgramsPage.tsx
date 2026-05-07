@@ -25,6 +25,8 @@ import type { Program } from "../types/program.types";
 export function ProgramsPage() {
   const navigate = useNavigate();
   const { hasCountryScope } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
+  const isCountryActive = user?.country_user_role?.country?.active ?? true;
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
@@ -115,10 +117,16 @@ export function ProgramsPage() {
         </div>
 
         <Can scope={SCOPES.PROGRAMS_WRITE}>
-          <Button onClick={() => setIsCreateDialogOpen(true)} size="lg" className="btn-secondary" >
-            <Plus className="w-5 h-5 mr-2" />
-            Create Program
-          </Button>
+          {isCountryActive && (
+            <Button
+              onClick={() => setIsCreateDialogOpen(true)}
+              size="lg"
+              className="btn-secondary"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Create Program
+            </Button>
+          )}
         </Can>
       </div>
 
@@ -163,6 +171,7 @@ export function ProgramsPage() {
                     onDelete={handleDelete}
                     onInvite={handleInvite}
                     canInvite={hasCountryScope}
+                    isCountryActive={isCountryActive}
                   />
                 );
               })}
@@ -190,10 +199,12 @@ export function ProgramsPage() {
           }
           action={
             <Can scope={SCOPES.PROGRAMS_WRITE}>
-              <Button onClick={() => setIsCreateDialogOpen(true)} className="btn-secondary">
-                <Plus className="w-4 h-4 mr-2" />
-                Create Program
-              </Button>
+              {isCountryActive && (
+                <Button onClick={() => setIsCreateDialogOpen(true)} className="btn-secondary">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Program
+                </Button>
+              )}
             </Can>
           }
         />
