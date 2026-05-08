@@ -1,5 +1,4 @@
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
-import { useAuthStore } from "@/features/auth/store/authStore";
 import type { Program } from "@/features/programs/types/program.types";
 import { useDeleteProject } from "../hooks/useDeleteProject";
 import { useProjects } from "../hooks/useProjects";
@@ -27,8 +26,6 @@ interface Props {
 
 export default function ProgramsWithProjectsTable({ programs, pagination, page, perPage, setPage, setPerPage }: Props) {
     const canCreate = useHasScope("projects:create");
-    const user = useAuthStore((s) => s.user);
-    const isCountryActive = user?.country_user_role?.country?.active ?? true;
     const [expandedPrograms, setExpandedPrograms] = useState<number[]>([]);
 
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -62,6 +59,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                     {programs.map((program, index) => {
                         const isExpanded = expandedPrograms.includes(program.id);
                         const isEditor = program.can_edit !== false;
+                        const isProgramCountryActive = program.country_user_roles?.some(cur => cur.country?.active === true) ?? false;
 
                         return (
                             <Fragment key={program.id}>
@@ -110,7 +108,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                                     </td>
                                     <td className="table-cell text-center font-medium">{program.projects_count ?? 0}</td>
                                     <td className="table-cell" onClick={(e) => e.stopPropagation()}>
-                                        {canCreate && isCountryActive && isEditor && (
+                                        {canCreate && isProgramCountryActive && (
                                             <Link
                                                 to={`/app/projects/new/${program.id}`}
                                                 className="btn-secondary-table inline-flex items-center gap-1"
@@ -126,7 +124,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                                 {isExpanded && (
                                     <tr className="bg-sky-50/50">
                                         <td colSpan={6} className="p-0">
-                                            <ProgramProjectsSubTable programId={program.id} />
+                                            <ProgramProjectsSubTable programId={program.id} isCountryActive={isProgramCountryActive} />
                                         </td>
                                     </tr>
                                 )}
@@ -167,9 +165,10 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
 
 interface ProgramProjectsSubTableProps {
     programId: number;
+    isCountryActive: boolean;
 }
 
-function ProgramProjectsSubTable({ programId }: ProgramProjectsSubTableProps) {
+function ProgramProjectsSubTable({ programId, isCountryActive }: ProgramProjectsSubTableProps) {
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const [selectedProject, setSelectedProject] = useState<ProjectTable | null>(null);
@@ -178,8 +177,6 @@ function ProgramProjectsSubTable({ programId }: ProgramProjectsSubTableProps) {
     const canEdit = useHasScope("projects:write");
     const canDelete = useHasScope("projects:delete");
     const navigate = useNavigate();
-    const user = useAuthStore((s) => s.user);
-    const isCountryActive = user?.country_user_role?.country?.active ?? true;
 
     const { data, isLoading } = useProjects(page, perPage, programId, "");
     const deleteProjectMutation = useDeleteProject(programId);
