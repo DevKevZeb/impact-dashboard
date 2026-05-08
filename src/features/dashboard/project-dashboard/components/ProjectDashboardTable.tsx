@@ -193,7 +193,7 @@ export default function ProjectDashboardTable({
     const parsedValue = Number(weightInput);
 
     if (Number.isNaN(parsedValue) || parsedValue < WEIGHT_MIN || parsedValue > WEIGHT_MAX) {
-      setWeightError("ICV/W (Weight) must be between 0 and 1.");
+      setWeightError("Weight must be between 0 and 1.");
       return;
     }
 
@@ -218,7 +218,7 @@ export default function ProjectDashboardTable({
               <th>START DATE</th>
               <th>END DATE</th>
               <th>PROGRESS</th>
-              {isCountryTable && <th>ICV/W</th>}
+              {isCountryTable && <th>WEIGHT</th>}
               <th>COMMENT</th>
             </tr>
           </thead>
