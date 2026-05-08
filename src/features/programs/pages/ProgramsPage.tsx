@@ -172,7 +172,7 @@ export function ProgramsPage() {
                     onDelete={handleDelete}
                     onInvite={handleInvite}
                     canInvite={hasCountryScope}
-                    isCountryActive={isCountryActive}
+                    isCountryActive={program.country_user_roles?.some(cur => cur.country?.active === true) ?? false}
                   />
                 );
               })}
