@@ -125,7 +125,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                                 {isExpanded && (
                                     <tr className="bg-sky-50/50">
                                         <td colSpan={6} className="p-0">
-                                            <ProgramProjectsSubTable programId={program.id} isCountryActive={isProgramCountryActive} />
+                                            <ProgramProjectsSubTable programId={program.id} isCountryActive={isProgramCountryActive} searchTerm={searchTerm} />
                                         </td>
                                     </tr>
                                 )}
@@ -167,9 +167,10 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
 interface ProgramProjectsSubTableProps {
     programId: number;
     isCountryActive: boolean;
+    searchTerm: string;
 }
 
-function ProgramProjectsSubTable({ programId, isCountryActive }: ProgramProjectsSubTableProps) {
+function ProgramProjectsSubTable({ programId, isCountryActive, searchTerm }: ProgramProjectsSubTableProps) {
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const [selectedProject, setSelectedProject] = useState<ProjectTable | null>(null);
@@ -361,70 +362,3 @@ function ProgramProjectsSubTable({ programId, isCountryActive }: ProgramProjects
     );
 }
 
-interface ProgramRowProps {
-    program: Program;
-    index: number;
-    isExpanded: boolean;
-    canCreate: boolean;
-    searchTerm: string;
-    onToggleExpand: (programId: number) => void;
-}
-
-function ProgramRow({ program, index, isExpanded, canCreate, searchTerm, onToggleExpand }: ProgramRowProps) {
-    const isEditor = program.can_edit !== false;
-
-    return (
-        <Fragment>
-            <tr className="table-row cursor-pointer" onClick={() => onToggleExpand(program.id)}>
-                <td className="table-cell">{index + 1}</td>
-                <td className="table-cell font-medium">
-                    <div className="flex items-center gap-2">
-                        <button
-                            type="button"
-                            className="p-1 rounded hover:bg-sky-100 cursor-pointer"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onToggleExpand(program.id);
-                            }}
-                        >
-                            {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                        </button>
-                        <span>{program.name}</span>
-                    </div>
-                </td>
-                <td className="table-cell">
-                    <span
-                        className={
-                            isEditor
-                                ? "inline-flex rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700"
-                                : "inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700"
-                        }
-                    >
-                        {isEditor ? "Editor" : "Invited"}
-                    </span>
-                </td>
-                <td className="table-cell text-center font-medium">{program.projects_count ?? 0}</td>
-                <td className="table-cell" onClick={(e) => e.stopPropagation()}>
-                    {canCreate && (
-                        <Link
-                            to={`/app/projects/new/${program.id}`}
-                            className="btn-secondary-table inline-flex items-center gap-1"
-                            title="Add Project"
-                        >
-                            <Plus className="w-4 h-4" />
-                            Project
-                        </Link>
-                    )}
-                </td>
-            </tr>
-
-            {isExpanded && (
-                <tr className="bg-sky-50/50">
-                    <td colSpan={5} className="p-0">
-                        <ProgramProjectsSubTable programId={program.id} searchTerm={searchTerm} />
-                    </td>
-                </tr>
-            )}
-        </Fragment>
-    );
-}
