@@ -1,4 +1,5 @@
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
+import { useAuthStore } from "@/features/auth/store/authStore";
 import type { Program } from "@/features/programs/types/program.types";
 import { useDeleteProject } from "../hooks/useDeleteProject";
 import { useProjects } from "../hooks/useProjects";
@@ -27,6 +28,8 @@ interface Props {
 
 export default function ProgramsWithProjectsTable({ programs, pagination, page, perPage, setPage, setPerPage, searchTerm }: Props) {
     const canCreate = useHasScope("projects:create");
+    const user = useAuthStore((s) => s.user);
+    const isCountryActive = user?.country_user_role?.country?.active ?? true;
     const [expandedPrograms, setExpandedPrograms] = useState<number[]>([]);
 
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -50,6 +53,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                     <tr>
                         <th>#</th>
                         <th>PROGRAM NAME</th>
+                        <th>COUNTRY</th>
                         <th>ROLE</th>
                         <th className="text-center!">PROJECTS ASSIGNED</th>
                         <th>ACTIONS</th>
@@ -72,7 +76,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                     })}
 
                     <tr className="table-pagination-row">
-                        <td colSpan={5} className="table-pagination-cell">
+                        <td colSpan={6} className="table-pagination-cell">
                             <div className="table-pagination-container">
                                 <div className="flex items-center gap-2 text-xs text-gray-600">
                                     <span>Rows per page:</span>
@@ -116,6 +120,8 @@ function ProgramProjectsSubTable({ programId, searchTerm }: ProgramProjectsSubTa
     const canEdit = useHasScope("projects:write");
     const canDelete = useHasScope("projects:delete");
     const navigate = useNavigate();
+    const user = useAuthStore((s) => s.user);
+    const isCountryActive = user?.country_user_role?.country?.active ?? true;
 
     const { data, isLoading } = useProjects(page, perPage, programId, searchTerm);
     const deleteProjectMutation = useDeleteProject(programId);
@@ -204,7 +210,7 @@ function ProgramProjectsSubTable({ programId, searchTerm }: ProgramProjectsSubTa
                                         </button>
                                     )}
 
-                                    {canEdit && Boolean(project.can_edit) && (
+                                    {canEdit && Boolean(project.can_edit) && isCountryActive && (
                                         <button
                                             type="button"
                                             className="btn-edit-table"
@@ -215,7 +221,18 @@ function ProgramProjectsSubTable({ programId, searchTerm }: ProgramProjectsSubTa
                                         </button>
                                     )}
 
-                                    {canDelete && Boolean(project.can_edit) && (
+                                    {canEdit && Boolean(project.can_edit) && !isCountryActive && (
+                                        <button
+                                            type="button"
+                                            className="btn-primary-table"
+                                            onClick={() => navigate(`/app/projects/view/${project.id}`)}
+                                            title="View Project"
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                        </button>
+                                    )}
+
+                                    {canDelete && Boolean(project.can_edit) && isCountryActive && (
                                         <button
                                             type="button"
                                             className="btn-delete-table"

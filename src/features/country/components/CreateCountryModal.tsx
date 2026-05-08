@@ -23,6 +23,8 @@ const countrySchema = z.object({
     ),
 });
 
+type CountryFormValues = z.infer<typeof countrySchema>;
+
 interface Props {
   open: boolean;
   country?: Country | null;
@@ -32,7 +34,7 @@ interface Props {
 }
 
 export default function CreateCountryModal({ open, country, onClose, onSubmit, currencies }: Props) {
-  const form = useForm<CreateCountryDTO>({
+  const form = useForm<CountryFormValues>({
     resolver: zodResolver(countrySchema),
     defaultValues: {
       name: "",
@@ -63,10 +65,14 @@ export default function CreateCountryModal({ open, country, onClose, onSubmit, c
     }
   }, [open, country, reset]);
 
-  const submitHandler = (data: CreateCountryDTO) => {
-    data.currency.code = data.currency.code.toUpperCase();
+  const submitHandler = (data: CountryFormValues) => {
+    const dto: CreateCountryDTO = {
+      ...data,
+      currency: { ...data.currency, code: data.currency.code.toUpperCase() },
+      active: false,
+    };
 
-    onSubmit(data);
+    onSubmit(dto);
     reset();
     onClose();
   };

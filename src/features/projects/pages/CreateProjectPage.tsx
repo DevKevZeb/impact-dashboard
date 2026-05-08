@@ -7,6 +7,7 @@ import { useUpdateProject } from "../hooks/useUpdateProject";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import type { FieldErrors } from "node_modules/react-hook-form/dist/types/errors";
+import { useAuthStore } from "@/features/auth/store/authStore";
 
 interface Props {
   mode: "create" | "edit";
@@ -20,6 +21,8 @@ export default function CreateProjectPage({mode}: Props) {
     const { mutateAsync: updateProject } = useUpdateProject();
 
     const navigate = useNavigate();
+    const user = useAuthStore((s) => s.user);
+    const isCountryActive = user?.country_user_role?.country?.active ?? true;
 
     if (!isValidProgramId) return <div>Invalid program</div>;
     if (mode === "edit" && !isValidProjectId) return <div>Invalid project</div>;
@@ -32,6 +35,30 @@ export default function CreateProjectPage({mode}: Props) {
                 <p className="text-gray-500">Loading...</p>
             </div>
         </div>
+        );
+    }
+
+    if (mode === "create" && !isCountryActive) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="text-center space-y-4 max-w-md">
+                    <span className="text-2xl">⚠️</span>
+                    <p className="text-red-600 font-medium">Projects cannot be created</p>
+                    <p className="text-sm text-gray-600">Your country is not active. Contact an administrator to activate it.</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (mode === "edit" && !isCountryActive) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="text-center space-y-4 max-w-md">
+                    <span className="text-2xl">⚠️</span>
+                    <p className="text-red-600 font-medium">Projects cannot be edited</p>
+                    <p className="text-sm text-gray-600">Your country is not active. Contact an administrator to activate it.</p>
+                </div>
+            </div>
         );
     }
 

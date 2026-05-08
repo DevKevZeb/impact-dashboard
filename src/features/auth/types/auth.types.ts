@@ -5,7 +5,7 @@ export interface Role {
 
 export interface CountryUserRole {
   id: number;
-  country: { id: number; name: string };
+  country: { id: number; name: string; active: boolean };
 }
 
 export interface User {

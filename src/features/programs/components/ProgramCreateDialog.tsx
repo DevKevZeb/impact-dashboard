@@ -22,6 +22,7 @@ import {
   programCreateSchema,
   type ProgramCreateFormData,
 } from "../types/program.schema";
+import { useAuthStore } from "@/features/auth/store/authStore";
 
 interface ProgramCreateDialogProps {
   open: boolean;
@@ -33,6 +34,8 @@ export function ProgramCreateDialog({
   onOpenChange,
 }: ProgramCreateDialogProps) {
   const canWrite = useHasScope(SCOPES.PROGRAMS_WRITE);
+  const user = useAuthStore((s) => s.user);
+  const isCountryActive = user?.country_user_role?.country?.active ?? true;
   const createMutation = useCreateProgram();
   const { data: sdgs } = useSdgs();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,6 +83,11 @@ export function ProgramCreateDialog({
   const onSubmit = async (data: ProgramCreateFormData) => {
     if (!canWrite) {
       toast.error("Insufficient permissions to create programs");
+      return;
+    }
+
+    if (!isCountryActive) {
+      toast.error("Programs cannot be created because your country is not active.");
       return;
     }
 
