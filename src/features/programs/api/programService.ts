@@ -72,20 +72,27 @@ export const programService = {
 
     const { data } = await apiClient.post<ApiResponse<Program>>(
       PROGRAMS_ENDPOINT,
-      formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      }
+      formData
     );
     return data.data;
   },
 
   update: async (id: number, input: ProgramUpdateInput): Promise<Program> => {
     const formData = new FormData();
-    formData.append("_method", "PUT");
     formData.append("name", input.name);
     formData.append("description", input.description);
-    formData.append("contact_id", input.contact_id.toString());
+    if (input.contact.id) {
+      formData.append("contact[id]", input.contact.id.toString());
+    }
+    formData.append("contact[first_name]", input.contact.first_name);
+    formData.append("contact[last_name]", input.contact.last_name);
+    formData.append("contact[title]", input.contact.title);
+    formData.append("contact[email]", input.contact.email);
+    if (input.contact.phone) {
+      formData.append("contact[phone]", input.contact.phone);
+    }
+    formData.append("program_state_id", input.program_state_id.toString());
+    
     if (input.banner_img) {
       formData.append("banner_img", input.banner_img);
     }
@@ -100,12 +107,9 @@ export const programService = {
       });
     }
 
-    const { data } = await apiClient.post<ApiResponse<Program>>(
+    const { data } = await apiClient.put<ApiResponse<Program>>(
       `${PROGRAMS_ENDPOINT}/${id}`,
-      formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      }
+      formData
     );
     return data.data;
   },

@@ -112,7 +112,7 @@ export function ProgramsPage() {
         <div>
           <h1 className="page-title">Programs</h1>
           <p className="text-gray-500 mt-2">
-            Manage programs with contacts, SDGs and states
+            Manage programs with contacts, donors, agencies and budgets
           </p>
         </div>
 
@@ -151,8 +151,9 @@ export function ProgramsPage() {
                   Program Info
                 </DataTableHead>
                 <DataTableHead>Contact</DataTableHead>
-                <DataTableHead>State</DataTableHead>
-                <DataTableHead>SDGs</DataTableHead>
+                <DataTableHead>Donors</DataTableHead>
+                <DataTableHead>Implementing Agencies</DataTableHead>
+                <DataTableHead>Budget</DataTableHead>
                 <DataTableHead>Actions</DataTableHead>
               </tr>
             </DataTableHeader>

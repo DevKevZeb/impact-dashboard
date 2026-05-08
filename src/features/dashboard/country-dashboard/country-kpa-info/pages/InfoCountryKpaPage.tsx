@@ -145,7 +145,6 @@ export default function InfoCountryKpaPage() {
           },
         },
       });
-    }
     setFreezeConfirmOpen(false);
     await refetchTree();
     await refetch();

@@ -42,14 +42,79 @@ interface Props {
     onSubmit: (data: any) => void;
     onInvalid: (errors: any) => void;
 }
+
+function ProgressPercentInput({
+    value,
+    max,
+    onCommit,
+}: {
+    value: number | undefined;
+    max: number;
+    onCommit: (nextValue: number) => void;
+}) {
+    const [inputValue, setInputValue] = useState(value === 0 || value == null ? "0" : String(value));
+    const [isFocused, setIsFocused] = useState(false);
+
+    const commitValue = (rawValue: string) => {
+        const normalizedValue = rawValue.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+
+        if (normalizedValue === "") {
+            setInputValue("0");
+            onCommit(0);
+            return;
+        }
+
+        const clamped = Math.min(Number(normalizedValue), max);
+        setInputValue(String(clamped));
+        onCommit(clamped);
+    };
+
+    const displayValue = isFocused ? inputValue : value === 0 || value == null ? "0" : String(value);
+
+    return (
+        <div className="relative w-[90px]">
+            <Input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                min={0}
+                max={max}
+                value={displayValue}
+                onFocus={(e) => {
+                    setIsFocused(true);
+                    if (e.currentTarget.value === "0") {
+                        e.currentTarget.select();
+                        setInputValue("");
+                    }
+                }}
+                onChange={(e) => {
+                    const nextValue = e.target.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+                    setInputValue(nextValue);
+                    onCommit(nextValue === "" ? 0 : Math.min(Number(nextValue), max));
+                }}
+                onBlur={() => commitValue(inputValue)}
+                onBlurCapture={() => setIsFocused(false)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        commitValue(inputValue);
+                    }
+                }}
+                placeholder="0"
+                className="pr-7 text-center input-default no-spinner"
+            />
+            <Percent className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+        </div>
+    );
+}
  
 export default function ProjectFormView({ mode, programName, form, onSubmit, onInvalid, programId }: Props) {
-    const hasCountryScope = useAuthStore((state) => state.hasCountryScope);
     const isAdmin = useAuthStore((state) => state.hasScope("*:*"));
     const canEditWeight = useAuthStore((state) => state.hasScope("projects:weight"));
     const canViewByCountry = useAuthStore((state) => state.hasScope("projects:view_by_country"));
     const isCountryManager = canViewByCountry && !isAdmin;
     const canShowWeight = mode === "edit" && canEditWeight && isCountryManager;
+    const useProgramContext = Boolean(programId);
 
 
     const [totalDonors, setTotalDonors] = useState<number | null>(null);
@@ -62,23 +127,26 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
     const beneficiary = useWatch({ control: form.form.control, name: "beneficiary" });
 
     const fetchKpas = useCallback(
-        hasCountryScope ? fetchProgramKpasForSelect(programId ?? 0) : fetchKpasForSelect,
-        [hasCountryScope, programId]
+        useProgramContext ? fetchProgramKpasForSelect(programId ?? 0) : fetchKpasForSelect,
+        [useProgramContext, programId]
     );
 
     const fetchStrategicOutputs = useCallback(
-        hasCountryScope
+        useProgramContext
             ? fetchProgramStrategicOutputsForSelect(programId ?? 0, kpa?.id ?? 0)
             : fetchStrategicOutputsForSelect(kpa?.id ?? 0),
-        [hasCountryScope, programId, kpa?.id]
+        [useProgramContext, programId, kpa?.id]
     );
 
     const fetchMeasures = useCallback(
-        hasCountryScope
+        useProgramContext
             ? fetchProgramMeasuresForSelect(programId ?? 0, strategicOutput?.id ?? 0)
             : fetchMeasuresForSelect(strategicOutput?.id ?? 0),
-        [hasCountryScope, programId, strategicOutput?.id]
+        [useProgramContext, programId, strategicOutput?.id]
     );
+
+    const formatNumberedLabel = (numbering: string | undefined, label: string) =>
+        numbering ? `${numbering} ${label}`.trim() : label;
 
     useEffect(() => {
         fetchDonorsForSelect([])({ query: "", page: 1, limit: 1 })
@@ -150,7 +218,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 </div>
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A KPA</Label>
-                    <AsyncSearchSelect<KpaProject> enab={false} value={kpa} onChange={(v) => { form.form.setValue("kpa", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("strategicOutput", null); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchKpas} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a KPA" emptyMessage="No KPAs found"/>
+                    <AsyncSearchSelect<KpaProject> enab={false} value={kpa} onChange={(v) => { form.form.setValue("kpa", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("strategicOutput", null); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchKpas} getOptionLabel={(k) => formatNumberedLabel(k.numbering, k.name ?? "")} getOptionKey={(k)=> k.id} placeholder="Select a KPA" emptyMessage="No KPAs found"/>
                         {form.form.formState.errors.kpa && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.kpa.message === 'string' ? form.form.formState.errors.kpa.message : 'Invalid input'}</p>
                     )}
@@ -159,7 +227,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 {kpa && kpa !==null && kpa.strategic_outputs_count > 0 ? 
                 (<div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A STRATEGIC OUTPUT</Label>
-                    <AsyncSearchSelect<StrategicOutputCountry> enab={false} value={strategicOutput} onChange={(v) => { form.form.setValue("strategicOutput", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchStrategicOutputs} getOptionLabel={(k) => `${k?.name ?? ""} - ${k?.country?.name ?? ""}`} getOptionKey={(k)=> k.id} placeholder="Select a Strategic Output" emptyMessage="No Strategic Outputs found"/>
+                    <AsyncSearchSelect<StrategicOutputCountry> enab={false} value={strategicOutput} onChange={(v) => { form.form.setValue("strategicOutput", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("measure", null); form.form.setValue("indicators", []); }} fetchOptions={fetchStrategicOutputs} getOptionLabel={(k) => formatNumberedLabel(k?.numbering, `${k?.name ?? ""} - ${k?.country?.name ?? ""}`)} getOptionKey={(k)=> k.id} placeholder="Select a Strategic Output" emptyMessage="No Strategic Outputs found"/>
                     {form.form.formState.errors.strategicOutput && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.strategicOutput.message === 'string' ? form.form.formState.errors.strategicOutput.message : 'Invalid input'}</p>
                     )}
@@ -170,7 +238,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                 {strategicOutput && (strategicOutput.measures_count > 0 ? 
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A MEASURE</Label>
-                    <AsyncSearchSelect<Measure> enab={false} value={measure} onChange={(v) => { form.form.setValue("measure", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("indicators", []); }} fetchOptions={fetchMeasures} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a Measure" emptyMessage="No Measure found"/>
+                    <AsyncSearchSelect<Measure> enab={false} value={measure} onChange={(v) => { form.form.setValue("measure", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true }); form.form.setValue("indicators", []); }} fetchOptions={fetchMeasures} getOptionLabel={(k) => formatNumberedLabel(k.numbering, k.name ?? "")} getOptionKey={(k)=> k.id} placeholder="Select a Measure" emptyMessage="No Measure found"/>
                     {form.form.formState.errors.measure && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.measure.message === 'string' ? form.form.formState.errors.measure.message : 'Invalid input'}</p>
                     )}
@@ -179,7 +247,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
 
                 {measure && (
                     measure.indicators_count > 0 ? (
-                        <IndicatorSection form={form} measure={measure} useProgramContext={hasCountryScope} />
+                        <IndicatorSection form={form} measure={measure} useProgramContext={useProgramContext} />
                     ) : (
                         <AlertBox message="The selected measure has no indicators. Please select another one." />
                     )
@@ -283,10 +351,11 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                         render={({ field }) => (
                             <div className="flex items-center gap-4">
                                 <Slider value={[field.value ?? 0]} max={100} step={1} onValueChange={(value) => field.onChange(value[0])} className="flex-1" />
-                                <div className="relative w-[90px]">
-                                    <Input type="number" min={0} max={100} value={field.value} onChange={(e) => { const val = Number(e.target.value); if (!Number.isNaN(val)) { field.onChange(Math.min(100, Math.max(0, val))); } }} className="pr-7 text-center input-default no-spinner" />
-                                    <Percent className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
-                                </div>
+                                <ProgressPercentInput
+                                    value={field.value}
+                                    max={100}
+                                    onCommit={field.onChange}
+                                />
                             </div>
                         )}
                     />
@@ -311,7 +380,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                     )}
                 </div>
                 </div>
-                <Button type="submit" className="btn-secondary">{mode === "edit" ? 'Edit' : 'Create'}</Button>
+                                <Button type="submit" className="btn-secondary">{mode === "edit" ? 'Update Project' : 'Create'}</Button>
             </form>
         </div>
   );

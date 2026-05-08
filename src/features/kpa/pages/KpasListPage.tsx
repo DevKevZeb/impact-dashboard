@@ -40,7 +40,12 @@ export default function KpasListPage(){
   const { mutateAsync: deleteKpaMutation, isPending: isDeletingKpa } = useDeleteKpa();
 
   const handleSubmit = async (formData: CreateKpaDto) => {
-    if(selectedKpa) await updateKpa({ id: selectedKpa.id, dto:formData});
+    if (selectedKpa) {
+      await updateKpa({
+        id: selectedKpa.id,
+        dto: { name: formData.name },
+      });
+    }
     else{
       await createKpa(formData);
       setPage(1);
