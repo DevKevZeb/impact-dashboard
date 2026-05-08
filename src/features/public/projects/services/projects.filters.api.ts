@@ -7,7 +7,7 @@ import { mapMeasures } from "../mappers/measure.mapper";
 import { mapProjectStates } from "../mappers/project.state.mapper";
 
 export async function getCountriesPaginated(search: string, page: number, per_page: number){
-    const { data } = await publicApiClient.get(`/countries?search=${encodeURIComponent(search)}&page=${page}&per_page=${per_page}`);
+    const { data } = await publicApiClient.get(`/countries?search=${encodeURIComponent(search)}&page=${page}&per_page=${per_page}&active=true`);
     return {
         countries: mapCountries(data.data.countries),
         pagination: {
