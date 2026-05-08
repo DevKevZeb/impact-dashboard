@@ -122,7 +122,11 @@ export default function InfoCountryKpaPage() {
   const [indicatorToDelete, setIndicatorToDelete] = useState<{ id: number; name: string; measureId: number } | null>(null);
   const { mutateAsync: deleteIndicatorMutation, isPending: isDeletingIndicator } = useDeleteIndicator(indicatorToDelete?.measureId);
 
+<<<<<<< issue/PEI-91
   const { mutateAsync: activateCountryMutation, isPending: isActivating } = useActivateCountry();
+=======
+  const { mutateAsync: activateCountryMutation } = useActivateCountry();
+>>>>>>> develop
   const { user: storeUser, setUser } = useAuthStore();
 
   const [freezeConfirmOpen, setFreezeConfirmOpen] = useState(false);
@@ -146,7 +150,10 @@ export default function InfoCountryKpaPage() {
         },
       });
     }
+<<<<<<< issue/PEI-91
     setFreezeConfirmOpen(false);
+=======
+>>>>>>> develop
     await refetchTree();
     await refetch();
   };
