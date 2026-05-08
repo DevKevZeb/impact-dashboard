@@ -17,6 +17,12 @@ function formatDate(date: Date | string): string {
   });
 }
 
+function formatNameList(items?: { name: string }[] | null): string {
+  const names = items?.map((item) => item.name).filter(Boolean) ?? [];
+
+  return names.length > 0 ? names.join(", ") : "-";
+}
+
 export default function ProjectDetailsPage() {
   const { id } = useParams();
   const parsedId = Number(id);
@@ -113,6 +119,15 @@ export default function ProjectDetailsPage() {
           <p className="text-base text-gray-900">
             {data.contact ? `${data.contact.first_name} ${data.contact.last_name}` : "-"}
           </p>
+        </div>
+
+        <div>
+          <p className="text-xs uppercase tracking-wide text-gray-500">Donor</p>
+          <p className="text-base text-gray-900">{formatNameList(data.donors)}</p>
+        </div>
+        <div>
+          <p className="text-xs uppercase tracking-wide text-gray-500">Implementing Agency</p>
+          <p className="text-base text-gray-900">{formatNameList(data.agencies)}</p>
         </div>
       </div>
     </div>

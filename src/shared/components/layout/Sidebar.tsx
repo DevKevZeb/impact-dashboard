@@ -37,15 +37,15 @@ const menuItems: MenuItem[] = [
     children: [
       { title: "Admin Dashboard", path: "/app", requiredScopes: [SCOPES.ADMIN_DASHBOARD] },
       {
+        title: "Country Dashboard",
+        path: "/app/country-kpa",
+        requiredRoles: ["admin", "country-manager"],
+      },
+      {
         title: "Project Dashboard", 
         path: "/app/dashboard",
         requiredAllScopes: [SCOPES.PROJECTS_READ, SCOPES.PROJECTS_WEIGHT],
         hideForAdmin: true,
-      },
-      {
-        title: "Country Dashboard",
-        path: "/app/country-kpa",
-        requiredRoles: ["admin", "country-manager"],
       },
       {
         title: "Manage Users",

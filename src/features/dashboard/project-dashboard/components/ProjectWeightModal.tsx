@@ -30,7 +30,7 @@ export function ProjectWeightModal({
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="rounded-xl max-w-md">
         <DialogHeader>
-          <DialogTitle className="modal-title">Update ICV/W (Weight)</DialogTitle>
+          <DialogTitle className="modal-title">Update Weight</DialogTitle>
           <DialogDescription>
             Set a weight value between 0 and 1 for {projectTitle ?? "this project"}.
           </DialogDescription>
@@ -38,7 +38,7 @@ export function ProjectWeightModal({
 
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700" htmlFor="dashboard-weight-input">
-            ICV/W (Weight)
+            Weight
           </label>
           <Input
             id="dashboard-weight-input"
