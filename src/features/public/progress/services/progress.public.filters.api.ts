@@ -14,6 +14,7 @@ export async function fetchCountriesForPublicProgress(params: {
         search: query || "",
         page,
         per_page: limit,
+        active: true,
       },
     });
 

@@ -117,47 +117,87 @@ export default function ProgressPublicPage(){
                         </div>
                     </div>
                     {sort === "kpas_information" && (
-                        <div className="w-full flex flex-col lg:flex-row gap-4">
-                        <div className="w-11/12 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-                            <Controller control={control} name="country"
-                                render={({field})=>(
-                                    <div>
-                                        <AsyncSearchSelect<Country> value={field.value} onChange={field.onChange} placeholder={"Search by Country"} fetchOptions={fetchCountriesForPublicProgress} getOptionLabel={(c) => c.name} getOptionKey={(c)=> c.id}/>
-                                        <p className="previous-message">Leave empty for all countries</p>
-                                    </div>
-                                )}
-                            />
-                            <Controller control={control} name="kpa"
-                                render={({field})=>(
-                                    <div>
-                                        <AsyncSearchSelect<KPA> key={country?.id ?? "overall"} value={field.value} onChange={field.onChange} placeholder={"Search by KPA"} fetchOptions={getKPAsForCountry()} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!country}/>
-                                        {!country && <p className="previous-message">Select a Country first</p>}
-                                        {country && <p className="previous-message">KPAs for {country.name}</p>}
-                                    </div>
-                                )}
-                            />
-                            <Controller control={control} name="strategic_output"
-                                render={({field}) => (
-                                    <div>
-                                        <AsyncSearchSelect<StrategicOutput> key={kpa?.id ?? "no-kpa"} value={field.value} onChange={field.onChange} placeholder={"Search by Strategic Output"} fetchOptions={fetchStrategicOutputsForSelect(kpa ? kpa.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!kpa}/>
-                                        {!kpa && <p className="previous-message">Select a KPA first</p>}
-                                    </div>
-                                )}
-                            />
+                        <div className="w-full flex flex-col lg:flex-row gap-8">
+                            <div className="w-full lg:max-w-md flex flex-col">
 
-                            <Controller control={control} name="measure"
-                                render={({field}) => (
-                                    <div>
-                                        <AsyncSearchSelect<Measure> key={strategicOutput?.id ?? "no-strategic-output"} value={field.value} onChange={field.onChange} placeholder={"Search by Measure"} fetchOptions={fetchMeasuresForSelect(strategicOutput ? strategicOutput.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k)=> k.id} disabled={!strategicOutput}/>
-                                        {!strategicOutput && <p className="previous-message">Select a Strategic Output first</p>}
+                                {/* Step 1 — Country */}
+                                <div className="flex gap-4">
+                                    <div className="flex flex-col items-center">
+                                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 border-[#1E3291] text-[#1E3291] bg-blue-50 shrink-0">
+                                            1
+                                        </div>
+                                        <div className="w-px flex-1 bg-slate-200 mt-1 min-h-6" />
                                     </div>
-                                )}
-                            />
+                                    <div className="flex-1 pb-6">
+                                        <p className="text-sm font-semibold text-slate-700 mb-1.5">Country</p>
+                                        <Controller control={control} name="country"
+                                            render={({ field }) => (
+                                                <AsyncSearchSelect<Country> value={field.value} onChange={field.onChange} placeholder={"Search by Country"} fetchOptions={fetchCountriesForPublicProgress} getOptionLabel={(c) => c.name} getOptionKey={(c) => c.id} />
+                                            )}
+                                        />
+                                        <p className="previous-message mt-1">Leave empty for all countries</p>
+                                    </div>
+                                </div>
+
+                                {/* Step 2 — KPA */}
+                                <div className={`flex gap-4 transition-opacity duration-300 ${!country ? "opacity-40 pointer-events-none" : ""}`}>
+                                    <div className="flex flex-col items-center">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 shrink-0 transition-colors duration-300 ${country ? "border-[#1E3291] text-[#1E3291] bg-blue-50" : "border-slate-300 text-slate-400 bg-slate-50"}`}>
+                                            2
+                                        </div>
+                                        <div className="w-px flex-1 bg-slate-200 mt-1 min-h-6" />
+                                    </div>
+                                    <div className="flex-1 pb-6">
+                                        <p className={`text-sm font-semibold mb-1.5 transition-colors duration-300 ${country ? "text-slate-700" : "text-slate-400"}`}>KPA</p>
+                                        <Controller control={control} name="kpa"
+                                            render={({ field }) => (
+                                                <AsyncSearchSelect<KPA> key={country?.id ?? "overall"} value={field.value} onChange={field.onChange} placeholder={"Search by KPA"} fetchOptions={getKPAsForCountry()} getOptionLabel={(k) => k.name} getOptionKey={(k) => k.id} disabled={!country} />
+                                            )}
+                                        />
+                                        {country && <p className="previous-message mt-1">KPAs for {country.name}</p>}
+                                    </div>
+                                </div>
+
+                                {/* Step 3 — Strategic Output */}
+                                <div className={`flex gap-4 transition-opacity duration-300 ${!kpa ? "opacity-40 pointer-events-none" : ""}`}>
+                                    <div className="flex flex-col items-center">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 shrink-0 transition-colors duration-300 ${kpa ? "border-[#1E3291] text-[#1E3291] bg-blue-50" : "border-slate-300 text-slate-400 bg-slate-50"}`}>
+                                            3
+                                        </div>
+                                        <div className="w-px flex-1 bg-slate-200 mt-1 min-h-6" />
+                                    </div>
+                                    <div className="flex-1 pb-6">
+                                        <p className={`text-sm font-semibold mb-1.5 transition-colors duration-300 ${kpa ? "text-slate-700" : "text-slate-400"}`}>Strategic Output</p>
+                                        <Controller control={control} name="strategic_output"
+                                            render={({ field }) => (
+                                                <AsyncSearchSelect<StrategicOutput> key={kpa?.id ?? "no-kpa"} value={field.value} onChange={field.onChange} placeholder={"Search by Strategic Output"} fetchOptions={fetchStrategicOutputsForSelect(kpa ? kpa.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k) => k.id} disabled={!kpa} />
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Step 4 — Measure */}
+                                <div className={`flex gap-4 transition-opacity duration-300 ${!strategicOutput ? "opacity-40 pointer-events-none" : ""}`}>
+                                    <div className="flex flex-col items-center">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 shrink-0 transition-colors duration-300 ${strategicOutput ? "border-[#1E3291] text-[#1E3291] bg-blue-50" : "border-slate-300 text-slate-400 bg-slate-50"}`}>
+                                            4
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 pb-2">
+                                        <p className={`text-sm font-semibold mb-1.5 transition-colors duration-300 ${strategicOutput ? "text-slate-700" : "text-slate-400"}`}>Measure</p>
+                                        <Controller control={control} name="measure"
+                                            render={({ field }) => (
+                                                <AsyncSearchSelect<Measure> key={strategicOutput?.id ?? "no-strategic-output"} value={field.value} onChange={field.onChange} placeholder={"Search by Measure"} fetchOptions={fetchMeasuresForSelect(strategicOutput ? strategicOutput.id : 0)} getOptionLabel={(k) => k.name} getOptionKey={(k) => k.id} disabled={!strategicOutput} />
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 ml-12">
+                                    <Button type="submit" className="btn-secondary text-base">Search</Button>
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex h-auto mb-6 mt-4 lg:mt-0 w-1/12 gap-4">
-                            <Button type="submit" className="btn-secondary text-base">Search</Button>
-                        </div> 
-                        </div> 
                     )}
                     <span className="block w-full h-px mt-20 bg-slate-300"></span>
                 </form>
