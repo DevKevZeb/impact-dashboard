@@ -18,7 +18,9 @@ import { toast } from "sonner";
 
 export default function DonorsListPage() {
   const queryClient = useQueryClient();
-    const canWrite = useHasScope("donors:write");
+    const canCreate = useHasScope("donors:create");
+    const canEdit = useHasScope("donors:update");
+    const canDelete = useHasScope("donors:delete");
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const [searchTerm, setSearchTerm] = useState('');
@@ -53,16 +55,19 @@ export default function DonorsListPage() {
     }
 
     const handleOpenCreate = () => {
+        if (!canCreate) return;
         setSelectedDonor(null);
         setOpenModal(true);
     }
 
     const handleEdit = async (donor: Donor) => {
+        if (!canEdit) return;
         setSelectedDonor(donor);
         setOpenModal(true);
     }
 
     const handleDelete = (donor: Donor) => {
+      if (!canDelete) return;
       setSelectedDonor(donor);
       setOpenDeleteModal(true);
     }
@@ -153,7 +158,7 @@ export default function DonorsListPage() {
                         Manage all donors
                 </p>
             </div>
-            {canWrite &&
+            {canCreate &&
             <Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
                <Plus className="w-5 h-5 mr-2"/>
                 New Donor 
@@ -180,7 +185,7 @@ export default function DonorsListPage() {
         
         {showSkeleton ? <TableSkeleton columns={2}/> :
         data && data.donors.length > 0 ?
-        <DonorTable donors={data.donors} pagination={data.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={handleDelete} canWrite={canWrite}/>
+        <DonorTable donors={data.donors} pagination={data.pagination} page={page} perPage={perPage} setPage={setPage} setPerPage={setPerPage} onEdit={handleEdit} onDelete={handleDelete} canEdit={canEdit} canDelete={canDelete}/>
         :
         <EmptyState
           icon={Tag} title={searchTerm ? "No donor found" : "No donors available"}

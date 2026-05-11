@@ -20,10 +20,11 @@ interface Props {
     onEdit: (donor: Donor) => void;
     onDelete: (donor: Donor) => void;
 
-    canWrite?: boolean;
+    canEdit?: boolean;
+    canDelete?: boolean;
 }
 
-export default function DonorTable( { donors, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete, canWrite}: Props) {
+export default function DonorTable( { donors, pagination, page, perPage, setPage, setPerPage, onEdit, onDelete, canEdit, canDelete}: Props) {
     if (!pagination) return <div>Enter the pagination</div>;
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newPerPage = Number(e.target.value);
@@ -38,7 +39,7 @@ export default function DonorTable( { donors, pagination, page, perPage, setPage
                         <tr>
                             <th>#</th>
                             <th>DONOR NAME</th>
-                            {canWrite && <th>ACTIONS</th>}
+                            {(canEdit || canDelete) && <th>ACTIONS</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -46,21 +47,24 @@ export default function DonorTable( { donors, pagination, page, perPage, setPage
                             <tr key={donor.id} className="table-row">
                                 <td className="table-cell">{index + 1}</td>
                                 <td className="table-cell">{donor.name}</td>
-                                {canWrite && (
+                                {(canEdit || canDelete) && (
                                     <td className="table-cell space-x-2"> 
-                                        <button className="btn-edit-table" onClick={() => onEdit(donor)}>
-                                            <SquarePen className="w-4 h-4" />
-                                        </button>
-                                        <button className="btn-delete-table" onClick={() => onDelete(donor)}>
-                                            <Trash className="w-4 h-4" />
-                                        </button>
-                                    
+                                        {canEdit && (
+                                            <button className="btn-edit-table" onClick={() => onEdit(donor)}>
+                                                <SquarePen className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                        {canDelete && (
+                                            <button className="btn-delete-table" onClick={() => onDelete(donor)}>
+                                                <Trash className="w-4 h-4" />
+                                            </button>
+                                        )}
                                     </td>
                                 )}
                             </tr>
                         ))}
                         <tr className="table-pagination-row">
-                            <td colSpan={canWrite ? 3 : 2} className="table-pagination-cell">
+                            <td colSpan={(canEdit || canDelete) ? 3 : 2} className="table-pagination-cell">
                                 <div className="table-pagination-container">
 
                                     <div className="flex items-center gap-2 text-xs text-gray-600">
