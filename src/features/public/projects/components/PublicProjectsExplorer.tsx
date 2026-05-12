@@ -34,11 +34,17 @@ const OPTIONS = [
 interface PublicProjectsExplorerProps {
   programId?: number;
   wrapperClassName?: string;
+  /** When true, the Country step is hidden. The first country in programCountries (if any) is pre-set. */
+  hideCountry?: boolean;
+  /** Used together with hideCountry to pre-set country automatically. */
+  programCountries?: { id: number; name: string }[];
 }
 
 export default function PublicProjectsExplorer({
   programId,
   wrapperClassName = "w-5/7",
+  hideCountry = false,
+  programCountries,
 }: PublicProjectsExplorerProps) {
   const [page, setPage] = useState(1);
   const [perPage] = useState(20);
@@ -46,10 +52,15 @@ export default function PublicProjectsExplorer({
   const [projects, setProjects] = useState<any[]>([]);
   const [sort, setSort] = useState("date_newest");
 
+  // Pre-set the first country when country step is hidden.
+  const defaultCountry = hideCountry && programCountries && programCountries.length > 0
+    ? { id: programCountries[0].id, name: programCountries[0].name }
+    : null;
+
   const form = useForm<any>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
-      country: null,
+      country: defaultCountry,
       kpa: null,
       strategic_output: null,
       measure: null,
@@ -140,33 +151,37 @@ export default function PublicProjectsExplorer({
           {/* Stepper encadenado */}
           <div className="flex flex-col lg:max-w-md w-full">
 
-            {/* Step 1 — Country */}
-            <div className="flex gap-4">
-              <div className="flex flex-col items-center">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 border-[#1E3291] text-[#1E3291] bg-blue-50 shrink-0">1</div>
-                <div className="w-px flex-1 bg-slate-200 mt-1 min-h-6" />
+            {/* Step Country — hidden when hideCountry=true */}
+            {!hideCountry && (
+              <div className="flex gap-4">
+                <div className="flex flex-col items-center">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 border-[#1E3291] text-[#1E3291] bg-blue-50 shrink-0">1</div>
+                  <div className="w-px flex-1 bg-slate-200 mt-1 min-h-6" />
+                </div>
+                <div className="flex-1 pb-6">
+                  <p className="text-sm font-semibold text-slate-700 mb-1.5">Country</p>
+                  <Controller control={control} name="country"
+                    render={({ field }) => (
+                      <AsyncSearchSelect<Country>
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Search by Country"
+                        fetchOptions={fetchCountriesForSelect}
+                        getOptionLabel={(option) => option.name}
+                        getOptionKey={(option) => option.id}
+                      />
+                    )}
+                  />
+                </div>
               </div>
-              <div className="flex-1 pb-6">
-                <p className="text-sm font-semibold text-slate-700 mb-1.5">Country</p>
-                <Controller control={control} name="country"
-                  render={({ field }) => (
-                    <AsyncSearchSelect<Country>
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="Search by Country"
-                      fetchOptions={fetchCountriesForSelect}
-                      getOptionLabel={(option) => option.name}
-                      getOptionKey={(option) => option.id}
-                    />
-                  )}
-                />
-              </div>
-            </div>
+            )}
 
-            {/* Step 2 — KPA */}
+            {/* Step KPA — step 1 when country is hidden, step 2 otherwise */}
             <div className={`flex gap-4 transition-opacity duration-300 ${!country ? "opacity-40 pointer-events-none" : ""}`}>
               <div className="flex flex-col items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 shrink-0 transition-colors duration-300 ${country ? "border-[#1E3291] text-[#1E3291] bg-blue-50" : "border-slate-300 text-slate-400 bg-slate-50"}`}>2</div>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 shrink-0 transition-colors duration-300 ${country ? "border-[#1E3291] text-[#1E3291] bg-blue-50" : "border-slate-300 text-slate-400 bg-slate-50"}`}>
+                  {hideCountry ? 1 : 2}
+                </div>
                 <div className="w-px flex-1 bg-slate-200 mt-1 min-h-6" />
               </div>
               <div className="flex-1 pb-6">
@@ -188,10 +203,12 @@ export default function PublicProjectsExplorer({
               </div>
             </div>
 
-            {/* Step 3 — Strategic Output */}
+            {/* Step Strategic Output */}
             <div className={`flex gap-4 transition-opacity duration-300 ${!kpa ? "opacity-40 pointer-events-none" : ""}`}>
               <div className="flex flex-col items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 shrink-0 transition-colors duration-300 ${kpa ? "border-[#1E3291] text-[#1E3291] bg-blue-50" : "border-slate-300 text-slate-400 bg-slate-50"}`}>3</div>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 shrink-0 transition-colors duration-300 ${kpa ? "border-[#1E3291] text-[#1E3291] bg-blue-50" : "border-slate-300 text-slate-400 bg-slate-50"}`}>
+                  {hideCountry ? 2 : 3}
+                </div>
                 <div className="w-px flex-1 bg-slate-200 mt-1 min-h-6" />
               </div>
               <div className="flex-1 pb-6">
@@ -213,10 +230,12 @@ export default function PublicProjectsExplorer({
               </div>
             </div>
 
-            {/* Step 4 — Measure */}
+            {/* Step Measure */}
             <div className={`flex gap-4 transition-opacity duration-300 ${!strategicOutput ? "opacity-40 pointer-events-none" : ""}`}>
               <div className="flex flex-col items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 shrink-0 transition-colors duration-300 ${strategicOutput ? "border-[#1E3291] text-[#1E3291] bg-blue-50" : "border-slate-300 text-slate-400 bg-slate-50"}`}>4</div>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 shrink-0 transition-colors duration-300 ${strategicOutput ? "border-[#1E3291] text-[#1E3291] bg-blue-50" : "border-slate-300 text-slate-400 bg-slate-50"}`}>
+                  {hideCountry ? 3 : 4}
+                </div>
               </div>
               <div className="flex-1 pb-2">
                 <p className={`text-sm font-semibold mb-1.5 transition-colors duration-300 ${strategicOutput ? "text-slate-700" : "text-slate-400"}`}>Measure</p>

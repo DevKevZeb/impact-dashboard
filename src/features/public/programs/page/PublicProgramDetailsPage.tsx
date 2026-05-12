@@ -200,7 +200,12 @@ export default function PublicProgramDetailsPage() {
           <section className="mx-auto w-5/7 pt-10">
             <InfoRow title="Projects Under the Program" description="Explore projects assigned to this program." icon={MapPin} />
           </section>
-          <PublicProjectsExplorer programId={data.id} wrapperClassName="w-5/7" />
+          <PublicProjectsExplorer
+            programId={data.id}
+            wrapperClassName="w-5/7"
+            hideCountry
+            programCountries={data.program_summary.geographical_focus}
+          />
         </div>
       </div>
     </div>
