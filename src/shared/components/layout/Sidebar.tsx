@@ -74,6 +74,12 @@ const menuItems: MenuItem[] = [
     children: [
       { title: "Programs", path: "/app/programs", requiredScopes: [SCOPES.PROGRAMS_READ] },
       { title: "Projects", path: "/app/projects", requiredScopes: [SCOPES.PROJECTS_READ] },
+      { 
+        title: "Countries", 
+        path: "/app/countries", 
+        requiredRoles: ["project-manager"],
+        hideForAdmin: true 
+      },
     ],
   },
   {
@@ -84,6 +90,7 @@ const menuItems: MenuItem[] = [
       { title: "Beneficiaries", path: "/app/resources/beneficiaries", requiredScopes: [SCOPES.BENEFICIARIES_READ] },
     ],
   },
+  // Country Access menu removed per new UI structure (manage users moved under Users)
   {
     title: "Administration",
     icon: ShieldCheck,

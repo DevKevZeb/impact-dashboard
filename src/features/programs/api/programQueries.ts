@@ -168,19 +168,7 @@ export function useCreateProgram() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: ProgramCreateInput) => {
-      const program = await programService.create(input);
-
-      const { hasCountryScope, countryUserRoleId } = useAuthStore.getState();
-      if (hasCountryScope) {
-        await assignmentService.create({
-          program_id: program.id,
-          country_user_role_id: countryUserRoleId,
-        });
-      }
-
-      return program;
-    },
+    mutationFn: async (input: ProgramCreateInput) => programService.create(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: programKeys.lists() });
       queryClient.invalidateQueries({ queryKey: assignmentKeys.all });

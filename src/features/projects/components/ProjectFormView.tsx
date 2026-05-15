@@ -109,10 +109,10 @@ function ProgressPercentInput({
 }
  
 export default function ProjectFormView({ mode, programName, form, onSubmit, onInvalid, programId }: Props) {
+    const user = useAuthStore((state) => state.user);
     const isAdmin = useAuthStore((state) => state.hasScope("*:*"));
     const canEditWeight = useAuthStore((state) => state.hasScope("projects:weight"));
-    const canViewByCountry = useAuthStore((state) => state.hasScope("projects:view_by_country"));
-    const isCountryManager = canViewByCountry && !isAdmin;
+    const isCountryManager = (user?.roles ?? []).some((role) => role.name === "country-manager") && !isAdmin;
     const canShowWeight = mode === "edit" && canEditWeight && isCountryManager;
     const useProgramContext = Boolean(programId);
 
