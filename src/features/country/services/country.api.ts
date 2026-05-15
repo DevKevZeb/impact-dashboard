@@ -24,7 +24,7 @@ export async function getCountry(id: number): Promise<Country>{
 
 export async function createCountry(dto: CreateCountryDTO){
     try{
-        const payload = { name: dto.name, currency: { id:dto.currency.id, code: dto.currency.code}};
+        const payload = { name: dto.name, active: false, currency: { id:dto.currency.id, code: dto.currency.code}};
         const { data } = await apiClient.post("/countries", payload);
 
         toast.success(data.message);
