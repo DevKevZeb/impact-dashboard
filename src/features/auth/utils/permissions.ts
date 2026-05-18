@@ -93,6 +93,12 @@ export const SCOPES = {
   PROJECT_STATES_READ: "project_states:read",
   PROJECT_STATES_WRITE: "project_states:write",
   PROJECT_STATES_ALL: "project_states:*",
+
+  // ===== Country Join Requests =====
+  COUNTRY_JOIN_REQUESTS_READ: "country_join_requests:read",
+  COUNTRY_JOIN_REQUESTS_WRITE: "country_join_requests:write",
+  COUNTRY_JOIN_REQUESTS_APPROVE: "country_join_requests:approve",
+  COUNTRY_JOIN_REQUESTS_ALL: "country_join_requests:*",
 } as const;
 
 export type Scope = typeof SCOPES[keyof typeof SCOPES];

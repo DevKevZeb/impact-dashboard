@@ -44,6 +44,7 @@ import CountryKpaListPage from "@/features/dashboard/country-dashboard/country-k
 import InfoCountryKpaPage from "@/features/dashboard/country-dashboard/country-kpa-info/pages/InfoCountryKpaPage";
 import ProjectDashboardPage from "@/features/dashboard/project-dashboard/pages/ProjectDashboardPage";
 import CountryDashboardSharePage from "@/features/dashboard/country-dashboard/country-dashboard-share/pages/CountryDashboardSharePage";
+import { CountriesPage } from "@/features/country-join-requests/pages/CountriesPage";
 
 
 export function AppRouter() {
@@ -123,6 +124,7 @@ export function AppRouter() {
             <Route path="country-kpa" element={<CountryKpaListPage/>} />
             <Route path="country-kpa/:countryId" element={<InfoCountryKpaPage/>} />
             <Route path="country-dashboard-share" element={<CountryDashboardSharePage/>} />
+            <Route path="countries" element={<CountriesPage />} />
             
             {/* Resources Routes */}
             <Route path="resources">

@@ -100,7 +100,7 @@ export default function ProjectDashboardTable({
   };
 
   const openWeightModal = (row: ProjectDashboardRow) => {
-    if (!canEditWeight || !isCountryTable) {
+    if (!canEditWeight) {
       return;
     }
 

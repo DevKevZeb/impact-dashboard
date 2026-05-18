@@ -26,11 +26,15 @@ export default function ProjectDashboardPage() {
   const { data, isLoading, isFetching, error } = useProjectDashboard(page, perPage, debouncedSearch);
   const updateProgressMutation = useUpdateProjectDashboardProgress();
   const updateWeightMutation = useUpdateProjectDashboardWeight();
-  const { hasScope, hasAnyScope } = useAuthStore();
+  const { user, hasScope } = useAuthStore();
 
-  const isCountryTable = hasAnyScope(["projects:view_by_country", "programs:view_by_country"]);
+  // Check if user is country-manager role
+  const isCountryManager = (user?.roles ?? []).some((role) => role.name === "country-manager");
+  
+  // Only country-managers see and can edit weight column
+  const isCountryTable = isCountryManager;
   const canEditProgress = hasScope("projects:progress");
-  const canEditWeight = hasScope("projects:weight");
+  const canEditWeight = isCountryManager && hasScope("projects:weight");
 
   const showSkeleton = isFetching && (searchChanged || pageChanged);
 
