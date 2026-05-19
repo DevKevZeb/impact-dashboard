@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getProjectDashboardPaginated,
+  getProjectDashboardPaginatedByCountry,
   updateProjectDashboardProgress,
   updateProjectDashboardWeight,
 } from "../services/projectDashboard.api";
@@ -14,6 +15,21 @@ export function useProjectDashboard(page: number, perPage: number, search: strin
   return useQuery({
     queryKey: ["project-dashboard", userId, countryUserRoleId, page, perPage, search],
     queryFn: () => getProjectDashboardPaginated(page, perPage, search),
+    placeholderData: (prev) => prev,
+    staleTime: 1000 * 10,
+  });
+}
+
+export function useProjectDashboardByCountry(
+  countryId: number,
+  page: number,
+  perPage: number,
+  search: string
+) {
+  return useQuery({
+    queryKey: ["project-dashboard", "country", countryId, page, perPage, search],
+    queryFn: () => getProjectDashboardPaginatedByCountry(countryId, page, perPage, search),
+    enabled: countryId > 0,
     placeholderData: (prev) => prev,
     staleTime: 1000 * 10,
   });

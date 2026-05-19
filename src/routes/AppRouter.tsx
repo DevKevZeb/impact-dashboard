@@ -7,9 +7,7 @@ import { ProgramsPage } from "@/features/programs/pages/ProgramsPage";
 import { PlaceholderPage } from "@/shared/components/PlaceholderPage";
 import AgencyListPage from "@/features/agency/pages/AgencyListPage";
 import CountryListPage from "@/features/country/pages/CountryListPage";
-
 import KpasListPage from "@/features/kpa/pages/KpasListPage";
-
 import IndicatorTypesListPage from "@/features/indicator-type/pages/IndicatorTypesListPage";
 import ProjectStateListPage from "@/features/project-states/pages/ProjectStateListPage";
 import ListProgramsWithProjects from "@/features/projects/pages/ListProgramsWithProjects";
@@ -45,6 +43,7 @@ import InfoCountryKpaPage from "@/features/dashboard/country-dashboard/country-k
 import ProjectDashboardPage from "@/features/dashboard/project-dashboard/pages/ProjectDashboardPage";
 import CountryDashboardSharePage from "@/features/dashboard/country-dashboard/country-dashboard-share/pages/CountryDashboardSharePage";
 import { CountriesPage } from "@/features/country-join-requests/pages/CountriesPage";
+import AdminDashboardPage from "@/features/dashboard/admin-dashboard/pages/AdminDashboardPage";
 
 
 export function AppRouter() {
@@ -91,6 +90,7 @@ export function AppRouter() {
         {/* Protected Routes - Require Authentication */}
         <Route path="/app" element={<PrivateRoute><MainLayout /></PrivateRoute>}>
             <Route index element={<DashboardPage />} />
+            <Route path="admin-dashboard" element={<AdminDashboardPage />} />
             <Route path="profile" element={<ProfilePage />} />
             {/* Administration Routes */}
             <Route path="admin">

@@ -35,6 +35,35 @@ export const programService = {
     };
   },
 
+  getPaginatedByCountry: async (
+    countryId: number,
+    page: number,
+    perPage: number,
+    search: string = ""
+  ) => {
+    const { data } = await apiClient.get<ApiResponse<ProgramPaginatedResponse>>(
+      PROGRAMS_ENDPOINT,
+      {
+        params: {
+          page,
+          per_page: perPage,
+          country_id: countryId,
+          ...(search ? { search } : {}),
+        },
+      }
+    );
+
+    return {
+      programs: data.data.programs,
+      pagination: {
+        current_page: data.data.current_page,
+        last_page: data.data.last_page,
+        per_page: data.data.per_page,
+        total: data.data.total,
+      },
+    };
+  },
+
   getById: async (id: number): Promise<Program> => {
     const { data } = await apiClient.get<ApiResponse<Program>>(
       `${PROGRAMS_ENDPOINT}/${id}`
