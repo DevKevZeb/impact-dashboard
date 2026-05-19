@@ -17,6 +17,8 @@ export interface ProgramSummaryItem {
 }
 
 export interface ProgramSummary {
+  start_date?: string | null;
+  end_date?: string | null;
   donors: ProgramSummaryItem[];
   implementing_agencies: ProgramSummaryItem[];
   budget: number;

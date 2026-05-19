@@ -11,7 +11,7 @@ export function DashboardPage() {
 
   useEffect(() => {
     if (isAdmin) {
-      navigate("/app/country-kpa", { replace: true });
+      navigate("/app/admin-dashboard", { replace: true });
       return;
     }
 

@@ -19,6 +19,8 @@ export const programKeys = {
   all: ["programs"] as const,
   lists: () => [...programKeys.all, "list"] as const,
   detail: (id: number) => [...programKeys.all, "detail", id] as const,
+  byCountry: (countryId: number, page: number, perPage: number, search: string) =>
+    [...programKeys.all, "by-country", countryId, page, perPage, search] as const,
 };
 
 export const assignmentKeys = {
@@ -63,6 +65,20 @@ export function useMyPrograms(page: number, perPage: number) {
     error: query.error,
     isAdmin: !hasCountryScope,
   };
+}
+
+export function useProgramsByCountry(
+  countryId: number,
+  page: number,
+  perPage: number,
+  search: string = ""
+) {
+  return useQuery({
+    queryKey: programKeys.byCountry(countryId, page, perPage, search),
+    queryFn: () => programService.getPaginatedByCountry(countryId, page, perPage, search),
+    enabled: countryId > 0,
+    staleTime: 30 * 1000,
+  });
 }
 
 export function useProgram(id: number) {
