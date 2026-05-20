@@ -86,7 +86,11 @@ const menuItems: MenuItem[] = [
     title: "Resources",
     icon: Users,
     children: [
-      { title: "Donors", path: "/app/resources/donors", requiredScopes: [SCOPES.DONORS_READ] },
+      {
+        title: "Donors",
+        path: "/app/resources/donors",
+        requiredRoles: ["admin", "country-manager"],
+      },
       { title: "Beneficiaries", path: "/app/resources/beneficiaries", requiredScopes: [SCOPES.BENEFICIARIES_READ] },
     ],
   },

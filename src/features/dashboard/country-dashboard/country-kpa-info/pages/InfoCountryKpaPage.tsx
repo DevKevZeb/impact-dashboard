@@ -31,7 +31,7 @@ import { useAuthStore } from "@/features/auth/store/authStore";
 import { useCountryKpas } from "../../country-kpa/hooks/useCountryKpas";
 import { useActivateCountry } from "@/features/country/hooks/country/useActivateCountry";
 import { ConfirmationDialog } from "@/shared/components/ConfirmationDialog";
-import { Snowflake } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
 export default function InfoCountryKpaPage() {
   const navigate = useNavigate();
@@ -408,16 +408,16 @@ export default function InfoCountryKpaPage() {
         onOpenChange={setFreezeConfirmOpen}
         onConfirm={handleConfirmFreeze}
         isLoading={isActivating}
-        title="Freeze Country"
+        title="Confirm Dashboard"
         description={
           <span>
-            Are you sure you want to freeze <strong>{country?.name}</strong>? Once active, you will not be able to add, edit or delete strategic outputs, measures or indicators.
+            Are you sure you want to confirm the dashboard for <strong>{country?.name}</strong>? Once confirmed, you will not be able to add, edit or delete strategic outputs, measures or indicators.
           </span>
         }
-        confirmText="Freeze"
+        confirmText="Confirm"
         cancelText="Cancel"
         variant="warning"
-        icon={Snowflake}
+        icon={CheckCircle}
       />
 
     </div>
