@@ -105,7 +105,6 @@ export function AppRouter() {
             {/* Configuration Routes */}
             <Route path="config">
                 <Route path="countries" element={<CountryListPage/>} />
-                <Route path="agencies" element={<AgencyListPage/>} />
                 <Route path="kpas" element={<KpasListPage/>} />
                 <Route path="sdgs" element={<SdgsPage />} />
                 <Route path="program-states" element={<ProgramStatesPage />} />
@@ -130,6 +129,7 @@ export function AppRouter() {
             <Route path="resources">
                 <Route path="beneficiaries" element={<BeneficiariesListPage/>} />
                 <Route path="donors" element={<DonorsListPage/>} />
+                <Route path="agencies" element={<AgencyListPage/>} />
             </Route>
 
             {/* Reports Routes */}

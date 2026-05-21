@@ -59,7 +59,6 @@ const menuItems: MenuItem[] = [
     title: "Configuration",
     icon: Settings,
     children: [
-      { title: "Agencies", path: "/app/config/agencies", requiredScopes: [SCOPES.AGENCIES_READ] },
       { title: "Countries", path: "/app/config/countries", requiredScopes: [SCOPES.COUNTRIES_READ] },
       { title: "Indicator Types", path: "/app/config/indicator-types", requiredScopes: [SCOPES.INDICATOR_TYPES_READ] },
       { title: "KPAs", path: "/app/config/kpas", requiredScopes: [SCOPES.KPAS_READ] },
@@ -92,6 +91,7 @@ const menuItems: MenuItem[] = [
         requiredRoles: ["admin", "country-manager"],
       },
       { title: "Beneficiaries", path: "/app/resources/beneficiaries", requiredScopes: [SCOPES.BENEFICIARIES_READ] },
+      { title: "Implementing Agencies", path: "/app/resources/agencies", requiredScopes: [SCOPES.AGENCIES_READ] },
     ],
   },
   // Country Access menu removed per new UI structure (manage users moved under Users)

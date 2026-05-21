@@ -132,7 +132,7 @@ export default function AgencyListPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
           <Loader2 className="loader-default" />
-          <p className="text-gray-500">Loading Agencies...</p>
+          <p className="text-gray-500">Loading Implementing Agencies...</p>
         </div>
       </div>
     );
@@ -156,9 +156,9 @@ export default function AgencyListPage() {
     <div className="page-container">
       <div className="title-container">
        <div>
-         <h1 className="page-title">Agencies</h1>   
+         <h1 className="page-title">Implementing Agencies</h1>   
           <p className="page-description">
-            Manage the Agencies
+            Manage the Implementing Agencies
           </p> 
        </div>
         {canWrite && (<Button className="btn-secondary" size="lg" onClick={handleOpenCreate}>
@@ -185,15 +185,31 @@ export default function AgencyListPage() {
         />
       )}
 
-      {showSkeleton ? <TableSkeleton columns={4} /> :
-      data && data.agencies.length > 0 ? (
-        <AgencyTable agencies={data?.agencies} pagination={data?.pagination} page={page} perPage={perPage} setPage={setPage} onEdit={handleEdit} onDelete={handleDelete} onApprove={handleApprove} setPerPage={setPerPage} canWrite={canWrite}  />
-      ):
-      <EmptyState 
-      icon={Tag} title={searchTerm ? "No agencies found" : "No agencies available"}
-      description={
-        searchTerm ? "Try adjusting your search terms" : "Click 'New Agency' to create your first Agency"
-      }/>}
+      {showSkeleton && <TableSkeleton columns={4} />}
+      {!showSkeleton && data && data.agencies.length > 0 && (
+        <AgencyTable
+          agencies={data?.agencies}
+          pagination={data?.pagination}
+          page={page}
+          perPage={perPage}
+          setPage={setPage}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onApprove={handleApprove}
+          setPerPage={setPerPage}
+          canWrite={canWrite}
+        />
+      )}
+
+      {!showSkeleton && (!data || data.agencies.length === 0) && (
+        <EmptyState
+          icon={Tag}
+          title={searchTerm ? "No implementing agencies found" : "No implementing agencies available"}
+          description={
+            searchTerm ? "Try adjusting your search terms" : "Click 'New Agency' to create your first implementing agency"
+          }
+        />
+      )}
     </div>
   );
 }
