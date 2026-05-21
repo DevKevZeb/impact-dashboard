@@ -28,14 +28,6 @@ const indicatorSchema = z.object({
     .refine((v) => v !== null, { message: "Type is required" }),
 }).superRefine((data, ctx) => {
   if (data.type !== null && data.type.is_bottom_up === false) {
-    // actual_value (αₓ) must be > 0 for TD
-    if (data.actual_value <= 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Actual value (αₓ) is required for Top-Down indicators",
-        path: ["actual_value"],
-      });
-    }
     // αₓ cannot exceed Tₓ
     if (
       data.actual_value > 0 &&
