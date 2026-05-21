@@ -1,5 +1,5 @@
   import React, { useState, useCallback, useEffect } from "react";
-  import { ChevronRight, ChevronDown, Edit2, Trash2, Eye, Snowflake } from "lucide-react";
+  import { ChevronRight, ChevronDown, Edit2, Trash2, Eye, CheckCircle } from "lucide-react";
   import type { TreeNode } from "./TreeType";
 
   interface LazyTreeProps {
@@ -233,8 +233,8 @@
             className="flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer transition"
             onClick={(e) => { e.stopPropagation(); onFreezeCountry?.(); }}
           >
-            <Snowflake className="w-3.5 h-3.5" />
-            Freeze
+            <CheckCircle className="w-3.5 h-3.5" />
+            Confirm Dashboard
           </button>
         );
       }
