@@ -11,6 +11,8 @@ export interface ProjectDashboardRow {
   end_date: string;
   progress: number;
   weight: number;
+  has_bottom_up_indicator: boolean;
   comment: string | null;
   can_edit: boolean;
+  can_edit_weight: boolean;
 }

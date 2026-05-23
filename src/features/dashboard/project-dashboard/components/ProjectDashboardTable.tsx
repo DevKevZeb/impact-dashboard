@@ -99,8 +99,10 @@ export default function ProjectDashboardTable({
     setProgressError("");
   };
 
+  const canOpenWeightModal = (row: ProjectDashboardRow) => canEditWeight && row.has_bottom_up_indicator;
+
   const openWeightModal = (row: ProjectDashboardRow) => {
-    if (!canEditWeight) {
+    if (!canOpenWeightModal(row)) {
       return;
     }
 
@@ -266,7 +268,7 @@ export default function ProjectDashboardTable({
                 </td>
                 {isCountryTable && (
                   <td className="table-cell min-w-[140px]">
-                    {canEditWeight ? (
+                    {canOpenWeightModal(row) ? (
                       <button
                         type="button"
                         onClick={() => openWeightModal(row)}
