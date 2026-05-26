@@ -58,6 +58,7 @@ export const programCreateSchema = z.object({
     .regex(/^https?:\/\//, "URL must use HTTP or HTTPS protocol")
     .optional()
     .or(z.literal("")),
+  country_id: z.number().int().min(1).optional(),
   contact: contactSchema, // Nested contact object
   sdg_ids: z.array(z.number().int().min(1)).optional(),
 });

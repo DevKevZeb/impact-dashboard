@@ -6,6 +6,7 @@ export interface Role {
 export interface CountryUserRole {
   id: number;
   country: { id: number; name: string; active: boolean };
+  role?: { id: number; name: string };
 }
 
 export interface User {
@@ -15,6 +16,7 @@ export interface User {
   user_state_id: number;
   roles: Role[];
   country_user_role: CountryUserRole | null;
+  country_user_roles?: CountryUserRole[];
 }
 
 export interface LoginInput {
