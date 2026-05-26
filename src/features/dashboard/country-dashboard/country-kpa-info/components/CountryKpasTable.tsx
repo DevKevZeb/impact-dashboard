@@ -5,6 +5,9 @@ import { getStrategicOutputsByCountryKpaId } from "@/features/strategic-output/s
 import { getMeasuresByStrategicOutputId } from "@/features/measures/services/measure.api";
 import { getIndicatorsByMeasureId } from "@/features/indicator/services/indicator.api";
 
+const formatHierarchyNumber = (...parts: number[]) => parts.join(".");
+const formatHierarchyLabel = (number: string, label: string) => `${number}. ${label}`;
+
 interface Pagination {
   total: number;
   per_page: number;
@@ -103,6 +106,7 @@ export default function CountryKpasTable({kpas, pagination, page, perPage, setPa
                 <tbody>
                     {kpas.map((kpa, index) => {
                         const id = kpa.id_ck ?? kpa.id_kpa;
+                        const kpaNumber = index + 1;
                         const sos = soByKpa[id] ?? [];
                         return (
                             <React.Fragment key={id}>
@@ -120,7 +124,7 @@ export default function CountryKpasTable({kpas, pagination, page, perPage, setPa
                                                 {expandedKpas[id] ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                                             </button>
                                         )}
-                                        {kpa.name}
+                                        {formatHierarchyLabel(String(kpaNumber), kpa.name)}
                                     </td>
                                     <td className="table-cell text-center font-medium">{kpa.strategic_outputs_count}</td>
                                     <td className="table-cell text-center font-medium">{kpa.measures_count}</td>
@@ -137,7 +141,8 @@ export default function CountryKpasTable({kpas, pagination, page, perPage, setPa
                                         ) : sos.length === 0 ? (
                                             <tr><td colSpan={8} className="table-cell">No strategic outputs</td></tr>
                                         ) : (
-                                            sos.map((so) => {
+                                            sos.map((so, soIndex) => {
+                                                const soNumber = formatHierarchyNumber(kpaNumber, soIndex + 1);
                                                 const soMeasures = measuresBySo[so.id] ?? [];
                                                 return (
                                                     <React.Fragment key={so.id}>
@@ -156,7 +161,7 @@ export default function CountryKpasTable({kpas, pagination, page, perPage, setPa
                                                                         {expandedSos[so.id] ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                                                                     </button>
                                                                 )}
-                                                                {so.name}
+                                                                {formatHierarchyLabel(soNumber, so.name)}
                                                             </td>
                                                             <td className="table-cell text-center font-medium">{so.measures_count}</td>
                                                             <td className="table-cell text-center font-medium">{0}</td>
@@ -171,7 +176,8 @@ export default function CountryKpasTable({kpas, pagination, page, perPage, setPa
                                                             ) : soMeasures.length === 0 ? (
                                                                 <tr><td colSpan={8} className="table-cell">No measures</td></tr>
                                                             ) : (
-                                                                soMeasures.map((m: any) => {
+                                                                soMeasures.map((m: any, measureIndex: number) => {
+                                                                    const measureNumber = formatHierarchyNumber(kpaNumber, soIndex + 1, measureIndex + 1);
                                                                     const mIndicators = indicatorsByMeasure[m.id] ?? [];
                                                                     return (
                                                                         <React.Fragment key={m.id}>
@@ -191,7 +197,7 @@ export default function CountryKpasTable({kpas, pagination, page, perPage, setPa
                                                                                             <span className="text-sm">{expandedMeasures[m.id] ? "▾" : "▸"}</span>
                                                                                         </button>
                                                                                     )}
-                                                                                    {m.name}
+                                                                                    {formatHierarchyLabel(measureNumber, m.name)}
                                                                                 </td>
                                                                                 <td className="table-cell text-center font-medium">{m.indicators_count}</td>
                                                                                 <td className="table-cell"></td>

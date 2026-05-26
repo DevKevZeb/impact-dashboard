@@ -246,7 +246,9 @@ export default function AdminDashboardPage() {
         map.set(country.id, { id: country.id, name: country.name });
       }
     });
-    return Array.from(map.values());
+    return Array.from(map.values()).sort((left, right) =>
+      left.name.localeCompare(right.name, undefined, { sensitivity: "base" })
+    );
   }, [data]);
 
   if (!isAdmin) {
