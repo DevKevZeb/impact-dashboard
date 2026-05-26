@@ -14,8 +14,10 @@ export function mapProjectDashboardRow(raw: any): ProjectDashboardRow {
     end_date: raw.end_date,
     progress: Number(raw.progress ?? 0),
     weight: Number(raw.weight ?? 0),
+    has_bottom_up_indicator: Boolean(raw.has_bottom_up_indicator),
     comment: raw.comment ?? null,
     can_edit: Boolean(raw.can_edit),
+    can_edit_weight: Boolean(raw.can_edit_weight),
   };
 }
 
