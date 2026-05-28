@@ -10,7 +10,7 @@ import type { CountryOption, CreateCountryKpaDTO, KpaOption } from "../types/Cou
 import type { Kpa } from "@/features/kpa/types/KpaType";
 import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
 import { fetchKpasForSelect } from "@/features/kpa/services/kpa.api";
-import { fetchCountriesForSelect } from "@/features/country/services/country.api";
+import { fetchCountriesAvailableForKpa } from "@/features/country/services/country.api";
 
 const schema = z.object({
   country: z.object({
@@ -79,7 +79,7 @@ export default function CreateCountryKpaModal({ open, onClose, onSubmit, selecte
               control={control}
               name="country"
               render={({ field }) => (
-                <AsyncSearchSelect<CountryOption> value={field.value} onChange={field.onChange} placeholder="Search Countries..." fetchOptions={fetchCountriesForSelect} getOptionLabel={(k) => k.name} getOptionKey={(k) => k.id} />
+                <AsyncSearchSelect<CountryOption> value={field.value} onChange={field.onChange} placeholder="Search Countries..." fetchOptions={fetchCountriesAvailableForKpa} getOptionLabel={(k) => k.name} getOptionKey={(k) => k.id} />
               )}
             />
             {errors.country && <p className="error text-sm text-red-600">{errors.country.message as string}</p>}

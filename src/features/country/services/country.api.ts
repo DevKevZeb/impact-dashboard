@@ -91,6 +91,16 @@ export async function fetchCountriesForSelect(params: { query: string; page: num
   };
 }
 
+export async function fetchCountriesAvailableForKpa(params: { query: string; page: number; limit: number; }) : Promise<{ items: Country[]; hasMore: boolean }>{
+  const { query, page, limit } = params;
+  const { data } = await apiClient.get(`/countries/available-for-kpa?search=${encodeURIComponent(query)}&page=${page}&per_page=${limit}`);
+
+  return {
+    items: mapCountries(data.data.countries),
+    hasMore: data.data.current_page < data.data.last_page,
+  };
+}
+
 export async function activateCountry(id: number): Promise<void> {
   const { data } = await apiClient.patch(`/countries/${id}/activate`);
   toast.success(data.message ?? 'Country activated');
