@@ -10,6 +10,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Loader2, Upload, X, Check } from "lucide-react";
 import { Can } from "@/features/auth/components/Can";
 import { CannotAccess } from "@/features/auth/components/CannotAccess";
@@ -35,7 +42,15 @@ export function ProgramCreateDialog({
 }: ProgramCreateDialogProps) {
   const canWrite = useHasScope(SCOPES.PROGRAMS_WRITE);
   const user = useAuthStore((s) => s.user);
-  const isCountryActive = user?.country_user_role?.country?.active ?? true;
+  const countryUserRoles = user?.country_user_roles?.length
+    ? user.country_user_roles
+    : user?.country_user_role
+      ? [user.country_user_role]
+      : [];
+  const isCountryActive = countryUserRoles.length
+    ? countryUserRoles.some((cur) => cur.country?.active)
+    : true;
+  const requiresCountrySelection = countryUserRoles.length > 1;
   const createMutation = useCreateProgram();
   const { data: sdgs } = useSdgs();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,9 +64,19 @@ export function ProgramCreateDialog({
     formState: { errors },
     reset,
     setValue,
+    setError,
+    clearErrors,
+    watch,
   } = useForm<ProgramCreateFormData>({
     resolver: zodResolver(programCreateSchema),
   });
+
+  const selectedCountryId = watch("country_id");
+  const selectedCountry = countryUserRoles.find(
+    (cur) => cur.country?.id === selectedCountryId
+  );
+  const isSelectedCountryActive = selectedCountry?.country?.active ?? isCountryActive;
+  const selectableCountries = countryUserRoles.filter((cur) => cur.country);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -86,7 +111,16 @@ export function ProgramCreateDialog({
       return;
     }
 
-    if (!isCountryActive) {
+    if (requiresCountrySelection && !data.country_id) {
+      setError("country_id", {
+        type: "manual",
+        message: "You must select a country to create a program.",
+      });
+      toast.error("You must select a country to create a program.");
+      return;
+    }
+
+    if (!isSelectedCountryActive) {
       toast.error("Programs cannot be created because your country is not active.");
       return;
     }
@@ -98,6 +132,7 @@ export function ProgramCreateDialog({
         description: data.description,
         banner_img: data.banner_img,
         program_url: data.program_url || undefined,
+        country_id: data.country_id,
         contact: {
           first_name: data.contact.first_name,
           last_name: data.contact.last_name,
@@ -163,7 +198,38 @@ export function ProgramCreateDialog({
             )}
           </div>
 
-          {/* 2. Description */}
+          {/* 2. Country */}
+          {requiresCountrySelection && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 block">
+                Country <span className="text-red-500">*</span>
+              </label>
+              <Select
+                value={selectedCountryId ? selectedCountryId.toString() : ""}
+                onValueChange={(value) => {
+                  const numericValue = Number(value);
+                  setValue("country_id", numericValue, { shouldValidate: true });
+                  clearErrors("country_id");
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {selectableCountries.map((cur) => (
+                    <SelectItem key={cur.id} value={cur.country!.id.toString()}>
+                      {cur.country!.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.country_id && (
+                <p className="text-sm text-red-600">{errors.country_id.message}</p>
+              )}
+            </div>
+          )}
+
+          {/* 3. Description */}
           <div className="space-y-2">
             <label
               htmlFor="description"
@@ -184,7 +250,7 @@ export function ProgramCreateDialog({
             )}
           </div>
 
-          {/* 3. Banner Image */}
+          {/* 4. Banner Image */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700 block">
               Banner Image (Optional)
@@ -226,7 +292,7 @@ export function ProgramCreateDialog({
             )}
           </div>
 
-          {/* 4. Program Website */}
+          {/* 5. Program Website */}
           <div className="space-y-2">
             <label
               htmlFor="program_url"
@@ -247,7 +313,7 @@ export function ProgramCreateDialog({
             )}
           </div>
 
-          {/* 5. Sustainable Development Goals */}
+          {/* 6. Sustainable Development Goals */}
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700 block">
               Sustainable Development Goals
@@ -291,7 +357,7 @@ export function ProgramCreateDialog({
             )}
           </div>
 
-          {/* 6. Contact Information */}
+          {/* 7. Contact Information */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-gray-900 border-b pb-2">
               Contact Information

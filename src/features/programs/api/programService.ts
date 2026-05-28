@@ -93,6 +93,10 @@ export const programService = {
       formData.append("program_url", input.program_url);
     }
 
+    if (input.country_id) {
+      formData.append("country_id", input.country_id.toString());
+    }
+
     if (input.sdg_ids && input.sdg_ids.length > 0) {
       input.sdg_ids.forEach((id, index) => {
         formData.append(`sdg_ids[${index}]`, id.toString());

@@ -26,7 +26,14 @@ export function ProgramsPage() {
   const navigate = useNavigate();
   const { hasCountryScope } = useAuthStore();
   const user = useAuthStore((s) => s.user);
-  const isCountryActive = user?.country_user_role?.country?.active ?? true;
+  const countryUserRoles = user?.country_user_roles?.length
+    ? user.country_user_roles
+    : user?.country_user_role
+      ? [user.country_user_role]
+      : [];
+  const isCountryActive = countryUserRoles.length
+    ? countryUserRoles.some((cur) => cur.country?.active)
+    : true;
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
@@ -150,6 +157,7 @@ export function ProgramsPage() {
                 >
                   Program Info
                 </DataTableHead>
+                <DataTableHead>Country</DataTableHead>
                 <DataTableHead>Contact</DataTableHead>
                 <DataTableHead>Donors</DataTableHead>
                 <DataTableHead>Implementing Agencies</DataTableHead>

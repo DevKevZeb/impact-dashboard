@@ -48,6 +48,7 @@ export interface ProgramCreateInput {
   description: string;
   banner_img?: File;
   program_url?: string;
+  country_id?: number;
   contact: {
     first_name: string;
     last_name: string;

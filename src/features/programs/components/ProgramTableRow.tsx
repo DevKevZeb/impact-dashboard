@@ -52,6 +52,11 @@ export function ProgramTableRow({
   const donors = program.program_summary?.donors ?? [];
   const agencies = program.program_summary?.implementing_agencies ?? [];
   const budget = program.program_summary?.budget ?? 0;
+  const countryAssignments = program.country_user_roles ?? [];
+  const primaryCountry = countryAssignments[0]?.country?.name ?? "-";
+  const extraCountries = countryAssignments.length > 1
+    ? `+${countryAssignments.length - 1} more`
+    : "";
 
   const renderSummaryList = (items: { id: number; name: string }[]) => {
     if (items.length === 0) {
@@ -102,6 +107,15 @@ export function ProgramTableRow({
           <div className="text-sm text-gray-500 line-clamp-2 mt-1">
             {program.description}
           </div>
+        </div>
+      </DataTableCell>
+
+      <DataTableCell>
+        <div className="text-sm">
+          <div className="font-medium text-gray-900 truncate">{primaryCountry}</div>
+          {extraCountries && (
+            <div className="text-xs text-gray-500">{extraCountries}</div>
+          )}
         </div>
       </DataTableCell>
 

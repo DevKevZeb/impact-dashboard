@@ -43,6 +43,29 @@ export function ProgramDetailDialog({
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
+          {/* Country */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+              Country
+            </h3>
+            {program.country_user_roles && program.country_user_roles.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {program.country_user_roles
+                  .map((cur) => cur.country?.name)
+                  .filter((name): name is string => Boolean(name))
+                  .map((name) => (
+                    <span
+                      key={name}
+                      className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium"
+                    >
+                      {name}
+                    </span>
+                  ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">N/A</p>
+            )}
+          </div>
           {/* Banner Image */}
           {bannerUrl && (
             <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
