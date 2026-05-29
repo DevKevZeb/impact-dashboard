@@ -72,7 +72,7 @@ export default function ProjectDashboardPage() {
   }
 
   return (
-    <div className="p-6 flex flex-col gap-4 h-full overflow-hidden">
+    <div className="page-container">
 
       <div className="title-container shrink-0">
         <div>
@@ -93,8 +93,6 @@ export default function ProjectDashboardPage() {
           className="search-default"
         />
       </div>
-
-      <div className="flex-1 min-h-0">
 
       {showSkeleton ? (
         <TableSkeleton columns={12} />
@@ -125,7 +123,6 @@ export default function ProjectDashboardPage() {
           description={searchTerm ? "Try adjusting your search terms" : "No project dashboard data is currently available."}
         />
       )}
-      </div>
     </div>
   );
 }
