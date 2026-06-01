@@ -16,7 +16,9 @@ export default function PublicNavbar() {
           <img src={logoSrc} alt="PEI ePulse Logo" className="h-18 w-auto"/>
         </Link>
 
-        <PublicDesktopNavbar />
+        <div className="hidden">
+          <PublicDesktopNavbar />
+        </div>
 
         <div className="hidden min-[1290px]:flex items-center gap-3">
           <NavLink to="/register" className="btn-primary flex space-x-2 items-center">

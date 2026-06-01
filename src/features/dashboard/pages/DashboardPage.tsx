@@ -8,6 +8,7 @@ export function DashboardPage() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const isAdmin = (user?.roles ?? []).some((role) => role.name === "admin");
+  const isCountryManager = (user?.roles ?? []).some((role) => role.name === "country-manager");
 
   useEffect(() => {
     if (isAdmin) {
@@ -15,18 +16,19 @@ export function DashboardPage() {
       return;
     }
 
-    if (!isAdmin) {
-      navigate("/app/dashboard");
+    if (isCountryManager) {
+      navigate("/app/country-kpa", { replace: true });
+      return;
     }
-  }, [isAdmin, navigate]);
+
+    navigate("/app/dashboard", { replace: true });
+  }, [isAdmin, isCountryManager, navigate]);
 
   if (isAdmin) {
     return null;
   }
 
-  if (!isAdmin) {
-    return null;
-  }
+  return null;
 
   return (
     <div className="space-y-6">

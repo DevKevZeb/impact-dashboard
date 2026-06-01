@@ -84,7 +84,7 @@ export default function ListProgramsWithProjects(){
         <div className="page-container">
             <div className="title-container">
                 <div>
-                    <h1 className="page-title">Projects assigned</h1>   
+                    <h1 className="page-title">Projects</h1>   
                     <p className="page-description">Click on a program row to expand and manage its projects.</p>
                 </div>
             </div>
