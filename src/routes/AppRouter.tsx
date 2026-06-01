@@ -54,7 +54,8 @@ export function AppRouter() {
     <Routes>
         {/* Public Routes - Login & Register */}
         <Route path="/" element={<PublicRoute><PublicLayout/></PublicRoute>}>
-            <Route index element={<HomePage />} />
+            <Route index element={<LoginPage />} />
+            <Route path="home" element={<HomePage />} />
 
             <Route path="development">
                 <Route path="programs" element={<ProgramsPublicPage/>} />

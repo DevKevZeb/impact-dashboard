@@ -116,6 +116,13 @@ export function Sidebar({ isOpen, collapseToZero = false }: SidebarProps) {
   const hasScope = useAuthStore((state) => state.hasScope);
   const isAdmin = (user?.roles ?? []).some((role) => role.name === "admin");
 
+  const isRouteActive = (targetPath: string) => {
+    return (
+      location.pathname === targetPath ||
+      location.pathname.startsWith(`${targetPath}/`)
+    );
+  };
+
   const toggleExpand = (title: string) => {
     setExpandedItems((prev) =>
       prev.includes(title)
@@ -181,8 +188,8 @@ export function Sidebar({ isOpen, collapseToZero = false }: SidebarProps) {
       <div className="py-4 flex flex-col gap-1">
         {filteredMenuItems.map((item) => {
           const isActive =
-            item.path === location.pathname ||
-            item.children?.some((child) => child.path === location.pathname);
+            (item.path ? isRouteActive(item.path) : false) ||
+            item.children?.some((child) => isRouteActive(child.path));
 
           const isExpanded = expandedItems.includes(item.title);
           const Icon = item.icon;
@@ -234,8 +241,7 @@ export function Sidebar({ isOpen, collapseToZero = false }: SidebarProps) {
                   )}
                 >
                   {item.children.map((child) => {
-                    const isChildActive =
-                      location.pathname === child.path;
+                    const isChildActive = isRouteActive(child.path);
 
                     return (
                       <Link
