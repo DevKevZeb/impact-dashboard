@@ -179,13 +179,13 @@ export function Sidebar({ isOpen, collapseToZero = false }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-16 bottom-0 z-40 transition-all duration-300 overflow-y-auto",
+        "fixed left-0 top-20 bottom-0 z-40 transition-all duration-300 overflow-y-auto",
         "bg-white border-r",
         isOpen ? "w-64" : collapseToZero ? "w-0" : "w-0 lg:w-20"
       )}
       style={{ borderColor: "var(--color-border)" }}
     >
-      <div className="py-4 flex flex-col gap-1">
+      <div className="pt-6 pb-4 flex flex-col gap-1">
         {filteredMenuItems.map((item) => {
           const isActive =
             (item.path ? isRouteActive(item.path) : false) ||

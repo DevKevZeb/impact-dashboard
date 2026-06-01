@@ -3,7 +3,7 @@
 @layer components {
 
   .navbar-container {
-    @apply fixed top-0 left-0 right-0 z-50 h-16
+    @apply fixed top-0 left-0 right-0 z-50 h-20
            border-b
            shadow-md;
 
