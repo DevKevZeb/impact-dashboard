@@ -27,10 +27,10 @@ export function MainLayout() {
       <div className="h-screen flex flex-col bg-slate-50 overflow-hidden">
         <Navbar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
         <Sidebar isOpen={isSidebarOpen} collapseToZero />
-        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} aria-label={isSidebarOpen ? "Hide sidebar" : "Show sidebar"} className={cn( "fixed top-18 z-40 hidden lg:flex", "items-center justify-center w-8 h-8 rounded-full", "bg-white border border-gray-200 shadow-md -translate-x-1/2", "text-[#1E3291] hover:bg-[#1E3291] hover:text-white hover:border-[#1E3291]", "transition-all duration-300 ease-in-out", isSidebarOpen ? "left-64" : "left-4" )} >
+        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} aria-label={isSidebarOpen ? "Hide sidebar" : "Show sidebar"} className={cn( "fixed top-20 z-40 hidden lg:flex", "items-center justify-center w-8 h-8 rounded-full", "bg-white border border-gray-200 shadow-md -translate-x-1/2", "text-[#1E3291] hover:bg-[#1E3291] hover:text-white hover:border-[#1E3291]", "transition-all duration-300 ease-in-out", isSidebarOpen ? "left-64" : "left-4" )} >
           {isSidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
         </button>
-        <main className={cn( "pt-16 flex-1 min-h-0 overflow-x-hidden overflow-y-auto transition-all duration-300 ease-in-out", isSidebarOpen ? "lg:pl-64" : "lg:pl-0" )} >
+        <main className={cn( "pt-20 flex-1 min-h-0 overflow-x-hidden overflow-y-auto transition-all duration-300 ease-in-out", isSidebarOpen ? "lg:pl-64" : "lg:pl-0" )} >
           <Outlet />
         </main>
       </div>
@@ -43,9 +43,9 @@ export function MainLayout() {
       
       <Sidebar isOpen={isSidebarOpen} />
       
-      <main 
+      <main
         className={cn(
-          "pt-16 transition-all duration-300 ease-in-out min-h-screen",
+          "pt-20 transition-all duration-300 ease-in-out min-h-screen",
           isSidebarOpen ? "lg:pl-64" : "lg:pl-20"
         )}
       >
