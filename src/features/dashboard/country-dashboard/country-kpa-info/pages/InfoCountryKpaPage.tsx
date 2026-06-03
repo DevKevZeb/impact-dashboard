@@ -29,6 +29,7 @@ import { handleExportExcel } from "../utils/csvKPAsSaver";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useAuthStore } from "@/features/auth/store/authStore";
 import { useCountryKpas } from "../../country-kpa/hooks/useCountryKpas";
+import { useCountryDashboardImplementation } from "../hooks/useCountryDashboardImplementation";
 import { useActivateCountry } from "@/features/country/hooks/country/useActivateCountry";
 import { ConfirmationDialog } from "@/shared/components/ConfirmationDialog";
 import { CheckCircle } from "lucide-react";
@@ -84,9 +85,15 @@ export default function InfoCountryKpaPage() {
 
   // Only fetch data if user has access
   const { data, isLoading, refetch: refetchTree } = useCountryKpas(id, 1, -1, hasAccess);
-  const { data: dataTable, isLoading: isLoadingTable, refetch } = useCountryKpas(id, tablePage, tablePerPage, hasAccess);
+  const { data: dataTable, isLoading: isLoadingTable, refetch: refetchImplementation } = useCountryDashboardImplementation(id, tablePage, tablePerPage, hasAccess);
 
-  const kpasTable = !Array.isArray(dataTable) && dataTable?.kpas ? dataTable.kpas : [];
+  const kpasTable = dataTable?.kpas ?? [];
+  const tablePagination = dataTable?.pagination ?? {
+    total: 0,
+    per_page: tablePerPage,
+    current_page: tablePage,
+    last_page: 1,
+  };
   const kpas = !Array.isArray(data) && data?.kpas ? data.kpas : [];
   const country = Array.isArray(data) ? undefined : data?.country;
 
@@ -148,7 +155,7 @@ export default function InfoCountryKpaPage() {
     }
     setFreezeConfirmOpen(false);
     await refetchTree();
-    await refetch();
+    await refetchImplementation();
   };
 
   const initial = useMemo<TreeNode[]>(() => {
@@ -208,7 +215,7 @@ export default function InfoCountryKpaPage() {
     setParentKpaId(null);
 
     refreshNode?.(parentKey);
-    await refetch();
+    await Promise.all([refetchTree(), refetchImplementation()]);
 
   }
 
@@ -225,7 +232,7 @@ export default function InfoCountryKpaPage() {
     await deleteStrategicOutputMutation(strategicOutputToDelete.id);
     refreshNode?.(`ck-${strategicOutputToDelete.countryKpaId}`);
     setStrategicOutputToDelete(null);
-    await refetch();
+    await Promise.all([refetchTree(), refetchImplementation()]);
   };
 
   const handleCreateMeasure = async (node: TreeNode) => {
@@ -257,7 +264,7 @@ export default function InfoCountryKpaPage() {
     setParentStrategicOutputId(null);
 
     refreshNode?.(parentKey);
-    await refetch();
+    await Promise.all([refetchTree(), refetchImplementation()]);
   }
 
   const handleCreateIndicator = async (node: TreeNode) => {
@@ -295,7 +302,7 @@ export default function InfoCountryKpaPage() {
     setEditIndicator(null);
     setParentMeasureId(null);
     refreshNode?.(parentKey);
-    await refetch();
+    await Promise.all([refetchTree(), refetchImplementation()]);
   }
 
   const handleDeleteMeasure = (node: any) => {
@@ -311,7 +318,7 @@ export default function InfoCountryKpaPage() {
     await deleteMeasureMutation(measureToDelete.id);
     refreshNode?.(`so-${measureToDelete.strategicOutputId}`);
     setMeasureToDelete(null);
-    await refetch();
+    await Promise.all([refetchTree(), refetchImplementation()]);
   };
 
   const handleDeleteIndicator = (node: any) => {
@@ -327,7 +334,7 @@ export default function InfoCountryKpaPage() {
     await deleteIndicatorMutation(indicatorToDelete.id);
     refreshNode?.(`m-${indicatorToDelete.measureId}`);
     setIndicatorToDelete(null);
-    await refetch();
+    await Promise.all([refetchTree(), refetchImplementation()]);
   };
 
 
@@ -376,14 +383,14 @@ export default function InfoCountryKpaPage() {
         </>
       )}
 
-      {!isLoadingTable ? dataTable && !Array.isArray(dataTable) && kpasTable.length > 0 && (
+      {!isLoadingTable ? kpasTable.length > 0 && (
         <CountryKpasTable
           kpas={kpasTable}
           page={tablePage}
           setPage={setTablePage}
           perPage={tablePerPage}
           setPerPage={setTablePerPage}
-          pagination={dataTable?.pagination}
+          pagination={tablePagination}
         />
       ) : <TableSkeleton columns={7}/>}
 
