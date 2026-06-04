@@ -22,6 +22,17 @@ export function MainLayout() {
     }
   }, [isSidebarOpen]);
 
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)");
+
+    const handleResize = (e: MediaQueryListEvent) => {
+      setIsSidebarOpen(e.matches);
+    };
+
+    mql.addEventListener("change", handleResize);
+    return () => mql.removeEventListener("change", handleResize);
+  }, []);
+
   if (isDashboard) {
     return (
       <div className="h-screen flex flex-col bg-slate-50 overflow-hidden">

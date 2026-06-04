@@ -299,9 +299,11 @@
 
       return (
         <>
-          <button type="button" className="btn-edit-tree cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEdit(); }} >
-            <Edit2 className="w-4" />
-          </button>
+          {(!countryActive || type === "i") && (
+            <button type="button" className="btn-edit-tree cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEdit(); }} >
+              <Edit2 className="w-4" />
+            </button>
+          )}
           {!countryActive && (
             <button type="button" className="btn-delete-tree cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDelete(); }} >
               <Trash2 className="w-4" />
@@ -364,12 +366,6 @@
                         {node.meta?.type}
                       </span>
                     </span>
-                    <span className="flex items-center gap-1 text-slate-600">
-                        implementation:
-                        <span className="rounded-md bg-[#61C8E7]/20 px-2 py-0.5 text-xs font-semibold text-[#1E3291]">
-                          100%
-                        </span>
-                      </span>
                   </span>
                 ) : (
                   <span className="flex items-center gap-2 text-slate-700">
