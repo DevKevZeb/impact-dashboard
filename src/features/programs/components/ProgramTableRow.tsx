@@ -68,7 +68,7 @@ export function ProgramTableRow({
     return (
       <div className="space-y-1">
         {visibleItems.map((item) => (
-          <div key={item.id} className="text-sm font-medium text-gray-900 truncate max-w-[11rem]" title={item.name}>
+          <div key={item.id} className="text-xs font-medium text-gray-900 truncate max-w-[7rem]" title={item.name}>
             {item.name}
           </div>
         ))}
@@ -87,7 +87,7 @@ export function ProgramTableRow({
       
       <DataTableCell>
         {bannerUrl ? (
-          <div className="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden">
+          <div className="w-10 h-10 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden">
             <img
               src={bannerUrl}
               alt={program.name}
@@ -95,23 +95,23 @@ export function ProgramTableRow({
             />
           </div>
         ) : (
-          <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
+          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
             <span className="text-xs text-gray-400">No image</span>
           </div>
         )}
       </DataTableCell>
 
       <DataTableCell>
-        <div className="max-w-xs">
-          <div className="font-medium text-gray-900 truncate">{program.name}</div>
-          <div className="text-sm text-gray-500 line-clamp-2 mt-1">
+          <div className="max-w-[9rem]">
+          <div className="font-medium text-gray-900 truncate text-xs">{program.name}</div>
+          <div className="text-xs text-gray-500 line-clamp-2 mt-0.5">
             {program.description}
           </div>
         </div>
       </DataTableCell>
 
       <DataTableCell>
-        <div className="text-sm">
+        <div className="text-xs">
           <div className="font-medium text-gray-900 truncate">{primaryCountry}</div>
           {extraCountries && (
             <div className="text-xs text-gray-500">{extraCountries}</div>
@@ -120,11 +120,11 @@ export function ProgramTableRow({
       </DataTableCell>
 
       <DataTableCell>
-        <div className="text-sm">
-          <div className="font-medium text-gray-900">
+        <div className="text-xs">
+          <div className="font-medium text-gray-900 whitespace-nowrap">
             {program.contact.first_name} {program.contact.last_name}
           </div>
-          <div className="text-xs text-gray-500">{program.contact.title}</div>
+          <div className="text-[11px] text-gray-500">{program.contact.title}</div>
         </div>
       </DataTableCell>
 
@@ -137,7 +137,7 @@ export function ProgramTableRow({
       </DataTableCell>
 
       <DataTableCell>
-        <span className="text-sm font-semibold text-gray-900">
+        <span className="text-xs font-semibold text-gray-900">
           ${budget.toLocaleString(undefined, { maximumFractionDigits: 2 })}
         </span>
       </DataTableCell>
