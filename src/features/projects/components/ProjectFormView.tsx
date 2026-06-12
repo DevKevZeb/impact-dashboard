@@ -52,8 +52,14 @@ function ProgressPercentInput({
     max: number;
     onCommit: (nextValue: number) => void;
 }) {
-    const [inputValue, setInputValue] = useState(value === 0 || value == null ? "0" : String(value));
+    const [inputValue, setInputValue] = useState(value === 0 || value == null ? "0" : String(Math.round(value)));
     const [isFocused, setIsFocused] = useState(false);
+
+    useEffect(() => {
+        if (!isFocused) {
+            setInputValue(value === 0 || value == null ? "0" : String(Math.round(value)));
+        }
+    }, [value, isFocused]);
 
     const commitValue = (rawValue: string) => {
         const normalizedValue = rawValue.replace(/\D/g, "").replace(/^0+(?=\d)/, "");

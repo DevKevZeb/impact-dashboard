@@ -247,10 +247,10 @@ function ProgramProjectsSubTable({ programId, isCountryActive, searchTerm }: Pro
                                 <div className="w-full bg-[#61C8E7]/70 rounded-full h-4 relative overflow-hidden">
                                     <div
                                         className="bg-[#1E3291] h-4 rounded-full transition-all duration-500"
-                                        style={{ width: `${project.progress}%` }}
+                                        style={{ width: `${Math.round(project.progress)}%` }}
                                     />
                                     <span className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold text-white">
-                                        {project.progress}%
+                                        {Math.round(project.progress)}%
                                     </span>
                                 </div>
                             </td>
