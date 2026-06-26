@@ -366,6 +366,14 @@
                         {node.meta?.type}
                       </span>
                     </span>
+                    {node.meta?.type === "TD" && (
+                      <span className="flex items-center gap-1 text-slate-600">
+                        actual value:
+                        <span className="rounded-md bg-[#61C8E7]/20 px-2 py-0.5 text-xs font-semibold text-[#1E3291]">
+                          {Number(node.meta?.actual_value ?? 0).toFixed(2)}
+                        </span>
+                      </span>
+                    )}
                   </span>
                 ) : (
                   <span className="flex items-center gap-2 text-slate-700">
