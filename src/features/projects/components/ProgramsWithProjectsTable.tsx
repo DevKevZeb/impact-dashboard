@@ -30,6 +30,14 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
     const canCreate = useHasScope("projects:create");
     const user = useAuthStore((state) => state.user);
     const isCountryManager = (user?.roles ?? []).some((role) => role.name === "country-manager");
+    const pmCountryRoles = user?.country_user_roles?.length
+        ? user.country_user_roles
+        : user?.country_user_role
+            ? [user.country_user_role]
+            : [];
+    const pmCountryActive = pmCountryRoles.length
+        ? pmCountryRoles.every((cur) => cur.country?.active)
+        : true;
     const [expandedPrograms, setExpandedPrograms] = useState<number[]>([]);
 
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -116,7 +124,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                                     )}
                                     <td className="table-cell text-center font-medium">{program.projects_count ?? 0}</td>
                                     <td className="table-cell" onClick={(e) => e.stopPropagation()}>
-                                        {canCreate && isProgramCountryActive && (
+                                        {canCreate && pmCountryActive && isProgramCountryActive && (
                                             <Link
                                                 to={`/app/projects/new/${program.id}`}
                                                 className="btn-secondary-table inline-flex items-center gap-1"

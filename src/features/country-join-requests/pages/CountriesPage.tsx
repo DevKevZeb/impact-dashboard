@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { Loader2, Globe } from 'lucide-react';
 import { useAuthStore } from '@/features/auth/store/authStore';
+import { useCountryStatus } from '@/features/country/hooks/useCountryStatus';
 import { useActiveCountries } from '../hooks/useActiveCountries';
 import { useCountryJoinRequests } from '../hooks/useCountryJoinRequests';
 import { CountryCard } from '../components/CountryCard';
@@ -16,6 +17,7 @@ import type { Country, JoinRequest } from '../types';
 export function CountriesPage() {
   const user = useAuthStore((state) => state.user);
   const isProjectManager = (user?.roles ?? []).some((r) => r.name === 'project-manager');
+  const { isActive: isCountryActive } = useCountryStatus();
 
   const { data: countriesResp, isLoading: loadingCountries } = useActiveCountries();
   const { data: requestsResp } = useCountryJoinRequests();
@@ -72,6 +74,7 @@ export function CountriesPage() {
                 key={country.id}
                 country={country}
                 request={requestsByCountryId.get(country.id)}
+                canJoin={isCountryActive}
               />
             ))}
           </DataTableBody>

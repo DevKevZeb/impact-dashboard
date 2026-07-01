@@ -28,6 +28,9 @@ import TableSkeleton from "@/components/ui/TableSkeleton";
 import { handleExportExcel } from "../utils/csvKPAsSaver";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useAuthStore } from "@/features/auth/store/authStore";
+import { getCurrentUser } from "@/features/auth/api/auth.api";
+import { authKeys } from "@/features/auth/api/authQueries";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCountryKpas } from "../../country-kpa/hooks/useCountryKpas";
 import { useCountryDashboardImplementation } from "../hooks/useCountryDashboardImplementation";
 import { useActivateCountry } from "@/features/country/hooks/country/useActivateCountry";
@@ -97,6 +100,15 @@ export default function InfoCountryKpaPage() {
   const kpas = !Array.isArray(data) && data?.kpas ? data.kpas : [];
   const country = Array.isArray(data) ? undefined : data?.country;
 
+  const syncedCountry = (
+    user?.country_user_roles?.length
+      ? user.country_user_roles
+      : user?.country_user_role
+        ? [user.country_user_role]
+        : []
+  ).find((cur) => cur.country?.id === id)?.country;
+  const isCountryActive = syncedCountry ? !!syncedCountry.active : (country?.active ?? false);
+
   const [selected, setSelected] = useState<string | null>(null);
   const [refreshNode, setRefreshNode] = useState<((key: string) => Promise<void>) | null>(null);
 
@@ -131,6 +143,7 @@ export default function InfoCountryKpaPage() {
 
   const { mutateAsync: activateCountryMutation, isPending: isActivating } = useActivateCountry();
   const { user: storeUser, setUser } = useAuthStore();
+  const queryClient = useQueryClient();
 
   const [freezeConfirmOpen, setFreezeConfirmOpen] = useState(false);
 
@@ -140,19 +153,24 @@ export default function InfoCountryKpaPage() {
 
   const handleConfirmFreeze = async () => {
     await activateCountryMutation(id);
-    // Update auth store so isCountryActive reflects immediately across all views
-    if (storeUser?.country_user_role?.country) {
-      setUser({
-        ...storeUser,
-        country_user_role: {
-          ...storeUser.country_user_role,
-          country: {
-            ...storeUser.country_user_role.country,
-            active: true,
+    try {
+      const fresh = await getCurrentUser();
+      setUser(fresh);
+    } catch {
+      if (storeUser?.country_user_role?.country) {
+        setUser({
+          ...storeUser,
+          country_user_role: {
+            ...storeUser.country_user_role,
+            country: {
+              ...storeUser.country_user_role.country,
+              active: true,
+            },
           },
-        },
-      });
+        });
+      }
     }
+    queryClient.invalidateQueries({ queryKey: authKeys.me() });
     setFreezeConfirmOpen(false);
     await refetchTree();
     await refetchImplementation();
@@ -368,7 +386,7 @@ export default function InfoCountryKpaPage() {
             selectionKey={selected} 
             onSelectionChange={(key) => setSelected(key)} 
             loadChildren={loadChildrenCountryKpaTree} 
-            countryActive={country?.active ?? false}
+            countryActive={isCountryActive}
             onFreezeCountry={handleFreezeCountry}
             onAddStrategicOutput={handleCreateStrategicOutput} 
             onEditStrategicOutput={handleEditStrategicOutput}
@@ -403,7 +421,7 @@ export default function InfoCountryKpaPage() {
       )}  
 
       {parentMeasureId !== null && (
-        <CreateIndicatorModal open={openIndicatorModal} indicator={editIndicator} parentMeasureId={parentMeasureId} onClose={() => setOpenIndicatorModal(false)} onSubmit={handleSubmitIndicator} disableTypeChange={country?.active ?? false}/>
+        <CreateIndicatorModal open={openIndicatorModal} indicator={editIndicator} parentMeasureId={parentMeasureId} onClose={() => setOpenIndicatorModal(false)} onSubmit={handleSubmitIndicator} disableTypeChange={isCountryActive}/>
       )}
 
       <DeleteIndicatorDialog indicatorName={indicatorToDelete?.name ?? ""} open={!!indicatorToDelete} onOpenChange={(open) => { if (!open) setIndicatorToDelete(null); }} onConfirm={handleConfirmDeleteIndicator} isLoading={isDeletingIndicator} />

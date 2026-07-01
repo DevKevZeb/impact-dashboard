@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { login, getCurrentUser, refreshToken } from "./auth.api";
 import type { LoginInput } from "../types/auth.types";
 import { useAuthStore } from "../store/authStore";
@@ -40,9 +41,24 @@ export function useCurrentUser() {
     queryKey: authKeys.me(),
     queryFn: getCurrentUser,
     enabled: isAuthenticated,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 15 * 1000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
+    refetchInterval: 15 * 1000,
     retry: false,
   });
+}
+
+export function useSyncCurrentUser() {
+  const setUser = useAuthStore((state) => state.setUser);
+  const { data } = useCurrentUser();
+
+  useEffect(() => {
+    if (data) {
+      setUser(data);
+    }
+  }, [data, setUser]);
 }
 
 export function useRefreshToken() {
