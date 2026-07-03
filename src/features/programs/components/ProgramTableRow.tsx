@@ -3,6 +3,7 @@ import type { Program } from "../types/program.types";
 import { DataTableRow, DataTableCell } from "@/shared/components/table";
 import { Can } from "@/features/auth/components/Can";
 import { SCOPES } from "@/features/auth/utils/permissions";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 interface ProgramTableRowProps {
   program: Program;
@@ -57,6 +58,7 @@ export function ProgramTableRow({
   const extraCountries = countryAssignments.length > 1
     ? `+${countryAssignments.length - 1} more`
     : "";
+  const currencyCode = countryAssignments[0]?.country?.currency_code ?? "";
 
   const renderSummaryList = (items: { id: number; name: string }[]) => {
     if (items.length === 0) {
@@ -138,7 +140,7 @@ export function ProgramTableRow({
 
       <DataTableCell>
         <span className="text-xs font-semibold text-gray-900">
-          ${budget.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+          {formatCurrency(budget, currencyCode)}
         </span>
       </DataTableCell>
 

@@ -1,6 +1,7 @@
 export interface ProjectDashboardRow {
   id: number;
   country: string | null;
+  currency_code: string;
   measure: string | null;
   program_title: string | null;
   project_title: string;
