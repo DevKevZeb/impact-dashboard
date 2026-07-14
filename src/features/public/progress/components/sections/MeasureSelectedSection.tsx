@@ -58,7 +58,7 @@ export default function MeasureSelectedSection({ measureId, measureName }: Props
 				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data && <Contribution100BarChart data={data.donors ?? []} title="Donors' contribution to implementation" exportFileName="measure-donors" />}
+					{data && <Contribution100BarChart data={data.donors ?? []} title="Donors' contribution to implementation" exportFileName="measure-donors" emptyMessage={`No donors have been reported for Measure: ${measureName} yet.`} />}
 				</div>
 			</div>
 
@@ -72,7 +72,7 @@ export default function MeasureSelectedSection({ measureId, measureName }: Props
 				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data && <Contribution100BarChart data={data.agencies ?? []} title="Implementing agencies' contribution to implementation" exportFileName="measure-agencies" />}
+					{data && <Contribution100BarChart data={data.agencies ?? []} title="Implementing agencies' contribution to implementation" exportFileName="measure-agencies" emptyMessage={`No implementing agencies have been reported for Measure: ${measureName} yet.`} />}
 				</div>
 			</div>
 		</div>

@@ -4,7 +4,7 @@ import * as htmlToImage from "html-to-image";
 import { Menu } from "lucide-react";
 
 interface Data {id: number; name: string; contribution:number}
-interface SimpleBarChartProps{ data:Data[]}
+interface SimpleBarChartProps{ data:Data[]; emptyMessage?: string }
 
 const X_TICK_FONT_SIZE = 11;
 const X_TICK_MAX_CHARS = 14;
@@ -39,7 +39,7 @@ const CustomXAxisTick = ({ x, y, payload }: { x?: number; y?: number; payload?: 
     );
 };
 
-export default function SimpleBarChart({data}:SimpleBarChartProps){
+export default function SimpleBarChart({data, emptyMessage = "No contributors reported yet."}:SimpleBarChartProps){
     const containerRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
     const [open, setOpen] = useState(false);
@@ -116,27 +116,31 @@ export default function SimpleBarChart({data}:SimpleBarChartProps){
                     </div>
                 )}
             </div>
-            <ResponsiveContainer width="100%" height={400}  >
-                <BarChart responsive data={data} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3"/>
-                    <XAxis
-                        dataKey="name"
-                        axisLine={false}
-                        tickLine={false}
-                        interval={0}
-                        height={74}
-                        tick={<CustomXAxisTick />}
-                    />
-                    <YAxis width="auto" axisLine={false} tickLine={false} tick={{ fill: "#9CA3AF", fontSize: 12 }} allowDecimals={false} domain={[0,100]} tickFormatter={(value) => `${value}%`}/>
-                    <Tooltip formatter={(value) => `${value}%`} contentStyle={{borderRadius: "8px", border: "1px solid #E5E7EB", boxShadow: "0 4px 12px rgba(0,0,0,0.08)", fontSize: 12}}  cursor={{ fill: "rgba(0,0,0,0.04)" }}/>
-                    <Legend formatter={() => "Contribution percent"}/>
-                    <Bar dataKey="contribution" label={{ position: "top", formatter: (value: any) => typeof value === "number" ? `${value}%` : value }}>
-                        {data.map((_, index) => (
-                            <Cell key={`cell-${index}`} fill={`hsl(${index * 40}, 70%, 55%)`}/>
-                        ))}
-                    </Bar>
-                </BarChart>
-            </ResponsiveContainer>
+            {data.length === 0 ? (
+                <p className="text-sm text-gray-400 py-6 text-center">{emptyMessage}</p>
+            ) : (
+                <ResponsiveContainer width="100%" height={400}  >
+                    <BarChart responsive data={data} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
+                        <CartesianGrid strokeDasharray="3 3"/>
+                        <XAxis
+                            dataKey="name"
+                            axisLine={false}
+                            tickLine={false}
+                            interval={0}
+                            height={74}
+                            tick={<CustomXAxisTick />}
+                        />
+                        <YAxis width="auto" axisLine={false} tickLine={false} tick={{ fill: "#9CA3AF", fontSize: 12 }} allowDecimals={false} domain={[0,100]} tickFormatter={(value) => `${value}%`}/>
+                        <Tooltip formatter={(value) => `${value}%`} contentStyle={{borderRadius: "8px", border: "1px solid #E5E7EB", boxShadow: "0 4px 12px rgba(0,0,0,0.08)", fontSize: 12}}  cursor={{ fill: "rgba(0,0,0,0.04)" }}/>
+                        <Legend formatter={() => "Contribution percent"}/>
+                        <Bar dataKey="contribution" label={{ position: "top", formatter: (value: any) => typeof value === "number" ? `${value}%` : value }}>
+                            {data.map((_, index) => (
+                                <Cell key={`cell-${index}`} fill={`hsl(${index * 40}, 70%, 55%)`}/>
+                            ))}
+                        </Bar>
+                    </BarChart>
+                </ResponsiveContainer>
+            )}
         </div>
     )
 }

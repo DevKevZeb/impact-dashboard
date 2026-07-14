@@ -61,7 +61,7 @@ export default function StrategicOutputSelectedSection({ strategicOutputId, stra
 				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data && <Contribution100BarChart data={data.donors ?? []} title="Donors' contribution to implementation" exportFileName="strategic-output-donors" />}
+					{data && <Contribution100BarChart data={data.donors ?? []} title="Donors' contribution to implementation" exportFileName="strategic-output-donors" emptyMessage={`No donors have been reported for Strategic Output: ${strategicOutputName} yet.`} />}
 				</div>
 			</div>
 
@@ -75,7 +75,7 @@ export default function StrategicOutputSelectedSection({ strategicOutputId, stra
 				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data && <Contribution100BarChart data={data.agencies ?? []} title="Implementing agencies' contribution to implementation" exportFileName="strategic-output-agencies" />}
+					{data && <Contribution100BarChart data={data.agencies ?? []} title="Implementing agencies' contribution to implementation" exportFileName="strategic-output-agencies" emptyMessage={`No implementing agencies have been reported for Strategic Output: ${strategicOutputName} yet.`} />}
 				</div>
 			</div>
 		</div>

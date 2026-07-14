@@ -58,7 +58,7 @@ export default function KpaSelectedSection({ kpaId, kpaName }: Props) {
 				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data && <Contribution100BarChart data={data.donors ?? []} title="Donors' contribution to implementation" exportFileName="kpa-donors" />}
+					{data && <Contribution100BarChart data={data.donors ?? []} title="Donors' contribution to implementation" exportFileName="kpa-donors" emptyMessage={`No donors have been reported for KPA: ${kpaName} yet.`} />}
 				</div>
 			</div>
 
@@ -72,7 +72,7 @@ export default function KpaSelectedSection({ kpaId, kpaName }: Props) {
 				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data && <Contribution100BarChart data={data.agencies ?? []} title="Implementing agencies' contribution to implementation" exportFileName="kpa-agencies" />}
+					{data && <Contribution100BarChart data={data.agencies ?? []} title="Implementing agencies' contribution to implementation" exportFileName="kpa-agencies" emptyMessage={`No implementing agencies have been reported for KPA: ${kpaName} yet.`} />}
 				</div>
 			</div>
 		</div>

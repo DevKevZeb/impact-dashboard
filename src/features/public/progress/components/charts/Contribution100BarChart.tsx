@@ -13,28 +13,26 @@ interface Contribution100BarChartProps {
   data: ContributionDatum[];
   title: string;
   exportFileName?: string;
+  emptyMessage?: string;
 }
 
-// Fixed categorical order, validated for adjacent-pair CVD separation (see dataviz skill palette).
-// Never cycle/reassign by position — color is derived from the contributor's own id below,
-// so the same donor/agency keeps the same color across every chart it appears in.
 const CATEGORICAL_PALETTE = [
-  "#2a78d6", // blue
-  "#1baf7a", // aqua
-  "#eda100", // yellow
-  "#008300", // green
-  "#4a3aa7", // violet
-  "#e34948", // red
-  "#e87ba4", // magenta
-  "#eb6834", // orange
+  "#2a78d6",
+  "#1baf7a",
+  "#eda100",
+  "#008300", 
+  "#4a3aa7", 
+  "#e34948", 
+  "#e87ba4",
+  "#eb6834", 
 ];
-const OTHER_COLOR = "#898781"; // muted ink — reserved for the folded "Other" bucket, never a real contributor
-const UNATTRIBUTED_COLOR = "#e1e0d9"; // hairline neutral — the untracked remainder, not a contributor
-const UNATTRIBUTED_EPSILON = 0.05; // ignore rounding dust below this
-const GAP_COLOR = "#ffffff"; // matches the card surface, used to cut a real gap between segments
-const GAP_VALUE = 0.4; // out of 100, per inter-segment gap
+const OTHER_COLOR = "#898781";
+const UNATTRIBUTED_COLOR = "#e1e0d9";
+const UNATTRIBUTED_EPSILON = 0.05;
+const GAP_COLOR = "#ffffff";
+const GAP_VALUE = 0.4;
 const MAX_SEGMENTS = 8;
-const MIN_INLINE_LABEL_PCT = 10; // segments narrower than this only show in legend/tooltip
+const MIN_INLINE_LABEL_PCT = 10;
 
 function colorForContributorId(id: number | string): string {
   const numericId =
@@ -84,10 +82,16 @@ function prepareSegments(data: ContributionDatum[]): Segment[] {
   return segments;
 }
 
-export default function Contribution100BarChart({ data, title, exportFileName = "contribution-chart" }: Contribution100BarChartProps) {
+export default function Contribution100BarChart({ data, title, exportFileName = "contribution-chart", emptyMessage = "No contributors reported yet." }: Contribution100BarChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+
+  // Distinct from a partial-attribution measure (some real donors + an "Unattributed"
+  // remainder, which prepareSegments below renders as a normal segment): this is the
+  // true empty case — nobody has been recorded as a contributor at all — and gets its
+  // own message instead of a misleading "Unattributed 100%" bar.
+  const hasAnyContributor = (data ?? []).some((d) => d.contribution > 0);
 
   const segments = useMemo(() => prepareSegments(data ?? []), [data]);
   const segmentById = useMemo(() => new Map(segments.map((s) => [String(s.id), s])), [segments]);
@@ -180,8 +184,8 @@ export default function Contribution100BarChart({ data, title, exportFileName = 
 
       <h3 className="text-sm font-medium text-gray-700 mb-4 pr-10">{title}</h3>
 
-      {segments.length === 0 ? (
-        <p className="text-sm text-gray-400 py-6 text-center">No contributors reported yet.</p>
+      {!hasAnyContributor ? (
+        <p className="text-sm text-gray-400 py-6 text-center">{emptyMessage}</p>
       ) : (
         <>
           <ResponsiveContainer width="100%" height={64}>
