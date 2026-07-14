@@ -4,6 +4,7 @@ export function mapProjectDashboardRow(raw: any): ProjectDashboardRow {
   return {
     id: Number(raw.id),
     country: raw.country ?? null,
+    currency_code: raw.currency_code ?? "",
     measure: raw.measure ?? null,
     program_title: raw.program_title ?? null,
     project_title: raw.project_title ?? "",

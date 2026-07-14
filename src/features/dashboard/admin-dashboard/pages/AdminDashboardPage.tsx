@@ -9,6 +9,7 @@ import { ProjectCommentModal } from "@/features/dashboard/project-dashboard/comp
 import { useProgramsByCountry } from "@/features/programs/api/programQueries";
 import type { Program } from "@/features/programs/types/program.types";
 import type { ProjectDashboardRow } from "@/features/dashboard/project-dashboard/types/projectDashboard.types";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 const formatDate = (date: string) => {
   if (!date) return "N/A";
@@ -17,15 +18,6 @@ const formatDate = (date: string) => {
     month: "short",
     day: "numeric",
   });
-};
-
-const formatCurrency = (amount: number) => {
-  if (!amount) return "N/A";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-  }).format(amount);
 };
 
 const formatWeight = (weight: number) => Number(weight ?? 0).toFixed(5);
@@ -190,7 +182,7 @@ function AdminCountrySection({ countryId, countryName }: AdminCountrySectionProp
                           <td className="px-4 py-2 text-gray-900">{row.project_title}</td>
                           <td className="px-4 py-2">{row.lead_project_manager ?? "N/A"}</td>
                           <td className="px-4 py-2">{row.lead_implementing_agency ?? "N/A"}</td>
-                          <td className="px-4 py-2">{formatCurrency(row.budget)}</td>
+                          <td className="px-4 py-2">{formatCurrency(row.budget, row.currency_code)}</td>
                           <td className="px-4 py-2">{formatDate(row.start_date)}</td>
                           <td className="px-4 py-2">{formatDate(row.end_date)}</td>
                           <td className="px-4 py-2">{row.measure ?? "N/A"}</td>

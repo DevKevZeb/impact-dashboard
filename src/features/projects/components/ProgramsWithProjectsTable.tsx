@@ -1,4 +1,5 @@
 import { useHasScope } from "@/features/auth/hooks/useHasScope";
+import { useAuthStore } from "@/features/auth/store/authStore";
 import type { Program } from "@/features/programs/types/program.types";
 import { useDeleteProject } from "../hooks/useDeleteProject";
 import { useProjects } from "../hooks/useProjects";
@@ -27,6 +28,16 @@ interface Props {
 
 export default function ProgramsWithProjectsTable({ programs, pagination, page, perPage, setPage, setPerPage, searchTerm }: Props) {
     const canCreate = useHasScope("projects:create");
+    const user = useAuthStore((state) => state.user);
+    const isCountryManager = (user?.roles ?? []).some((role) => role.name === "country-manager");
+    const pmCountryRoles = user?.country_user_roles?.length
+        ? user.country_user_roles
+        : user?.country_user_role
+            ? [user.country_user_role]
+            : [];
+    const pmCountryActive = pmCountryRoles.length
+        ? pmCountryRoles.every((cur) => cur.country?.active)
+        : true;
     const [expandedPrograms, setExpandedPrograms] = useState<number[]>([]);
 
     const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -43,6 +54,8 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
         setExpandedPrograms((prev) => [...prev, programId]);
     };
 
+    const colSpan = isCountryManager ? 5 : 6;
+
     return (
         <div className="table-wrapper">
             <table className="table-default">
@@ -51,7 +64,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                         <th>#</th>
                         <th>PROGRAM NAME</th>
                         <th>COUNTRY</th>
-                        <th>ROLE</th>
+                        {!isCountryManager && <th>ROLE</th>}
                         <th className="text-center!">PROJECTS ASSIGNED</th>
                         <th>ACTIONS</th>
                     </tr>
@@ -96,20 +109,22 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                                             <span className="text-xs text-gray-400">—</span>
                                         )}
                                     </td>
-                                    <td className="table-cell">
-                                        <span
-                                            className={
-                                                isEditor
-                                                    ? "inline-flex rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700"
-                                                    : "inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700"
-                                            }
-                                        >
-                                            {isEditor ? "Editor" : "Invited"}
-                                        </span>
-                                    </td>
+                                    {!isCountryManager && (
+                                        <td className="table-cell">
+                                            <span
+                                                className={
+                                                    isEditor
+                                                        ? "inline-flex rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700"
+                                                        : "inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700"
+                                                }
+                                            >
+                                                {isEditor ? "Editor" : "Invited"}
+                                            </span>
+                                        </td>
+                                    )}
                                     <td className="table-cell text-center font-medium">{program.projects_count ?? 0}</td>
                                     <td className="table-cell" onClick={(e) => e.stopPropagation()}>
-                                        {canCreate && isProgramCountryActive && (
+                                        {canCreate && pmCountryActive && isProgramCountryActive && (
                                             <Link
                                                 to={`/app/projects/new/${program.id}`}
                                                 className="btn-secondary-table inline-flex items-center gap-1"
@@ -124,7 +139,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
 
                                 {isExpanded && (
                                     <tr className="bg-sky-50/50">
-                                        <td colSpan={6} className="p-0">
+                                        <td colSpan={colSpan} className="p-0">
                                             <ProgramProjectsSubTable programId={program.id} isCountryActive={isProgramCountryActive} searchTerm={searchTerm} />
                                         </td>
                                     </tr>
@@ -134,7 +149,7 @@ export default function ProgramsWithProjectsTable({ programs, pagination, page, 
                     })}
 
                     <tr className="table-pagination-row">
-                        <td colSpan={6} className="table-pagination-cell">
+                        <td colSpan={colSpan} className="table-pagination-cell">
                             <div className="table-pagination-container">
                                 <div className="flex items-center gap-2 text-xs text-gray-600">
                                     <span>Rows per page:</span>
@@ -247,10 +262,10 @@ function ProgramProjectsSubTable({ programId, isCountryActive, searchTerm }: Pro
                                 <div className="w-full bg-[#61C8E7]/70 rounded-full h-4 relative overflow-hidden">
                                     <div
                                         className="bg-[#1E3291] h-4 rounded-full transition-all duration-500"
-                                        style={{ width: `${project.progress}%` }}
+                                        style={{ width: `${Math.round(project.progress)}%` }}
                                     />
                                     <span className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold text-white">
-                                        {project.progress}%
+                                        {Math.round(project.progress)}%
                                     </span>
                                 </div>
                             </td>

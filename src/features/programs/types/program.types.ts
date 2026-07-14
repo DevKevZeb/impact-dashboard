@@ -38,7 +38,7 @@ export interface Program {
   updated_at?: string;
   projects_count?: number;
   can_edit?: boolean;
-  country_user_roles?: { id: number; country: { id: number; name: string; active?: boolean } | null }[];
+  country_user_roles?: { id: number; country: { id: number; name: string; active?: boolean; currency_code: string } | null }[];
 }
 
 

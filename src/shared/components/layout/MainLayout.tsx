@@ -3,9 +3,12 @@ import { Outlet, useMatch } from "react-router-dom";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Navbar } from "./Navbar";
 import { Sidebar } from "./Sidebar";
+import { CountryStatusBanner } from "@/shared/components/CountryStatusBanner";
+import { useSyncCurrentUser } from "@/features/auth/api/authQueries";
 import { cn } from "@/lib/utils";
 
 export function MainLayout() {
+  useSyncCurrentUser();
   const isDashboard = useMatch("/app/dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
     if (typeof window === "undefined") {
@@ -22,6 +25,17 @@ export function MainLayout() {
     }
   }, [isSidebarOpen]);
 
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)");
+
+    const handleResize = (e: MediaQueryListEvent) => {
+      setIsSidebarOpen(e.matches);
+    };
+
+    mql.addEventListener("change", handleResize);
+    return () => mql.removeEventListener("change", handleResize);
+  }, []);
+
   if (isDashboard) {
     return (
       <div className="h-screen flex flex-col bg-slate-50 overflow-hidden">
@@ -31,6 +45,7 @@ export function MainLayout() {
           {isSidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
         </button>
         <main className={cn( "pt-20 flex-1 min-h-0 overflow-x-hidden overflow-y-auto transition-all duration-300 ease-in-out", isSidebarOpen ? "lg:pl-64" : "lg:pl-0" )} >
+          <CountryStatusBanner />
           <Outlet />
         </main>
       </div>
@@ -49,6 +64,7 @@ export function MainLayout() {
           isSidebarOpen ? "lg:pl-64" : "lg:pl-20"
         )}
       >
+        <CountryStatusBanner />
         <div className="container mx-auto p-6 max-w-7xl animate-in fade-in duration-500">
           <Outlet />
         </div>

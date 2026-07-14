@@ -32,8 +32,13 @@ export function ProgramsPage() {
       ? [user.country_user_role]
       : [];
   const isCountryActive = countryUserRoles.length
-    ? countryUserRoles.some((cur) => cur.country?.active)
+    ? countryUserRoles.every((cur) => cur.country?.active)
     : true;
+  const activeCountryIds = new Set(
+    countryUserRoles
+      .filter((cur) => cur.country?.active)
+      .map((cur) => cur.country!.id)
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
@@ -180,7 +185,13 @@ export function ProgramsPage() {
                     onDelete={handleDelete}
                     onInvite={handleInvite}
                     canInvite={hasCountryScope}
-                    isCountryActive={program.country_user_roles?.some(cur => cur.country?.active === true) ?? false}
+                    isCountryActive={
+                      program.country_user_roles?.some(
+                        (cur) =>
+                          cur.country?.active === true ||
+                          (cur.country ? activeCountryIds.has(cur.country.id) : false)
+                      ) ?? false
+                    }
                   />
                 );
               })}

@@ -4,6 +4,7 @@ import { ProjectProgressModal } from "./ProjectProgressModal";
 import { ProjectWeightModal } from "./ProjectWeightModal";
 import { ProjectCommentModal } from "./ProjectCommentModal";
 import { TruncatedCell } from "@/shared/components/table";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 interface Pagination {
   total: number;
@@ -34,13 +35,6 @@ const formatDate = (date: string) =>
     month: "short",
     day: "numeric",
   });
-
-const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-  }).format(amount);
 
 const formatWeight = (weight: number) => Number(weight ?? 0).toFixed(2);
 
@@ -235,7 +229,7 @@ export default function ProjectDashboardTable({
                 <td className="table-cell max-w-40"><TruncatedCell text={row.project_title} maxWidth="max-w-[160px]" /></td>
                 <td className="table-cell max-w-[150px]"><TruncatedCell text={row.lead_project_manager ?? "—"} maxWidth="max-w-[130px]" /></td>
                 <td className="table-cell max-w-[150px]"><TruncatedCell text={row.lead_implementing_agency ?? "—"} maxWidth="max-w-[130px]" /></td>
-                <td className="table-cell">{formatCurrency(row.budget)}</td>
+                <td className="table-cell">{formatCurrency(row.budget, row.currency_code)}</td>
                 <td className="table-cell">{formatDate(row.start_date)}</td>
                 <td className="table-cell">{formatDate(row.end_date)}</td>
                 <td className="table-cell min-w-[150px]">

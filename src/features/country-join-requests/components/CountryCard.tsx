@@ -10,9 +10,10 @@ import {
 interface Props {
   country: Country;
   request?: JoinRequest;
+  canJoin?: boolean;
 }
 
-export function CountryCard({ country, request }: Props) {
+export function CountryCard({ country, request, canJoin = true }: Props) {
   const mutation = useSubmitJoinRequest();
   const isPending = request?.status === 'pending';
   const isApproved = request?.status === 'approved';
@@ -34,9 +35,18 @@ export function CountryCard({ country, request }: Props) {
             Request Send
           </span>
         ) : (
-          <Button onClick={handleRequest} disabled={mutation.isPending} size="sm">
-            {mutation.isPending ? 'Sending...' : 'Join'}
-          </Button>
+          <span
+            className="inline-block"
+            title={
+              canJoin
+                ? undefined
+                : 'Your country dashboard must be confirmed before you can join other countries.'
+            }
+          >
+            <Button onClick={handleRequest} disabled={!canJoin || mutation.isPending} size="sm">
+              {mutation.isPending ? 'Sending...' : 'Join'}
+            </Button>
+          </span>
         )}
       </DataTableCell>
     </DataTableRow>

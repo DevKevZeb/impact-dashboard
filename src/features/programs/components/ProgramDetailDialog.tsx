@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/dialog";
 import { X, Mail, Phone, Globe, Calendar } from "lucide-react";
 import type { Program } from "../types/program.types";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 interface ProgramDetailDialogProps {
   program: Program | null;
@@ -23,6 +24,9 @@ export function ProgramDetailDialog({
   const bannerUrl = program.banner_img
     ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '')}/storage/${program.banner_img}`
     : null;
+
+  const currencyCode = program.country_user_roles?.[0]?.country?.currency_code ?? "";
+  const budget = program.program_summary?.budget ?? 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -149,7 +153,7 @@ export function ProgramDetailDialog({
                 <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                   <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">Budget</div>
                   <div className="mt-2 text-lg font-bold text-gray-900">
-                    ${program.program_summary.budget.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                    {formatCurrency(budget, currencyCode)}
                   </div>
                 </div>
 

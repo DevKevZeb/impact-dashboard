@@ -87,7 +87,7 @@ export function DataTableHead({
 
   return (
     <th
-      className={`px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wide ${
+      className={`px-3 py-2 text-left text-xs font-semibold text-white uppercase tracking-wide ${
         sortable ? "cursor-pointer select-none hover:bg-[#142161] transition-colors" : ""
       } ${className}`}
       onClick={sortable ? onSort : undefined}
@@ -101,5 +101,5 @@ export function DataTableHead({
 }
 
 export function DataTableCell({ children, className = "" }: DataTableCellProps) {
-  return <td className={`px-4 py-3 text-sm text-gray-700 ${className}`}>{children}</td>;
+  return <td className={`px-3 py-2 text-xs text-gray-700 ${className}`}>{children}</td>;
 }
