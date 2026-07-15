@@ -68,11 +68,6 @@ function prepareSegments(data: ContributionDatum[]): Segment[] {
     segments = [...head, { id: "other", name: `Other (${tail.length})`, contribution: otherTotal, color: OTHER_COLOR }];
   }
 
-  // Contributor shares reflect the share of PROJECT FUNDING attributed to a known
-  // donor/agency (Sd(x) = Cd(x)/I(x)) — a project's donors don't have to add up to
-  // its full budget (PDF: Σδ ≤ 1, not necessarily = 1). When they fall short, make the
-  // gap an explicit "Unattributed" segment instead of silently stretching the real
-  // segments to fill the bar — that would misrepresent partial data as full coverage.
   const attributedTotal = segments.reduce((sum, seg) => sum + seg.contribution, 0);
   const unattributed = 100 - attributedTotal;
   if (unattributed > UNATTRIBUTED_EPSILON) {
@@ -87,11 +82,7 @@ export default function Contribution100BarChart({ data, title, exportFileName = 
   const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
 
-  // Distinct from a partial-attribution measure (some real donors + an "Unattributed"
-  // remainder, which prepareSegments below renders as a normal segment): this is the
-  // true empty case — nobody has been recorded as a contributor at all — and gets its
-  // own message instead of a misleading "Unattributed 100%" bar.
-  const hasAnyContributor = (data ?? []).some((d) => d.contribution > 0);
+ const hasAnyContributor = (data ?? []).some((d) => d.contribution > 0);
 
   const segments = useMemo(() => prepareSegments(data ?? []), [data]);
   const segmentById = useMemo(() => new Map(segments.map((s) => [String(s.id), s])), [segments]);

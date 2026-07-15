@@ -8,7 +8,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import { useRef, useState, useEffect } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 import * as htmlToImage from "html-to-image";
 
@@ -16,6 +16,12 @@ interface HorizontalBarChartProps {
   name: string;
   implementation: number;
 }
+
+const CustomXTick = ({ x, y, payload }: { x?: number; y?: number; payload?: { value?: number | string } }) => (
+  <text x={x} y={(y ?? 0) + 10} textAnchor="middle" fill="#000000" fontSize={12}>
+    {`${payload?.value}%`}
+  </text>
+);
 
 export function HorizontalBarChart({ name, implementation }: HorizontalBarChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,7 +37,7 @@ export function HorizontalBarChart({ name, implementation }: HorizontalBarChartP
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  const exportPNG = async () => {
+  const exportPNG = useCallback(async () => {
     if (!containerRef.current) return;
     setOpen(false);
     try {
@@ -48,9 +54,9 @@ export function HorizontalBarChart({ name, implementation }: HorizontalBarChartP
     } catch (err) {
       console.error("PNG export failed:", err);
     }
-  };
+  }, []);
 
-  const exportSVG = async () => {
+  const exportSVG = useCallback(async () => {
     if (!containerRef.current) return;
     setOpen(false);
     try {
@@ -70,9 +76,9 @@ export function HorizontalBarChart({ name, implementation }: HorizontalBarChartP
     } catch (err) {
       console.error("SVG export failed:", err);
     }
-  };
+  }, []);
 
-  const exportCSV = () => {
+  const exportCSV = useCallback(() => {
     const csvContent = `Name,Implementation\n${name},${implementation.toFixed(2)}%`;
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -82,18 +88,13 @@ export function HorizontalBarChart({ name, implementation }: HorizontalBarChartP
     }).click();
     URL.revokeObjectURL(url);
     setOpen(false);
-  };
+  }, [name, implementation]);
+
+  const handlePNGClick = useCallback(() => { void exportPNG(); }, [exportPNG]);
+  const handleSVGClick = useCallback(() => { void exportSVG(); }, [exportSVG]);
+  const handleCSVClick = useCallback(() => { exportCSV(); }, [exportCSV]);
 
   const chartData = [{ name, value: implementation }];
-
-  const CustomXTick = (props: any) => {
-    const { x, y, payload } = props;
-    return (
-      <text x={x} y={y + 10} textAnchor="middle" fill="#000000" fontSize={12}>
-        {`${payload.value}%`}
-      </text>
-    );
-  };
 
   return (
     <div ref={containerRef} className="relative h-[350px] w-full bg-white border border-gray-200 shadow-sm rounded-xl py-4 px-2" >
@@ -103,19 +104,15 @@ export function HorizontalBarChart({ name, implementation }: HorizontalBarChartP
         </button>
         {open && (
           <div className="absolute top-10 right-0 bg-white border border-gray-200 rounded-lg shadow-lg p-1.5 min-w-44">
-            {[
-              { label: "Download PNG", fn: exportPNG },
-              { label: "Download SVG", fn: exportSVG },
-              { label: "Download CSV", fn: exportCSV },
-            ].map(({ label, fn }) => (
-              <button
-                key={label}
-                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md cursor-pointer"
-                onClick={fn}
-              >
-                {label}
-              </button>
-            ))}
+            <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md cursor-pointer" onClick={handlePNGClick}>
+              Download PNG
+            </button>
+            <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md cursor-pointer" onClick={handleSVGClick}>
+              Download SVG
+            </button>
+            <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md cursor-pointer" onClick={handleCSVClick}>
+              Download CSV
+            </button>
           </div>
         )}
       </div>

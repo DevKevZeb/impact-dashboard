@@ -2,7 +2,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 import * as htmlToImage from "html-to-image";
 
@@ -61,7 +61,7 @@ export function StackBarChart({ data }: Props) {
     return () => document.removeEventListener("mousedown", h);
   }, [open]);
 
-  const exportPNG = async () => {
+  const exportPNG = useCallback(async () => {
     if (!containerRef.current) return;
     setOpen(false);
     try {
@@ -77,9 +77,9 @@ export function StackBarChart({ data }: Props) {
     } catch (err) {
         console.error("PNG export failed:", err);
     }
-  };
+  }, []);
 
-  const exportSVG = async () => {
+  const exportSVG = useCallback(async () => {
       if (!containerRef.current) return;
       setOpen(false);
       try {
@@ -92,9 +92,9 @@ export function StackBarChart({ data }: Props) {
       } catch (err) {
           console.error("SVG export failed:", err);
       }
-  };
+  }, []);
 
-  const exportCSV = () => {
+  const exportCSV = useCallback(() => {
     if (!chartData.length) return;
     const headers = ["KPA", ...beneficiaries.map((b) => b.name)];
     const rows = chartData.map((r) =>
@@ -110,7 +110,11 @@ export function StackBarChart({ data }: Props) {
     }).click();
     URL.revokeObjectURL(url);
     setOpen(false);
-  };
+  }, [chartData, beneficiaries]);
+
+  const handlePNGClick = useCallback(() => { void exportPNG(); }, [exportPNG]);
+  const handleSVGClick = useCallback(() => { void exportSVG(); }, [exportSVG]);
+  const handleCSVClick = useCallback(() => { exportCSV(); }, [exportCSV]);
 
   return (
     <div ref={containerRef} className="relative w-full bg-white p-6 rounded-xl border border-gray-200 shadow-sm" >
@@ -120,12 +124,9 @@ export function StackBarChart({ data }: Props) {
         </button>
         {open && (
           <div className="absolute top-10 right-0 bg-white border border-gray-200 rounded-lg shadow-lg p-1.5 min-w-44">
-            {[{label: "Download PNG", fn: exportPNG }, { label: "Download SVG", fn: exportSVG }, { label: "Download CSV", fn: exportCSV }].map(({ label, fn }) => (
-              <button key={label}
-                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
-                onClick={fn}
-              >{label}</button>
-            ))}
+            <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md" onClick={handlePNGClick}>Download PNG</button>
+            <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md" onClick={handleSVGClick}>Download SVG</button>
+            <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md" onClick={handleCSVClick}>Download CSV</button>
           </div>
         )}
       </div>    

@@ -1,6 +1,7 @@
 import useKpaSelected from "../../hooks/useKpaSelected";
 import { HorizontalBarChart } from "../charts/HorizontalBarChart";
-import Contribution100BarChart from "../charts/Contribution100BarChart";
+import HorizontalMultiBarChart from "../charts/HorizontalMultiBarChart";
+import { mapContributionToChartData } from "../../mappers/contribution.data.mapper";
 
 type Props = { kpaId: number; kpaName: string; sort?: string; };
 
@@ -58,7 +59,7 @@ export default function KpaSelectedSection({ kpaId, kpaName }: Props) {
 				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data && <Contribution100BarChart data={data.donors ?? []} title="Donors' contribution to implementation" exportFileName="kpa-donors" emptyMessage={`No donors have been reported for KPA: ${kpaName} yet.`} />}
+					{data && <HorizontalMultiBarChart data={mapContributionToChartData(data.donors)} label="Contribution percent" emptyMessage={`No donors have been reported for KPA: ${kpaName} yet.`} />}
 				</div>
 			</div>
 
@@ -72,7 +73,7 @@ export default function KpaSelectedSection({ kpaId, kpaName }: Props) {
 				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data && <Contribution100BarChart data={data.agencies ?? []} title="Implementing agencies' contribution to implementation" exportFileName="kpa-agencies" emptyMessage={`No implementing agencies have been reported for KPA: ${kpaName} yet.`} />}
+					{data && <HorizontalMultiBarChart data={mapContributionToChartData(data.agencies)} label="Contribution percent" emptyMessage={`No implementing agencies have been reported for KPA: ${kpaName} yet.`} />}
 				</div>
 			</div>
 		</div>
