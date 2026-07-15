@@ -1,7 +1,8 @@
 import useCountrySelected from "../../hooks/useCountrySelected";
 import { HorizontalBarChart } from "../charts/HorizontalBarChart";
-import SimpleBarChart from "../charts/SimpleBarChart";
+import HorizontalMultiBarChart from "../charts/HorizontalMultiBarChart";
 import { StackBarChart } from "../charts/StackBarChart";
+import { mapContributionToChartData } from "../../mappers/contribution.data.mapper";
 
 type Props = { countryId: number; countryName: string };
 
@@ -73,7 +74,7 @@ export default function CountrySelectedSection({ countryId, countryName }: Props
 				<div className="w-5/7 md:w-3/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data?.agencies && <SimpleBarChart data={data.agencies}/>}
+					{data && <HorizontalMultiBarChart data={mapContributionToChartData(data.agencies)} label="Contribution percent" emptyMessage={`No implementing agencies have been reported for ${countryName} yet.`} />}
 				</div>
 			</div>
 
@@ -87,7 +88,7 @@ export default function CountrySelectedSection({ countryId, countryName }: Props
 				<div className="w-5/7 md:w-3/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data?.donors && <SimpleBarChart data={data.donors}/>}
+					{data && <HorizontalMultiBarChart data={mapContributionToChartData(data.donors)} label="Contribution percent" emptyMessage={`No donors have been reported for ${countryName} yet.`} />}
 				</div>
 			</div>
 		</div>

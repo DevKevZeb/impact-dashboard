@@ -1,5 +1,7 @@
 import useKpaSelected from "../../hooks/useKpaSelected";
 import { HorizontalBarChart } from "../charts/HorizontalBarChart";
+import HorizontalMultiBarChart from "../charts/HorizontalMultiBarChart";
+import { mapContributionToChartData } from "../../mappers/contribution.data.mapper";
 
 type Props = { kpaId: number; kpaName: string; sort?: string; };
 
@@ -44,6 +46,34 @@ export default function KpaSelectedSection({ kpaId, kpaName }: Props) {
 						<span>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(data.resource)}</span>
 						</span>
 					)}
+				</div>
+			</div>
+
+			<div className="w-full flex justify-center py-7">
+				<div className="w-5/7">
+					<h1 className="third-head-label">Donor partners' contribution to implementation</h1>
+                    <h3 className="mt-6">{`This statistic quantifies, in percentage terms, the contribution made by each donor partner to the ${data?.implementation ?? 0}% implemented so far of KPA: ${kpaName}.`}</h3>
+				</div>
+			</div>
+			<div className="w-full flex flex-col items-center py-7 justify-center">
+				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
+					{isLoading && <p>Loading...</p>}
+					{error && <p>Error loading data</p>}
+					{data && <HorizontalMultiBarChart data={mapContributionToChartData(data.donors)} label="Contribution percent" emptyMessage={`No donors have been reported for KPA: ${kpaName} yet.`} />}
+				</div>
+			</div>
+
+			<div className="w-full flex justify-center py-7">
+				<div className="w-5/7">
+					<h1 className="third-head-label">Implementing agencies' contribution to implementation</h1>
+                    <h3 className="mt-6">{`This statistic quantifies, in percentage terms, the contribution made by each implementing agency to the ${data?.implementation ?? 0}% implemented so far of KPA: ${kpaName}.`}</h3>
+				</div>
+			</div>
+			<div className="w-full flex flex-col items-center py-7 justify-center">
+				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
+					{isLoading && <p>Loading...</p>}
+					{error && <p>Error loading data</p>}
+					{data && <HorizontalMultiBarChart data={mapContributionToChartData(data.agencies)} label="Contribution percent" emptyMessage={`No implementing agencies have been reported for KPA: ${kpaName} yet.`} />}
 				</div>
 			</div>
 		</div>

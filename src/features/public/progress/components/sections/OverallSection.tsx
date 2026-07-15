@@ -1,7 +1,8 @@
 import useOverall from "../../hooks/useOverall";
 import { HorizontalBarChart } from "../charts/HorizontalBarChart";
-import SimpleBarChart from "../charts/SimpleBarChart";
+import HorizontalMultiBarChart from "../charts/HorizontalMultiBarChart";
 import { StackBarChart } from "../charts/StackBarChart";
+import { mapContributionToChartData } from "../../mappers/contribution.data.mapper";
 
 interface OverallSectionProps {
     countryId?: number;
@@ -72,7 +73,7 @@ export default function OverallSection({ countryId }: OverallSectionProps){
                 <div className="w-full max-w-4xl px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center gap-6 sm:gap-10">
                     {isLoading && <p>Loading...</p>}
                     {error && <p>Error loading data</p>}
-                    {data && <SimpleBarChart data={data?.agencies}/>}
+                    {data && <HorizontalMultiBarChart data={mapContributionToChartData(data.agencies)} label="Contribution percent" emptyMessage="No implementing agencies have been reported yet." />}
                 </div>
             </div>
 
@@ -86,7 +87,7 @@ export default function OverallSection({ countryId }: OverallSectionProps){
                 <div className="w-full max-w-4xl px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center gap-6 sm:gap-10">
                     {isLoading && <p>Loading...</p>}
                     {error && <p>Error loading data</p>}
-                    {data && <SimpleBarChart data={data?.donors}/>}
+                    {data && <HorizontalMultiBarChart data={mapContributionToChartData(data.donors)} label="Contribution percent" emptyMessage="No donors have been reported yet." />}
                 </div>
             </div>
         </div>

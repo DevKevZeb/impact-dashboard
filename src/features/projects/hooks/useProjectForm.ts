@@ -63,20 +63,20 @@ export function useProjectForm( mode: Mode, programId: number, project?: Project
     const agencies = useWatch({ control, name: "agencies" });
     const indicators = useWatch({ control, name: "indicators" });
 
-    const getTotalContributionUsed = () => {
-        const donorsTotal = donors?.reduce((s, d) => s + (d?.contribution ?? 0), 0) ?? 0;
-        const agenciesTotal = agencies?.reduce((s, a) => s + (a?.contribution ?? 0), 0) ?? 0;
-        return donorsTotal + agenciesTotal;
-    };
+    const getTotalDonorsContributionUsed = () =>
+        donors?.reduce((s, d) => s + (d?.contribution ?? 0), 0) ?? 0;
+
+    const getTotalAgenciesContributionUsed = () =>
+        agencies?.reduce((s, a) => s + (a?.contribution ?? 0), 0) ?? 0;
 
     const getMaxForDonor = (index: number) => {
         const current = donors?.[index]?.contribution ?? 0;
-        return Math.max(0, 100 - (getTotalContributionUsed() - current));
+        return Math.max(0, 100 - (getTotalDonorsContributionUsed() - current));
     };
 
     const getMaxForAgency = (index: number) => {
         const current = agencies?.[index]?.contribution ?? 0;
-        return Math.max(0, 100 - (getTotalContributionUsed() - current));
+        return Math.max(0, 100 - (getTotalAgenciesContributionUsed() - current));
     };
     const excludedDonorIds = (donors ?? [])
     .map((d) => d?.id)
