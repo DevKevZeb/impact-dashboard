@@ -153,7 +153,7 @@ export default function ProgramsPublicPage() {
         <div>
             <Banner
                 title="E-commerce Programs"
-                description="Search and find information on development partner programs and projects which support e-commerce in the Pacific"
+                description="Search and find information on national development partner programs and projects which support e-commerce in the Pacific"
                 image="https://pacificecommerce.org/wp-content/uploads/2022/04/banner-450.png"
             />
             <div className="flex flex-col items-center justify-center pb-20">
@@ -276,13 +276,13 @@ export default function ProgramsPublicPage() {
 
                         {/* Selector independiente */}
                         <div className="flex flex-col gap-2 lg:max-w-xs w-full">
-                            <p className="text-sm font-semibold text-slate-700 mb-1.5">Program State</p>
+                            <p className="text-sm font-semibold text-slate-700 mb-1.5">Program Status</p>
                             <Controller control={control} name="program_state"
                                 render={({ field }) => (
                                     <AsyncSearchSelect<ProgramState>
                                         value={field.value ?? DEFAULT_SELECT_OPTION}
                                         onChange={(value) => field.onChange(value ?? DEFAULT_SELECT_OPTION)}
-                                        placeholder="Search by Program State"
+                                        placeholder="Search by Program Status"
                                         fetchOptions={fetchProgramStatesForSelect}
                                         getOptionLabel={(option) => option.name}
                                         getOptionKey={(option) => option.id}
