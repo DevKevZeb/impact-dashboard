@@ -107,7 +107,7 @@ export default function ProgressPublicPage(){
     };
     return(
         <div className="mb-20">
-            <Banner title="Progress" description="Find out where we are with our Pacific Regional E-commerce Strategy" image="https://pacificecommerce.org/wp-content/uploads/2022/04/banner-450.png"/>
+            <Banner title="Progress" description="Find out where we are with our Pacific National E-commerce Strategy" image="https://pacificecommerce.org/wp-content/uploads/2022/04/banner-450.png"/>
             <div className="flex flex-col items-center justify-center pb-20">
                 <form className="w-5/7 flex flex-col py-14" onSubmit={handleSubmit(onSubmit)}>
                     <div className="w-1/3">

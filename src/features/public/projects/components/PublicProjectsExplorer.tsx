@@ -259,13 +259,13 @@ export default function PublicProjectsExplorer({
 
           {/* Selector independiente */}
           <div className="flex flex-col gap-2 lg:max-w-xs w-full">
-            <p className="text-sm font-semibold text-slate-700 mb-1.5">Project State</p>
+            <p className="text-sm font-semibold text-slate-700 mb-1.5">Project Status</p>
             <Controller control={control} name="project_state"
               render={({ field }) => (
                 <AsyncSearchSelect<ProjectState>
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="Search by Project State"
+                  placeholder="Search by Project Status"
                   fetchOptions={fetchProjectStatesForSelect}
                   getOptionLabel={(option) => option.state}
                   getOptionKey={(option) => option.id}
