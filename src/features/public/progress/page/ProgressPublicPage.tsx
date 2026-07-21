@@ -25,7 +25,7 @@ type ProgressFilters = z.infer<typeof filterSchema>;
 
 const OPTIONS = [
   { value: "overall", label: "Overall Strategy" },
-  { value: "kpas_information", label: "KPAs Information" },
+  { value: "kpas_information", label: "Country Information" },
 ];
 
 export default function ProgressPublicPage(){
