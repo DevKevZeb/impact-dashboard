@@ -1,7 +1,7 @@
 import useAllKpasImplementation from "../../hooks/useAllKpas"
 import { mapKpasResourcePercent } from "../../mappers/kpa.data.mapper";
+import { aggregateContributorsByKpa } from "../../mappers/contribution.data.mapper";
 import HorizontalMultiBarChart from "../charts/HorizontalMultiBarChart";
-import { StackBarChart } from "../charts/StackBarChart"; 
 
 const formatMillions = (value: number) => {
   return `$${(value / 1_000_000).toFixed(2)} million dollars`;
@@ -40,8 +40,7 @@ export default function KpaSection({ countryId }: KpaSectionProps){
         <div className="w-5/7">
           <h1 className="third-head-label">Resources allocated</h1>
           <h3 className="mt-6">
-            "Resources allocated" consolidates all the budgets designated for the projects
-            implementing the Measures linked to each Key Priority Area (KPA).
+            This graph presents the total funding allocated to projects implementing the measures, aggregated by Key Priority Area (KPA).
           </h3>
         </div>
       </div>
@@ -59,11 +58,9 @@ export default function KpaSection({ countryId }: KpaSectionProps){
       </div>
       <div className="w-full flex justify-center">
         <div className="w-5/7">
-          <h1 className="third-head-label">Beneficiaries</h1>
+          <h1 className="third-head-label">Implementing agencies’ contribution to implementation</h1>
           <h3 className="mt-6">
-            The visual representations below indicate which Forum Island Countries have benefitted
-            from at least one project implementing a Measure of the Pacific Regional E-commerce
-            Strategy and Roadmap, split by Key Priority Areas (KPA):
+            This statistic shows the percentage contribution of each agency to each Key Priority Area (KPA).
           </h3>
         </div>
       </div>
@@ -71,7 +68,34 @@ export default function KpaSection({ countryId }: KpaSectionProps){
         <div className="w-5/7 lg:w-3/7 flex flex-col justify-center items-center gap-10">
           {isLoading && <p>Loading...</p>}
           {error && <p>Error loading data</p>}
-          {data && <StackBarChart data={data.kpas} />}
+          {data && (
+            <HorizontalMultiBarChart
+              data={aggregateContributorsByKpa(data.kpas, "agencies")}
+              label="Contribution percent"
+              emptyMessage="No implementing agencies have been reported yet."
+            />
+          )}
+        </div>
+      </div>
+      <div className="w-full flex justify-center">
+        <div className="w-5/7">
+          <h1 className="third-head-label">Share of budget provided by donor</h1>
+          <h3 className="mt-6">
+            This statistic shows, in percentage terms, the contribution made by donor partners to the implementation of each Key Priority Area (KPA).
+          </h3>
+        </div>
+      </div>
+      <div className="w-full flex flex-col items-center py-7 justify-center">
+        <div className="w-5/7 lg:w-3/7 flex flex-col justify-center items-center gap-10">
+          {isLoading && <p>Loading...</p>}
+          {error && <p>Error loading data</p>}
+          {data && (
+            <HorizontalMultiBarChart
+              data={aggregateContributorsByKpa(data.kpas, "donors")}
+              label="Contribution percent"
+              emptyMessage="No donors have been reported yet."
+            />
+          )}
         </div>
       </div>
     </div>
