@@ -8,6 +8,7 @@ export function initEmbedMessenger(): void {
 
   const allowedOrigins = [
     "https://orchid-alligator-247477.hostingersite.com",
+    "https://wpw54b6v8n-staging.wpdns.site",
     "https://pacificecommerce.org"
   ];
 
