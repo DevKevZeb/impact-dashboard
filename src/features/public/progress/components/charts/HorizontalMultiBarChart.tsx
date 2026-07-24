@@ -29,6 +29,60 @@ const CustomXTick = ({ x, y, payload }: { x?: number; y?: number; payload?: { va
   </text>
 );
 
+const Y_MAX_CHARS = 22;
+const Y_MAX_LINES = 2;
+
+const wrapToLines = (text: string): string[] => {
+  const words = text.split(/(\s+)/);
+  const lines: string[] = [];
+  let currentLine = "";
+
+  for (const segment of words) {
+    const candidate = currentLine + segment;
+    if (candidate.length <= Y_MAX_CHARS || !currentLine.trim()) {
+      currentLine = candidate;
+    } else {
+      lines.push(currentLine.trimEnd());
+      currentLine = segment.trimStart();
+    }
+  }
+  if (currentLine.trim()) lines.push(currentLine.trimEnd());
+
+  if (lines.length > Y_MAX_LINES) {
+    const truncated = lines.slice(0, Y_MAX_LINES);
+    const last = truncated[Y_MAX_LINES - 1];
+    truncated[Y_MAX_LINES - 1] = last.length >= Y_MAX_CHARS
+      ? last.slice(0, Y_MAX_CHARS - 1) + "…"
+      : last + "…";
+    return truncated;
+  }
+
+  return lines;
+};
+
+const CustomYTick = ({ x, y, payload }: { x?: number; y?: number; payload?: { value?: string } }) => {
+  const lines = wrapToLines(String(payload?.value ?? ""));
+  const lineHeight = 14;
+  const startY = -((lines.length - 1) * lineHeight) / 2;
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      {lines.map((line, i) => (
+        <text
+          key={i}
+          x={-6}
+          y={startY + i * lineHeight}
+          fill="#374151"
+          fontSize={12}
+          textAnchor="end"
+        >
+          {line}
+        </text>
+      ))}
+    </g>
+  );
+};
+
 interface BarLabelProps { x?: number; y?: number; width?: number; height?: number; value?: number | string }
 
 const CustomBarLabel = (props: BarLabelProps) => {
@@ -156,7 +210,7 @@ export default function HorizontalMultiBarChart({ data, label = "Degree of Imple
         <ResponsiveContainer width="100%" height="100%">
           <BarChart layout="vertical" data={chartData} margin={{ top: 10, right: 60, left: 10, bottom: 30 }} barCategoryGap="30%" >
             <XAxis type="number" domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} tick={<CustomXTick />} axisLine={false} tickLine={false} />
-            <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#374151", fontSize: 12 }} width={160} />
+            <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={<CustomYTick />} width={160} />
             <Tooltip
               formatter={(value: number | undefined) => [
                 `${(value ?? 0).toFixed(2)}%`,

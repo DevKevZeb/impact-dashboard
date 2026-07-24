@@ -153,7 +153,7 @@ export default function ProgramsPublicPage() {
         <div>
             <Banner
                 title="E-commerce Programs"
-                description="Search and find information on national development partner programs and projects which support e-commerce in the Pacific"
+                description="Search and find national programs supporting e-commerce development in Pacific Island countries."
                 image="https://pacificecommerce.org/wp-content/uploads/2022/04/banner-450.png"
             />
             <div className="flex flex-col items-center justify-center pb-20">

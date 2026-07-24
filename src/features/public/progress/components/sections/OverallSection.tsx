@@ -1,16 +1,20 @@
 import useOverall from "../../hooks/useOverall";
 import { HorizontalBarChart } from "../charts/HorizontalBarChart";
 import HorizontalMultiBarChart from "../charts/HorizontalMultiBarChart";
-import { StackBarChart } from "../charts/StackBarChart";
 import { mapContributionToChartData } from "../../mappers/contribution.data.mapper";
 
 interface OverallSectionProps {
     countryId?: number;
+    countryName?: string;
 }
 
-export default function OverallSection({ countryId }: OverallSectionProps){
+export default function OverallSection({ countryId, countryName }: OverallSectionProps){
 
     const { data, isLoading, error } = useOverall(countryId);
+
+    const measuresCount = data?.name ? parseInt(String(data.name).match(/^(\d+)/)?.[1] ?? "0", 10) : 0;
+    const country = countryName ?? "the country";
+
     return(
         <div className="w-full flex flex-col justify-center items-center">
             <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8 flex justify-center mb-10 sm:mb-16">
@@ -19,21 +23,21 @@ export default function OverallSection({ countryId }: OverallSectionProps){
             <div className="w-full flex justify-center">
                 <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8">
                     <h1 className="third-head-label">Degree of Implementation</h1>
-                    <h3 className="mt-4 sm:mt-6 text-sm sm:text-base leading-relaxed">{`The degree of implementation is represented as a percentage, indicating the extent of accomplishment of the Pacific Regional E-commerce Strategy and Roadmap by averaging out the progress on implementation of all the ${data?.name}.`}</h3>
+                    <h3 className="mt-4 sm:mt-6 text-sm sm:text-base leading-relaxed">{`The degree of implementation is represented as a percentage, indicating the extent of accomplishment of the ${country} E-commerce Strategy and Roadmap by averaging out the progress on implementation of all the ${measuresCount} measures.`}</h3>
                 </div>
             </div>
             <div className="w-full flex flex-col items-center py-7 justify-center">
                 <div className="w-full max-w-4xl px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center gap-6 sm:gap-10">
                     {isLoading && <p>Loading...</p>}
                     {error && <p>Error loading data</p>}
-                    {data && <HorizontalBarChart name={data.name} implementation={data.implementation}/>}
+                    {data && <HorizontalBarChart name={`${measuresCount} measures`} implementation={data.implementation}/>}
                 </div>
             </div>
 
             <div className="w-full flex justify-center py-7">
                 <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8">
                     <h1 className="third-head-label">Resource Allocated</h1>
-                    <h3 className="mt-4 sm:mt-6 text-sm sm:text-base leading-relaxed">{`"Resources allocated" consolidates all the budgets designated for the projects implementing the ${data?.name} of the Pacific Regional E-commerce Strategy and Roadmap. The figure is expressed in USD.`}</h3>
+                    <h3 className="mt-4 sm:mt-6 text-sm sm:text-base leading-relaxed">{`This number consolidates all the funds designated for the projects implementing the ${measuresCount} measures of the ${country} E-commerce Strategy and Roadmap. The figure is expressed in USD.`}</h3>
                 </div>
             </div>
             <div className="w-full flex flex-col items-center py-7 justify-center">
@@ -51,22 +55,8 @@ export default function OverallSection({ countryId }: OverallSectionProps){
 
             <div className="w-full flex justify-center py-7">
                 <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-                    <h1 className="third-head-label">Beneficiaries</h1>
-                    <h3 className="mt-4 sm:mt-6 text-sm sm:text-base leading-relaxed">The visual representations below indicate which Forum Island Countries have benefitted from at least one project implementing a Measure of the Pacific Regional E-commerce Strategy and Roadmap, split by Key Priority Areas (KPA).</h3>
-                </div>
-            </div>
-            <div className="w-full flex flex-col items-center py-7 justify-center">
-                <div className="w-full max-w-4xl px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center gap-6 sm:gap-10">
-                    {isLoading && <p>Loading...</p>}
-                    {error && <p>Error loading data</p>}
-                    {data && <StackBarChart data={data.beneficiaries}/>}
-                </div>
-            </div>
-
-            <div className="w-full flex justify-center py-7">
-                <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8">
                     <h1 className="third-head-label">Implementing agencies’ contribution to implementation</h1>
-                    <h3 className="mt-4 sm:mt-6 text-sm sm:text-base leading-relaxed">This statistic quantifies, in percentage terms, the contribution made by each agency that implements at least one project under a Measure of the Pacific Regional E-commerce Strategy and Roadmap.</h3>
+                    <h3 className="mt-4 sm:mt-6 text-sm sm:text-base leading-relaxed">{`This statistic quantifies, in percentage terms, the contribution made by each agency that implements at least one project under a measure of the ${country} E-commerce Strategy and Roadmap.`}</h3>
                 </div>
             </div>
             <div className="w-full flex flex-col items-center py-7 justify-center">
@@ -79,8 +69,8 @@ export default function OverallSection({ countryId }: OverallSectionProps){
 
             <div className="w-full flex justify-center py-7">
                 <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-                    <h1 className="third-head-label">Donor partners’ contribution to implementation</h1>
-                    <h3 className="mt-4 sm:mt-6 text-sm sm:text-base leading-relaxed">This statistic quantifies, in percentage terms, the contribution made by each donor partner to the implementation of the KPAs of the Pacific Regional E-commerce Strategy and Roadmap.</h3>
+                    <h1 className="third-head-label">Share of budget provided by donor</h1>
+                    <h3 className="mt-4 sm:mt-6 text-sm sm:text-base leading-relaxed">{`This statistic shows, in percentage terms, the contribution made by donor partners to the implementation of at least one project under a measure of the ${country} E-commerce Strategy and Roadmap.`}</h3>
                 </div>
             </div>
             <div className="w-full flex flex-col items-center py-7 justify-center">

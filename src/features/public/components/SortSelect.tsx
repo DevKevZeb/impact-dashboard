@@ -9,12 +9,14 @@ interface SortSelectProps {
   options: Option[];
   value: string;
   onChange: (option: Option) => void;
+  disabled?: boolean;
 }
 
 export default function SortSelect({
   options,
   value,
   onChange,
+  disabled = false,
 }: SortSelectProps) {
   const [open, setOpen] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -34,8 +36,8 @@ export default function SortSelect({
 
   return (
     <div className="relative">
-      <div ref={ref} className="select-default" data-open={open ? "true" : "false"}>
-        <button type="button" onClick={() => setOpen((o) => !o)} className="input-default input-select-default" >
+      <div ref={ref} className={`select-default ${disabled ? "opacity-50 pointer-events-none" : ""}`} data-open={open ? "true" : "false"}>
+        <button type="button" disabled={disabled} onClick={() => setOpen((o) => !o)} className="input-default input-select-default" >
           <span>{selected?.label}</span>
         </button>
 
