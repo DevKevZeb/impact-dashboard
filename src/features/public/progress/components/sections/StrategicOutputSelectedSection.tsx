@@ -1,6 +1,7 @@
 import useStrategicOutputSelected from "../../hooks/useStrategicOutputSelected";
 import { HorizontalBarChart } from "../charts/HorizontalBarChart";
-import Contribution100BarChart from "../charts/Contribution100BarChart";
+import HorizontalMultiBarChart from "../charts/HorizontalMultiBarChart";
+import { mapContributionToChartData } from "../../mappers/contribution.data.mapper";
 
 type Props = {
 	strategicOutputId: number;
@@ -19,21 +20,21 @@ export default function StrategicOutputSelectedSection({ strategicOutputId, stra
 			<div className="w-full flex justify-center">
 				<div className="w-5/7">
 					<h1 className="third-head-label">Degree of Implementation</h1>
-                    <h3 className="mt-6">{`The degree of implementation is represented as a percentage, indicating the extent of progress made towards the delivery of Strategic Output: ${strategicOutputName} based on the progress made on its Measures.`}</h3>
+                    <h3 className="mt-6">{`The degree of implementation is represented as a percentage, indicating the extent of progress made towards the delivery of this Strategic Output based on the progress made on its Measures.`}</h3>
 				</div>
 			</div>
 			<div className="w-full flex flex-col items-center py-7 justify-center">
 				<div className="w-5/7 md:w-3/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data && <HorizontalBarChart name={data.name} implementation={data.implementation} />}
+					{data && <HorizontalBarChart name={data.name} implementation={data.implementation} displayName="This Strategic Output" />}
 				</div>
 			</div>
 
 			<div className="w-full flex justify-center py-7">
 				<div className="w-5/7">
 					<h1 className="third-head-label">Resource Allocated</h1>
-                    <h3 className="mt-6">{`"Resources allocated" consolidates all the budgets designated for the projects implementing the Measures linked to Strategic Output: ${strategicOutputName}.`}</h3>
+                    <h3 className="mt-6">{`Resources allocated consolidates all the budgets designated for the projects implementing the Measures linked to this Strategic Output.`}</h3>
 				</div>
 			</div>
 			<div className="w-full flex flex-col items-center py-7 justify-center">
@@ -54,28 +55,28 @@ export default function StrategicOutputSelectedSection({ strategicOutputId, stra
 			<div className="w-full flex justify-center py-7">
 				<div className="w-5/7">
 					<h1 className="third-head-label">Donor partners' contribution to implementation</h1>
-                    <h3 className="mt-6">{`This statistic quantifies, in percentage terms, the contribution made by each donor partner to the ${data?.implementation ?? 0}% implemented so far of Strategic Output: ${strategicOutputName}.`}</h3>
+                    <h3 className="mt-6">{`This statistic quantifies, in percentage terms, the contribution made by each donor partner to the ${data?.implementation ?? 0}% implemented so far of this Strategic Output.`}</h3>
 				</div>
 			</div>
 			<div className="w-full flex flex-col items-center py-7 justify-center">
 				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data && <Contribution100BarChart data={data.donors ?? []} title="Donors' contribution to implementation" exportFileName="strategic-output-donors" emptyMessage={`No donors have been reported for Strategic Output: ${strategicOutputName} yet.`} />}
+					{data && <HorizontalMultiBarChart data={mapContributionToChartData(data.donors)} label="Contribution percent" emptyMessage={`No donors have been reported for this Strategic Output yet.`} />}
 				</div>
 			</div>
 
 			<div className="w-full flex justify-center py-7">
 				<div className="w-5/7">
 					<h1 className="third-head-label">Implementing agencies' contribution to implementation</h1>
-                    <h3 className="mt-6">{`This statistic quantifies, in percentage terms, the contribution made by each implementing agency to the ${data?.implementation ?? 0}% implemented so far of Strategic Output: ${strategicOutputName}.`}</h3>
+                    <h3 className="mt-6">{`This statistic quantifies, in percentage terms, the contribution made by each implementing agency to the ${data?.implementation ?? 0}% implemented so far of this Strategic Output.`}</h3>
 				</div>
 			</div>
 			<div className="w-full flex flex-col items-center py-7 justify-center">
 				<div className="w-5/7 flex flex-col justify-center items-center gap-10">
 					{isLoading && <p>Loading...</p>}
 					{error && <p>Error loading data</p>}
-					{data && <Contribution100BarChart data={data.agencies ?? []} title="Implementing agencies' contribution to implementation" exportFileName="strategic-output-agencies" emptyMessage={`No implementing agencies have been reported for Strategic Output: ${strategicOutputName} yet.`} />}
+					{data && <HorizontalMultiBarChart data={mapContributionToChartData(data.agencies)} label="Contribution percent" emptyMessage={`No implementing agencies have been reported for this Strategic Output yet.`} />}
 				</div>
 			</div>
 		</div>

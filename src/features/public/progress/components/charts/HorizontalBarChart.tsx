@@ -4,7 +4,6 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   LabelList,
 } from "recharts";
@@ -15,6 +14,7 @@ import * as htmlToImage from "html-to-image";
 interface HorizontalBarChartProps {
   name: string;
   implementation: number;
+  displayName?: string;
 }
 
 const CustomXTick = ({ x, y, payload }: { x?: number; y?: number; payload?: { value?: number | string } }) => (
@@ -23,7 +23,42 @@ const CustomXTick = ({ x, y, payload }: { x?: number; y?: number; payload?: { va
   </text>
 );
 
-export function HorizontalBarChart({ name, implementation }: HorizontalBarChartProps) {
+interface BarLabelProps { x?: number; y?: number; width?: number; height?: number; value?: number | string }
+
+const CustomBarLabel = (props: BarLabelProps) => {
+  const { x = 0, y = 0, width = 0, height = 0, value } = props;
+  const label = `${Number(value ?? 0).toFixed(2)}%`;
+  const MIN_INSIDE_WIDTH = 55;
+
+  if (width >= MIN_INSIDE_WIDTH) {
+    return (
+      <text
+        x={x + 10}
+        y={y + height / 2 + 1}
+        dominantBaseline="middle"
+        fill="#ffffff"
+        fontSize={13}
+        fontWeight="700"
+      >
+        {label}
+      </text>
+    );
+  }
+  return (
+    <text
+      x={x + width + 6}
+      y={y + height / 2 + 1}
+      dominantBaseline="middle"
+      fill="#374151"
+      fontSize={13}
+      fontWeight="700"
+    >
+      {label}
+    </text>
+  );
+};
+
+export function HorizontalBarChart({ name, implementation, displayName }: HorizontalBarChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -94,7 +129,7 @@ export function HorizontalBarChart({ name, implementation }: HorizontalBarChartP
   const handleSVGClick = useCallback(() => { void exportSVG(); }, [exportSVG]);
   const handleCSVClick = useCallback(() => { exportCSV(); }, [exportCSV]);
 
-  const chartData = [{ name, value: implementation }];
+  const chartData = [{ name: displayName ?? name, value: implementation }];
 
   return (
     <div ref={containerRef} className="relative h-[350px] w-full bg-white border border-gray-200 shadow-sm rounded-xl py-4 px-2" >
@@ -120,11 +155,10 @@ export function HorizontalBarChart({ name, implementation }: HorizontalBarChartP
       <ResponsiveContainer width="100%" height="100%">
         <BarChart layout="vertical" data={chartData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }} >
           <XAxis type="number" domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} tick={<CustomXTick />} axisLine={false} tickLine={false} />
-          <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#374151", fontSize: 12 }} width={80} />
+          <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={false} width={0} />
           <Tooltip formatter={(value: number | undefined) => [ `${(value ?? 0).toFixed(2)}%`, "Degree of Implementation", ]} contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", boxShadow: "0 4px 12px rgba(0,0,0,0.08)", fontSize: 12, }} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
-          <Legend verticalAlign="bottom" height={36} formatter={() => "Degree of Implementation"} wrapperStyle={{ fontSize: 12, color: "#374151" }} />
           <Bar dataKey="value" fill="rgba(59, 130, 246, 0.95)" barSize={150} radius={[0, 4, 4, 0]}>
-            <LabelList dataKey="value" position={"top"} formatter={(value: unknown) => `${Number(value ?? 0).toFixed(2)}%`} style={{ fontSize: 14, fontWeight: "bold", fill: "#000000" }}  />
+            <LabelList dataKey="value" content={<CustomBarLabel />} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

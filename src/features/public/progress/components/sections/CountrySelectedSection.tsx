@@ -32,7 +32,7 @@ export default function CountrySelectedSection({ countryId, countryName }: Props
 			<div className="w-full flex justify-center py-7">
 				<div className="w-5/7">
 					<h1 className="third-head-label">Resource Allocated</h1>
-                    <h3 className="mt-6">{`"Resources allocated" consolidates all the budgets designated for the projects implementing the Key Priority Areas in ${countryName}.`}</h3>
+                    <h3 className="mt-6">{`Resources allocated consolidates all the budgets designated for the projects implementing the Key Priority Areas in ${countryName}.`}</h3>
 				</div>
 			</div>
 			<div className="w-full flex flex-col items-center py-7 justify-center">

@@ -40,6 +40,9 @@ export function AsyncSearchSelect<T>({ value, onChange, fetchOptions, getOptionL
   const handleOpen = () => {
     setOpen(true);
     setEnabled(true);
+    if (value && query === getOptionLabel(value)) {
+      setQuery("");
+    }
   };
 
 
