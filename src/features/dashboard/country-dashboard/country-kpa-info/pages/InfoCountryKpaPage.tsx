@@ -26,6 +26,7 @@ import { useDeleteIndicator } from "@/features/indicator/hooks/useDeleteIndicato
 import CountryKpasTable from "../components/CountryKpasTable";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import { handleExportExcel } from "../utils/csvKPAsSaver";
+import { fetchCountryDashboardImplementation } from "../services/country-dashboard-stats.api";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useAuthStore } from "@/features/auth/store/authStore";
 import { getCurrentUser } from "@/features/auth/api/auth.api";
@@ -369,7 +370,7 @@ export default function InfoCountryKpaPage() {
             Measures and Indicators of {country?.name}.
           </p>
         </div>
-        <button onClick={async () => { await refetchTree(); handleExportExcel(data, country);}} className="bg-emerald-600 hover:bg-emerald-700 cursor-pointer text-white px-4 py-2 rounded-md text-sm font-medium transition" >
+        <button onClick={async () => { const allData = await fetchCountryDashboardImplementation(id, 1, -1); handleExportExcel(allData, allData?.country);}} className="bg-emerald-600 hover:bg-emerald-700 cursor-pointer text-white px-4 py-2 rounded-md text-sm font-medium transition" >
           <div className="flex items-center space-x-2">
             <span>Export KPAs</span>
           <span>(CSV detail)</span>
