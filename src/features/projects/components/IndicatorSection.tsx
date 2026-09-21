@@ -21,7 +21,7 @@ export function IndicatorSection({ form, measure, useProgramContext = true }: In
   const { programId } = useParams();
   const parsedProgramId = Number(programId ?? 0);
 
-  const hasUnselected = indicators?.some((i: any) => !i?.id);
+  const hasUnselected = indicators?.some((i) => !i?.id);
   const reachedLimit =
     indicatorsFA.fields.length >= measure.indicators_count;
 

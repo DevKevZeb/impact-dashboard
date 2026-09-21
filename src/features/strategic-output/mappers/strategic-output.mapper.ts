@@ -1,33 +1,35 @@
 import type { StrategicOutput, StrategicOutputCountry } from "../types/StrategicOutput";
 
-export function mapStrategicOutput(raw: any): StrategicOutput {
+export function mapStrategicOutput(raw: Record<string, unknown>): StrategicOutput {
   return {
-    id: raw.id,
-    name: raw.name,
-    numbering: raw.numbering,
-    country_kpa_id: raw.id_ck,
-    measures_count: raw.measures_count ?? 0,
+    id: raw.id as number,
+    name: raw.name as string,
+    numbering: raw.numbering as string,
+    country_kpa_id: raw.id_ck as number,
+    measures_count: (raw.measures_count as number | undefined) ?? 0,
   }
 }
 
-export function mapStrategicOutputs(rawList: any[]): StrategicOutput[] {
-  return rawList.map(mapStrategicOutput);
+export function mapStrategicOutputs(rawList: unknown[]): StrategicOutput[] {
+  return rawList.map((raw) => mapStrategicOutput(raw as Record<string, unknown>));
 }
 
-export function mapStrategicOutputWithCountry(raw: any): StrategicOutputCountry{
+export function mapStrategicOutputWithCountry(raw: Record<string, unknown>): StrategicOutputCountry{
+  const countryKpa = raw.country_kpa as Record<string, unknown>;
+  const country = countryKpa.country as Record<string, unknown>;
 
   return{
-    id: raw.id,
-    name: raw.name,
-    numbering: raw.numbering,
+    id: raw.id as number,
+    name: raw.name as string,
+    numbering: raw.numbering as string,
     country: {
-      id: raw.country_kpa.country.id,
-      name: raw.country_kpa.country.name,
+      id: country.id as number,
+      name: country.name as string,
     },
-    measures_count: raw.measures_count ?? 0
+    measures_count: (raw.measures_count as number | undefined) ?? 0
   }
 }
 
-export function mapStrategicOutputsWithCountry(rawList: any[]): StrategicOutputCountry[]{
-  return rawList.map(mapStrategicOutputWithCountry);
+export function mapStrategicOutputsWithCountry(rawList: unknown[]): StrategicOutputCountry[]{
+  return rawList.map((raw) => mapStrategicOutputWithCountry(raw as Record<string, unknown>));
 }

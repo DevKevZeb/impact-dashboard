@@ -1,12 +1,12 @@
 import type { StrategicOutput } from "../types/strategic.output.type";
 
-export function mapStrategicOutput(raw: any): StrategicOutput {
+export function mapStrategicOutput(raw: Record<string, unknown>): StrategicOutput {
     return {
-        id: raw.id,
-        name: raw.name
+        id: raw.id as number,
+        name: raw.name as string
     }
 }
 
-export function mapStrategicOutputs(rawList: any[]): StrategicOutput[]{
-    return rawList.map(mapStrategicOutput);
+export function mapStrategicOutputs(rawList: unknown[]): StrategicOutput[]{
+    return rawList.map((raw) => mapStrategicOutput(raw as Record<string, unknown>));
 }

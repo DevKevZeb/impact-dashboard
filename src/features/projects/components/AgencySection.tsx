@@ -2,17 +2,19 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { UseProjectFormReturn } from "../hooks/useProjectForm";
-import { AgencyRow } from "./AgencyRow";
+import { AgencyRow, type SetFieldValue } from "./AgencyRow";
+import type { FetchOptions } from "@/shared/components/AsyncSearchSelect/asyncSearch.type";
+import type { Agency } from "@/features/agency/types/agency.types";
 
 interface Props {
   form: UseProjectFormReturn;
   totalAgencies: number | null;
-  fetchAgencies: (params: any) => Promise<any>;
+  fetchAgencies: FetchOptions<Agency>;
 }
 
 export function AgencySection({ form, totalAgencies, fetchAgencies }: Props) {
   const { form: rhf, agenciesFA, agencies, getMaxForAgency, } = form;
-  const hasUnselected = agencies?.some((a: any) => !a?.id);
+  const hasUnselected = agencies?.some((a) => !a?.id);
   const reachedLimit = typeof totalAgencies === "number" && agenciesFA.fields.length >= totalAgencies;
 
   return (
@@ -25,7 +27,7 @@ export function AgencySection({ form, totalAgencies, fetchAgencies }: Props) {
             index={index}
             agency={agencies?.[index]}  
             getMaxForContributor={getMaxForAgency}
-            setValue={rhf.setValue}
+            setValue={rhf.setValue as SetFieldValue}
             removeAgency={agenciesFA.remove}
             fetchAgencies={fetchAgencies}
           />

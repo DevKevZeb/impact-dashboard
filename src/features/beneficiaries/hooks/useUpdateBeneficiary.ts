@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateBeneficiary } from "../service/beneficiaries.api";
 import type { BeneficiaryDTO } from "../types/beneficiaries.types";
@@ -11,7 +12,7 @@ export function useUpdateBeneficiary(){
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["beneficiaries"] });
         },
-        onError: (err: any) => {
+        onError: (err: AxiosError<{ message?: string }>) => {
             const message = err?.response?.data?.message ?? err?.message ?? "Error updating";
             toast.error(message);
         },

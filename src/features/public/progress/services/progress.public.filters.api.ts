@@ -1,8 +1,13 @@
-import { publicApiClient } from "@/shared/lib/axios.public";
+import { publicApiClient, type ApiResponse } from "@/shared/lib/axios.public";
 import type { Country } from "../../projects/types/country.type";
 import type { StrategicOutput } from "../../projects/types/strategic.output.type";
 import { mapStrategicOutputs } from "../../projects/mappers/strategic.output.mapper";
 import type { FetchParams } from "../../projects/types/params.type";
+
+interface PaginatedPayload {
+  current_page: number;
+  last_page: number;
+}
 
 export async function fetchCountriesForPublicProgress(params: {
   query: string;
@@ -12,7 +17,7 @@ export async function fetchCountriesForPublicProgress(params: {
   const { query, page, limit } = params;
 
   try {
-    const { data } = await publicApiClient.get<any>("/countries", {
+    const { data } = await publicApiClient.get<ApiResponse<PaginatedPayload & { countries?: { id: number; name: string }[] }>>("/countries", {
       params: {
         search: query || "",
         page,
@@ -21,7 +26,7 @@ export async function fetchCountriesForPublicProgress(params: {
       },
     });
 
-    const countries = (data.data?.countries || []).map((country: any) => ({
+    const countries = (data.data?.countries || []).map((country) => ({
       id: country.id,
       name: country.name,
     }));
@@ -40,7 +45,7 @@ export async function fetchCountriesForPublicProgress(params: {
 export function fetchKPAsForCountry(countryId: number) {
   return async (params?: { query?: string; page?: number; limit?: number }) => {
     try {
-      const { data } = await publicApiClient.get<any>(`/kpas/${countryId}`, {
+      const { data } = await publicApiClient.get<ApiResponse<PaginatedPayload & { kpas?: { id?: number; id_ck?: number; name: string }[] }>>(`/kpas/${countryId}`, {
         params: {
           search: params?.query || "",
           page: params?.page || 1,
@@ -48,7 +53,7 @@ export function fetchKPAsForCountry(countryId: number) {
         },
       });
 
-      const kpas = (data.data?.kpas || []).map((kpa: any) => ({
+      const kpas = (data.data?.kpas || []).map((kpa) => ({
         id: kpa.id || kpa.id_ck,
         name: kpa.name,
       }));
@@ -69,7 +74,7 @@ export function fetchKPAsForCountry(countryId: number) {
 export function fetchAllStrategicOutputsForSelect(countryId: number) {
   return async ({ query, page, limit }: FetchParams): Promise<{ items: StrategicOutput[]; hasMore: boolean }> => {
     try {
-      const { data } = await publicApiClient.get<any>(`/strategic-outputs`, {
+      const { data } = await publicApiClient.get<ApiResponse<PaginatedPayload & { strategic_outputs?: unknown[] }>>(`/strategic-outputs`, {
         params: {
           country: countryId,
           search: query || "",

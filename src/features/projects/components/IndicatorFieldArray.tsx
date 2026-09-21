@@ -1,13 +1,20 @@
 // projects/components/IndicatorFieldArray.tsx
 import { Button } from "@/components/ui/button";
 import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
-import type { UseFieldArrayReturn, UseFormReturn } from "react-hook-form";
+import type { UseProjectFormReturn } from "../hooks/useProjectForm";
+import type { FetchOptions } from "@/shared/components/AsyncSearchSelect/asyncSearch.type";
+import type { SetFieldValue } from "./AgencyRow";
+
+interface IndicatorOption {
+  id: number;
+  name?: string;
+}
 
 interface Props {
-  form: UseFormReturn<any>;
-  fieldArray: UseFieldArrayReturn<any, "indicators", "id">;
+  form: UseProjectFormReturn["form"];
+  fieldArray: UseProjectFormReturn["indicatorsFA"];
   measureId?: number;
-  fetchOptions: (excludeIds: number[]) => any;
+  fetchOptions: (excludeIds: number[]) => FetchOptions<IndicatorOption>;
 }
 
 export function IndicatorFieldArray({ form, fieldArray, measureId, fetchOptions, }: Props) {
@@ -15,7 +22,7 @@ export function IndicatorFieldArray({ form, fieldArray, measureId, fetchOptions,
   const { watch, setValue, formState } = form;
 
   const indicators = watch("indicators");
-  const excludeIds = indicators?.map((i: any) => i?.id).filter(Boolean) ?? [];
+  const excludeIds = indicators?.map((i) => i?.id).filter(Boolean) ?? [];
 
 
 
@@ -30,7 +37,7 @@ export function IndicatorFieldArray({ form, fieldArray, measureId, fetchOptions,
               enab={false} 
               value={indicators?.[index] ?? null}
               onChange={(v) =>
-              setValue(`indicators.${index}`, v, {
+              (setValue as SetFieldValue)(`indicators.${index}`, v, {
               shouldDirty: true,
               shouldTouch: true,
               shouldValidate: true,

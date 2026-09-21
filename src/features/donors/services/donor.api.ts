@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { apiClient } from "@/shared/lib/axios";
 import { mapDonor, mapDonors } from "../mappers/donor.mapper";
 import type { Donor, DonorDTO } from "../types/donor.types";
@@ -23,10 +24,10 @@ export async function createDonor(dto: DonorDTO): Promise<Donor>{
         toast.success(data.message);
 
         return mapDonor(data.data ?? data);
-    } catch(error: any) {
+    } catch(error: unknown) {
         showErrors(error);
         throw error;
-    } 
+    }
 }
 
 export async function updateDonor(id: number, dto: DonorDTO): Promise<Donor>{
@@ -36,7 +37,7 @@ export async function updateDonor(id: number, dto: DonorDTO): Promise<Donor>{
         toast.success(data.message);
 
         return mapDonor(data.data ?? data);
-    } catch (error: any) {
+    } catch (error: unknown) {
         showErrors(error);
         throw error;
     }
@@ -65,11 +66,12 @@ export function fetchDonorsForSelect(excludedIds: number[] = []){
   }
 }
 
-function showErrors(error: any) {
-    const status = error.response?.status;
+function showErrors(error: unknown) {
+    const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, string[]> }>;
+    const status = axiosError.response?.status;
 
-    if (status === 422 && error.response?.data?.errors) {
-        const errors = error.response.data.errors as Record<string, string[]>;
+    if (status === 422 && axiosError.response?.data?.errors) {
+        const errors = axiosError.response.data.errors;
         Object.values(errors).flat().forEach((msg: string) => {
           toast.error('Error', { description: msg });
         });

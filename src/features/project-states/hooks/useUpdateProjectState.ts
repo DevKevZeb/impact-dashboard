@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ProjectStateDTO } from "../types/projectstate.types";
 import { updateProjectState } from "../service/projectstate.api";
@@ -11,7 +12,7 @@ export function useUpdateProjectState(){
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["project-states"] });
         },
-        onError: (err: any) => {
+        onError: (err: AxiosError<{ message?: string }>) => {
         const message = err?.response?.data?.message ?? err?.message ?? "Error updating";
         toast.error(message);
         },

@@ -12,7 +12,7 @@ export async function getPaginatedProjects(page: number, per_page: number, filte
 
   if (filters?.search) params.append("search", filters.search);
   
-  const payload: any = {};
+  const payload: Partial<findDTO> = {};
 
   if (filters?.country) payload.country = filters.country;
   if (filters?.kpa) payload.kpa = filters.kpa;

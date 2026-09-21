@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { Loader2, Plus, Search, Tag } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { ProjectState, ProjectStateDTO } from "../types/projectstate.types";
@@ -76,9 +77,10 @@ export default function ProjectStateListPage(){
             toast.success("Project status deleted successfully");
             setOpenDeleteDialog(false);
             setSelectedForDelete(null);
-        } catch (error: any) {
-            const status = error?.response?.status;
-            const message = error?.response?.data?.message;
+        } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+            const status = axiosError?.response?.status;
+            const message = axiosError?.response?.data?.message;
 
             if (status === 409) {
                 toast.error(message || "Cannot delete project status because it is related to other records.");

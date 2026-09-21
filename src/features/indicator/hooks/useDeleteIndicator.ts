@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteIndicator } from "../services/indicator.api";
 import { toast } from "sonner";
@@ -14,7 +15,7 @@ export function useDeleteIndicator(measureId?: number) {
       }
       toast.success("Indicator deleted successfully");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       const message = error?.response?.data?.message ?? "Failed to delete indicator";
       toast.error("Error deleting indicator", { description: message });
     },

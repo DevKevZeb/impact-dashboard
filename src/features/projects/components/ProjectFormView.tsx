@@ -11,7 +11,7 @@ import { fetchStrategicOutputsForSelect } from "@/features/strategic-output/serv
 import { AlertBox } from "./AlertBox";
 import type { Measure } from "@/features/measures/types/measureTypes";
 import { fetchMeasuresForSelect } from "@/features/measures/services/measure.api";
-import { Controller, useWatch } from "react-hook-form";
+import { Controller, useWatch, type SubmitHandler, type SubmitErrorHandler, type UseFormReturn } from "react-hook-form";
 import { Calendar28 } from "./DatePicker";
 import { Button } from "@/components/ui/button";
 import { IndicatorSection } from "./IndicatorSection";
@@ -33,14 +33,16 @@ import {
 } from "../services/project.catalog.api";
 import { useAuthStore } from "@/features/auth/store/authStore";
 
+type ProjectFormValues = UseProjectFormReturn["form"] extends UseFormReturn<infer T> ? T : never;
+
 interface Props {
     mode: "create" | "edit";
     programName?: string;
     programId?: number;
     projectId?: number;
     form: UseProjectFormReturn;
-    onSubmit: (data: any) => void;
-    onInvalid: (errors: any) => void;
+    onSubmit: SubmitHandler<ProjectFormValues>;
+    onInvalid: SubmitErrorHandler<ProjectFormValues>;
 }
 
 function ProgressPercentInput({
@@ -298,7 +300,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
 
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT A BENEFICIARY</Label>
-                    <AsyncSearchSelect<Beneficiary>  enab={false}  value={beneficiary} onChange={(v) => { form.form.setValue("beneficiary", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchBeneficiariesForSelector} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k: any)=> k.id} placeholder="Select a Beneficiary" emptyMessage="No Beneficiaries found"/>
+                    <AsyncSearchSelect<Beneficiary>  enab={false}  value={beneficiary} onChange={(v) => { form.form.setValue("beneficiary", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchBeneficiariesForSelector} getOptionLabel={(k) => k.name ?? ""} getOptionKey={(k)=> k.id} placeholder="Select a Beneficiary" emptyMessage="No Beneficiaries found"/>
                     {form.form.formState.errors.beneficiary && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.beneficiary.message === 'string' ? form.form.formState.errors.beneficiary.message : 'Invalid input'}</p>
                     )}
@@ -310,16 +312,16 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                         <div className="flex flex-col space-y-2">
                             <Label>FIRST NAME</Label>
                             <Input {...form.form.register("contact.first_name")} placeholder="First name" className="input-default" />
-                            {(form.form.formState.errors.contact as any)?.first_name && (
-                                <p className="text-sm text-red-600">{typeof (form.form.formState.errors.contact as any)?.first_name?.message === 'string' ? (form.form.formState.errors.contact as any).first_name.message : 'Invalid input'}</p>
+                            {form.form.formState.errors.contact?.first_name && (
+                                <p className="text-sm text-red-600">{typeof form.form.formState.errors.contact?.first_name?.message === 'string' ? form.form.formState.errors.contact.first_name.message : 'Invalid input'}</p>
                             )} 
                         </div>
 
                         <div className="flex flex-col space-y-2">
                             <Label>LAST NAME</Label>
                             <Input {...form.form.register("contact.last_name")} placeholder="Last name" className="input-default" />
-                            {(form.form.formState.errors.contact as any)?.last_name && (
-                                <p className="text-sm text-red-600">{typeof (form.form.formState.errors.contact as any)?.last_name?.message === 'string' ? (form.form.formState.errors.contact as any).last_name.message : 'Invalid input'}</p>
+                            {form.form.formState.errors.contact?.last_name && (
+                                <p className="text-sm text-red-600">{typeof form.form.formState.errors.contact?.last_name?.message === 'string' ? form.form.formState.errors.contact.last_name.message : 'Invalid input'}</p>
                             )} 
                         </div>
                     </div>
@@ -327,8 +329,8 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                     <div className="flex flex-col space-y-2">
                         <Label>TITLE</Label>
                         <Input {...form.form.register("contact.title")} placeholder="e.g. Project Manager" className="input-default" />
-                        {(form.form.formState.errors.contact as any)?.title && (
-                            <p className="text-sm text-red-600">{typeof (form.form.formState.errors.contact as any)?.title?.message === 'string' ? (form.form.formState.errors.contact as any).title.message : 'Invalid input'}</p>
+                        {form.form.formState.errors.contact?.title && (
+                            <p className="text-sm text-red-600">{typeof form.form.formState.errors.contact?.title?.message === 'string' ? form.form.formState.errors.contact.title.message : 'Invalid input'}</p>
                         )} 
                     </div>
 
@@ -336,16 +338,16 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
                         <div className="flex flex-col space-y-2">
                             <Label>EMAIL</Label>
                             <Input type="email" {...form.form.register("contact.email")} placeholder="email@example.org" className="input-default"/>
-                            {(form.form.formState.errors.contact as any)?.email && (
-                                <p className="text-sm text-red-600">{typeof (form.form.formState.errors.contact as any)?.email?.message === 'string' ? (form.form.formState.errors.contact as any).email.message : 'Invalid input'}</p>
+                            {form.form.formState.errors.contact?.email && (
+                                <p className="text-sm text-red-600">{typeof form.form.formState.errors.contact?.email?.message === 'string' ? form.form.formState.errors.contact.email.message : 'Invalid input'}</p>
                             )} 
                         </div>
 
                         <div className="flex flex-col space-y-2">
                             <Label>PHONE</Label>
                             <Input {...form.form.register("contact.phone")} placeholder="+59171234567" className="input-default"/>
-                            {(form.form.formState.errors.contact as any)?.phone && (
-                                <p className="text-sm text-red-600">{typeof (form.form.formState.errors.contact as any)?.phone?.message === 'string' ? (form.form.formState.errors.contact as any).phone.message : 'Invalid input'}</p>
+                            {form.form.formState.errors.contact?.phone && (
+                                <p className="text-sm text-red-600">{typeof form.form.formState.errors.contact?.phone?.message === 'string' ? form.form.formState.errors.contact.phone.message : 'Invalid input'}</p>
                             )} 
                         </div>
                     </div>
@@ -372,7 +374,7 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
 
                 <div className="flex flex-col space-y-2">
                     <Label className="text-gray-700">SELECT THE PROJECT STATE</Label>
-                    <AsyncSearchSelect<ProjectState>  enab={false} value={project_state} onChange={(v) => { form.form.setValue("project_state", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchProjectStatesForSelector} getOptionLabel={(k) => k.state ?? ""} getOptionKey={(k: any)=> k.id} placeholder="Select the project state" emptyMessage="No project state found"/>
+                    <AsyncSearchSelect<ProjectState>  enab={false} value={project_state} onChange={(v) => { form.form.setValue("project_state", v, { shouldValidate: true, shouldDirty: true, shouldTouch:true })}} fetchOptions={fetchProjectStatesForSelector} getOptionLabel={(k) => k.state ?? ""} getOptionKey={(k)=> k.id} placeholder="Select the project state" emptyMessage="No project state found"/>
                     {form.form.formState.errors.project_state && (
                         <p className="text-sm text-red-600">{typeof form.form.formState.errors.project_state.message === 'string' ? form.form.formState.errors.project_state.message : 'Invalid input'}</p>
                     )}

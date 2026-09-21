@@ -3,17 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { UseProjectFormReturn } from "../hooks/useProjectForm";
 import { DonorRow } from "./DonorRow";
+import type { SetFieldValue } from "./AgencyRow";
+import type { FetchOptions } from "@/shared/components/AsyncSearchSelect/asyncSearch.type";
+import type { Donor } from "@/features/donors/types/donor.types";
 
 interface Props {
   form: UseProjectFormReturn;
   totalDonors: number | null;
-  fetchDonors: (params: any) => Promise<any>;
+  fetchDonors: FetchOptions<Donor>;
 }
 
 export function DonorSection({ form, totalDonors, fetchDonors }: Props) {
   const { form: rhf, donorsFA, donors, getMaxForDonor } = form;
 
-  const hasUnselected = donors?.some((d: any) => !d?.id);
+  const hasUnselected = donors?.some((d) => !d?.id);
   const reachedLimit = typeof totalDonors === "number" && donorsFA.fields.length >= totalDonors;
 
 
@@ -23,7 +26,7 @@ export function DonorSection({ form, totalDonors, fetchDonors }: Props) {
 
       {donorsFA.fields.map((field, index) => (
         <div key={field.id}>
-          <DonorRow index={index} donor={donors?.[index]} getMaxForDonor={getMaxForDonor} setValue={rhf.setValue} removeDonor={donorsFA.remove} fetchDonors={fetchDonors} />
+          <DonorRow index={index} donor={donors?.[index]} getMaxForDonor={getMaxForDonor} setValue={rhf.setValue as SetFieldValue} removeDonor={donorsFA.remove} fetchDonors={fetchDonors} />
 
           {Array.isArray(rhf.formState.errors.donors) &&
             rhf.formState.errors.donors[index]?.id && (

@@ -8,6 +8,7 @@ import { useCreateCountryKpa } from "../hooks/useCreateCountryKpa";
 import { useUpdateCountryKpa } from "../hooks/useUpdateCountryKpa";
 import CreateCountryKpaModal from "../components/CreateCountryKpaModal";
 import type { Kpa } from "@/features/kpa/types/KpaType";
+import type { CreateCountryKpaDTO } from "../types/CountryKpaType";
 import { Loader2, Plus, Search, Tag, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/shared/components/EmptyState";
@@ -78,7 +79,7 @@ export default function CountryKpaListPage() {
     setPage(1);
   };
 
-  const handleSubmit = async (dto: any) => {
+  const handleSubmit = async (dto: CreateCountryKpaDTO) => {
     if (selectedCountryId) {
       await updateCountryKpa({ id: selectedCountryId, dto });
     } else {

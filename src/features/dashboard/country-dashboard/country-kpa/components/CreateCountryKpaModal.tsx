@@ -24,6 +24,8 @@ const schema = z.object({
   }).nullable().refine(v => v !== null, { message: "Select a KPA" }),
 });
 
+type CountryKpaFormValues = z.infer<typeof schema>;
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -36,7 +38,7 @@ export default function CreateCountryKpaModal({ open, onClose, onSubmit, selecte
 
   const isEditing = !!selectedKpa;
 
-  const form = useForm<any>({
+  const form = useForm<CountryKpaFormValues>({
     resolver: zodResolver(schema),
     defaultValues: { country: null, kpa: null }
   });
@@ -52,10 +54,10 @@ export default function CreateCountryKpaModal({ open, onClose, onSubmit, selecte
     }
   }, [open, selectedCountryId, selectedKpa, reset]);
 
-  const submitHandler = (data: any) => {
+  const submitHandler = (data: CountryKpaFormValues) => {
     const dto: CreateCountryKpaDTO = {
-      country_id: data.country.id,
-      id_kpa: data.kpa.id
+      country_id: data.country!.id,
+      id_kpa: data.kpa!.id
     };
     onSubmit(dto);
     reset();

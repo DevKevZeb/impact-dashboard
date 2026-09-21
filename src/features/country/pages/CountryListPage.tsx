@@ -10,7 +10,8 @@ import CreateCountryModal from "../components/CreateCountryModal";
 import DeleteCountryDialog from "../components/DeleteCountryDialog";
 import { useCurrencies } from "../hooks/currency/useCurrency.ts";
 
-import type { Country } from "../types/CountryType.tsx";
+import type { AxiosError } from "axios";
+import type { Country, CreateCountryDTO } from "../types/CountryType.tsx";
 import { useUpdateCountry } from "../hooks/country/useUpdateCountry.ts";
 import { Loader2, Plus, Search, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
@@ -64,7 +65,7 @@ export default function CountryListPage() {
     setOpenDeleteModal(true);
   }
 
-  const handleSubmit  = async (dto: any) => {
+  const handleSubmit  = async (dto: CreateCountryDTO) => {
     if(editingCountry) await updateCountry( { id: editingCountry.id, dto: dto} );
     else{
       await createCountry(dto);
@@ -82,9 +83,10 @@ export default function CountryListPage() {
       toast.success(result?.message || "Country deleted successfully");
       setOpenDeleteModal(false);
       setSelectedCountry(null);
-    } catch (error: any) {
-      const status = error?.response?.status;
-      const message = error?.response?.data?.message;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      const status = axiosError?.response?.status;
+      const message = axiosError?.response?.data?.message;
 
       if (status === 409) {
         toast.error(message || "Cannot delete country because it is related to other records.");

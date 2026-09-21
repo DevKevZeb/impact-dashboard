@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { apiClient } from "@/shared/lib/axios";
 import { mapProject, mapProjectsTable } from "../mappers/project.mapper";
 import type { Project, ProjectDTO } from "../types/project.types";
@@ -19,11 +20,12 @@ export async function createProject(projectData: ProjectDTO): Promise<Project>{
         toast.success(data.message);
 
         return mapProject(data.data);
-    } catch(error: any) {
-      const status = error.response?.status;
+    } catch(error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, string[]> }>;
+      const status = axiosError.response?.status;
 
-      if (status === 422 && error.response?.data?.errors) {
-        const errors = error.response.data.errors as Record<string, string[]>;
+      if (status === 422 && axiosError.response?.data?.errors) {
+        const errors = axiosError.response.data.errors;
         Object.values(errors).flat().forEach((msg: string) => {
           toast.error('Error', { description: msg });
         });
@@ -44,11 +46,12 @@ export async function updateProject(id: number, projectData: ProjectDTO): Promis
         toast.success(data.message);
 
         return mapProject(data.data);
-    } catch(error: any) {
-      const status = error.response?.status;
+    } catch(error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, string[]> }>;
+      const status = axiosError.response?.status;
 
-      if (status === 422 && error.response?.data?.errors) {
-        const errors = error.response.data.errors as Record<string, string[]>;
+      if (status === 422 && axiosError.response?.data?.errors) {
+        const errors = axiosError.response.data.errors;
         Object.values(errors).flat().forEach((msg: string) => {
           toast.error('Error', { description: msg });
         });

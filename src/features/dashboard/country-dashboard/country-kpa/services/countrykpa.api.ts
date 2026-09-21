@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { apiClient } from "@/shared/lib/axios";
 import type { CreateCountryKpaDTO, UpdateCountryKpaDTO } from "../types/CountryKpaType";
 import { toast } from "sonner";
@@ -12,7 +13,7 @@ export async function createCountryKpa(dto: CreateCountryKpaDTO) {
     const { data } = await apiClient.post("/country_kpas", payload);
     toast.success(data.message);
     return data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     handleValidationError(error);
     throw error;
   }
@@ -28,17 +29,18 @@ export async function updateCountryKpa(id: number, dto: UpdateCountryKpaDTO) {
 
     toast.success(data.message);
     return data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     handleValidationError(error);
     throw error;
   }
 }
 
-function handleValidationError(error: any) {
-  const status = error.response?.status;
+function handleValidationError(error: unknown) {
+  const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, string[]> }>;
+  const status = axiosError.response?.status;
 
-  if (status === 422 && error.response?.data?.errors) {
-    const errors = error.response.data.errors as Record<string, string[]>;
+  if (status === 422 && axiosError.response?.data?.errors) {
+    const errors = axiosError.response.data.errors;
     Object.values(errors).flat().forEach((msg: string) => {
       toast.error(msg);
     });

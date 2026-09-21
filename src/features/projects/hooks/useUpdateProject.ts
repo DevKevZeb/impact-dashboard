@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ProjectDTO } from "../types/project.types";
 import { updateProject } from "../services/project.api";
@@ -7,11 +8,11 @@ export function useUpdateProject(){
 
     return useMutation({
         mutationFn: ({id, dto}: {id: number, dto: ProjectDTO}) => updateProject(id, dto),
-        onSuccess: () => (_data: any, variables: {id: number} ) => {
+        onSuccess: () => (_data: unknown, variables: {id: number} ) => {
           queryClient.invalidateQueries({ queryKey: ["projects"], exact: false});
           queryClient.invalidateQueries({queryKey: ["project", variables.id]})
         },
-        onError: (err: any) => {
+        onError: (err: AxiosError<{ message?: string }>) => {
           const message = err?.response?.data?.message ?? err?.message ?? "Error updating project";
           console.error(message);
         }

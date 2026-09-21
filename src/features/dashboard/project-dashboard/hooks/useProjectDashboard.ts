@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getProjectDashboardPaginated,
@@ -45,7 +46,7 @@ export function useUpdateProjectDashboardProgress() {
       queryClient.invalidateQueries({ queryKey: ["project-dashboard"], exact: false });
       toast.success("Project progress updated successfully");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       const message = error?.response?.data?.message ?? "Failed to update project progress";
       toast.error("Error updating progress", { description: message });
     },
@@ -62,7 +63,7 @@ export function useUpdateProjectDashboardWeight() {
       queryClient.invalidateQueries({ queryKey: ["project-dashboard"], exact: false });
       toast.success("Project weight updated successfully");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       const message = error?.response?.data?.message ?? "Failed to update project weight";
       toast.error("Error updating weight", { description: message });
     },

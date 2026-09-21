@@ -1,55 +1,55 @@
 import type { Project, ProjectTable } from "../types/project.types";
 
-export function mapProjectTable(raw: any): ProjectTable{
+export function mapProjectTable(raw: Record<string, unknown>): ProjectTable{
     return {
-        id: raw.id,
-        name: raw.name,
-        description: raw.description,
-        project_url: raw.project_url,
-        start_date: raw.start_date,
-        end_date: raw.end_date,
-        progress: raw.progress,
-        comments: raw.comments,
-        budget: raw.budget,
-        weight: raw.weight,
-        state: raw.project_state,
-        program_id: raw.program_id,
+        id: raw.id as number,
+        name: raw.name as string,
+        description: raw.description as string,
+        project_url: raw.project_url as string,
+        start_date: raw.start_date as Date,
+        end_date: raw.end_date as Date,
+        progress: raw.progress as number,
+        comments: raw.comments as string,
+        budget: raw.budget as number,
+        weight: raw.weight as number | undefined,
+        state: raw.project_state as ProjectTable["state"],
+        program_id: raw.program_id as number,
         can_edit: Boolean(raw.can_edit),
     }
 }
 
-export function mapProjectsTable(rawList: any[]): ProjectTable[]{
-    return rawList.map(mapProjectTable);
+export function mapProjectsTable(rawList: unknown[]): ProjectTable[]{
+    return rawList.map((raw) => mapProjectTable(raw as Record<string, unknown>));
 }
 
-export function mapProject(raw: any): Project{
+export function mapProject(raw: Record<string, unknown>): Project{
     return {
-        id: raw.id,
-        name: raw.name,
-        description: raw.description,
-        project_url: raw.project_url,
-        start_date: raw.start_date,
-        end_date: raw.end_date,
-        progress: raw.progress,
-        comments: raw.comments,
-        budget: raw.budget,
-        weight: raw.weight,
-        contact: raw.contact,
-        beneficiary: raw.beneficiary,
-        project_state: raw.project_state,
-        kpa: raw.kpa,
-        strategic_output: raw.strategic_output,
-        measure: raw.measure,
-        donors: raw.donors,
-        agencies: raw.agencies,
-        program_id: raw.program_id,
-        indicators: raw.indicators,
+        id: raw.id as number,
+        name: raw.name as string,
+        description: raw.description as string,
+        project_url: raw.project_url as string,
+        start_date: raw.start_date as Date,
+        end_date: raw.end_date as Date,
+        progress: raw.progress as number,
+        comments: raw.comments as string,
+        budget: raw.budget as number,
+        weight: raw.weight as number,
+        contact: raw.contact as Project["contact"],
+        beneficiary: raw.beneficiary as Project["beneficiary"],
+        project_state: raw.project_state as Project["project_state"],
+        kpa: raw.kpa as Project["kpa"],
+        strategic_output: raw.strategic_output as Project["strategic_output"],
+        measure: raw.measure as Project["measure"],
+        donors: raw.donors as Project["donors"],
+        agencies: raw.agencies as Project["agencies"],
+        program_id: raw.program_id as number,
+        indicators: raw.indicators as Project["indicators"],
     }
 }
 
-export function mapProjects(rawList: any[]): Project[]{
+export function mapProjects(rawList: unknown[]): Project[]{
     console.log("Mapping projects from raw data:", rawList);
-    return rawList.map(mapProject);
+    return rawList.map((raw) => mapProject(raw as Record<string, unknown>));
 }
 
 export function mapProjectToForm(project: Project) {

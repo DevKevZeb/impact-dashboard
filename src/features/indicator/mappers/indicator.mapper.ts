@@ -1,22 +1,23 @@
 import type { Indicator } from "../types/indicatorTypes";
 
-export function mapIndicators(rawList: any[]): Indicator[] {
-  return rawList.map(mapIndicator);
+export function mapIndicators(rawList: unknown[]): Indicator[] {
+  return rawList.map((raw) => mapIndicator(raw as Record<string, unknown>));
 
 }
 
 
-export function mapIndicator(raw: any): Indicator {
+export function mapIndicator(raw: Record<string, unknown>): Indicator {
+  const type = raw.type as Record<string, unknown>;
   return {
-    id: raw.id, 
-    name: raw.name,
-    target: raw.target,
-    actual_value: raw.actual_value ?? 0,
-    measure_id: raw.measure_id,
+    id: raw.id as number,
+    name: raw.name as string,
+    target: raw.target as number,
+    actual_value: (raw.actual_value as number | undefined) ?? 0,
+    measure_id: raw.measure_id as number,
     type: {
-      id: raw.type.id,
-      name: raw.type.name,
-      is_bottom_up: raw.type.is_bottom_up ?? true,
+      id: type.id as number,
+      name: type.name as string,
+      is_bottom_up: (type.is_bottom_up as boolean | undefined) ?? true,
     }
   }
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FolderX, Loader, Search } from "lucide-react";
+import type { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
@@ -15,6 +16,7 @@ import type { KPA } from "../types/kpa.type";
 import type { StrategicOutput } from "../types/strategic.output.type";
 import type { Measure } from "../types/measure.type";
 import type { ProjectState } from "../types/project.state.type";
+import type { ProjectCard as ProjectCardType } from "../types/project.type";
 import {
   fetchCountriesForSelect,
   fetchKPAsForSelect,
@@ -30,6 +32,8 @@ const OPTIONS = [
   { value: "name_za", label: "Name Z-A" },
   { value: "name_az", label: "Name A-Z" },
 ];
+
+type ProjectFilterFormValues = z.infer<typeof projectSchema>;
 
 interface PublicProjectsExplorerProps {
   programId?: number;
@@ -49,7 +53,7 @@ export default function PublicProjectsExplorer({
   const [page, setPage] = useState(1);
   const [perPage] = useState(20);
   const [filters, setFilters] = useState<findDTO | null>(null);
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<ProjectCardType[]>([]);
   const [sort, setSort] = useState("date_newest");
 
   // Pre-set the first country when country step is hidden.
@@ -57,7 +61,7 @@ export default function PublicProjectsExplorer({
     ? { id: programCountries[0].id, name: programCountries[0].name }
     : null;
 
-  const form = useForm<any>({
+  const form = useForm<ProjectFilterFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
       country: defaultCountry,
@@ -107,7 +111,7 @@ export default function PublicProjectsExplorer({
     });
   }, [data]);
 
-  const onSubmit = (submitted: any) => {
+  const onSubmit = (submitted: ProjectFilterFormValues) => {
     setPage(1);
     setFilters({
       search: submitted.search || null,

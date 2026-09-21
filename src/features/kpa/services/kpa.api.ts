@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { apiClient } from "@/shared/lib/axios";
 import { mapKpa, mapKpas, mapKpasProject } from "../mappers/kpa.mapper";
 import type { CreateKpaDto, Kpa, KpaProject, UpdateKpaDto } from "../types/KpaType";
@@ -25,15 +26,16 @@ export async function createKpa(dto: CreateKpaDto): Promise<Kpa>{
         toast.success(data.message);
 
         return mapKpa(data.data ?? data)
-    } catch (error: any) {
-    const status = error.response?.status;
+    } catch (error: unknown) {
+    const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, string[]> }>;
+    const status = axiosError.response?.status;
 
-    if (status === 422 && error.response?.data?.errors) {
-      const errors = error.response.data.errors as Record<string, string[]>;
+    if (status === 422 && axiosError.response?.data?.errors) {
+      const errors = axiosError.response.data.errors;
       Object.values(errors).flat().forEach((msg: string) => {
         toast.error('Error', { description: msg });
       });
-    } 
+    }
 
     throw error;
   }
@@ -47,15 +49,16 @@ export async function updateKpa(id: number, dto: UpdateKpaDto): Promise<Kpa>{
         toast.success(data.message);
 
         return mapKpa(data.data ?? data)
-    } catch (error: any) {
-    const status = error.response?.status;
+    } catch (error: unknown) {
+    const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, string[]> }>;
+    const status = axiosError.response?.status;
 
-    if (status === 422 && error.response?.data?.errors) {
-      const errors = error.response.data.errors as Record<string, string[]>;
+    if (status === 422 && axiosError.response?.data?.errors) {
+      const errors = axiosError.response.data.errors;
       Object.values(errors).flat().forEach((msg: string) => {
         toast.error('Error', { description: msg });
       });
-    } 
+    }
 
     throw error;
   }

@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { UpdateCountryDTO } from "../../types/CountryType";
 import { updateCountry } from "../../services/country.api";
@@ -13,7 +14,7 @@ export function useUpdateCountry(){
             qc.invalidateQueries({ queryKey: ["countries"]});
             qc.invalidateQueries({ queryKey: ["currencies"] });
         },
-        onError: (err: any) => {
+        onError: (err: AxiosError<{ message?: string }>) => {
             const message = err?.response?.data?.message ?? err?.message ?? "Error updating";
         toast.error(message); 
         }

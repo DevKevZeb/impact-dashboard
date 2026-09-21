@@ -4,20 +4,20 @@ import { LazyTree } from "../components/TreeNode/Tree";
 import { loadChildrenCountryKpaTree } from "../components/TreeNode/loadChildrenCountryKpaTree";
 
 import { Globe2, Flag, AlertCircle } from "lucide-react";
-import type { TreeNode } from "../components/TreeNode/TreeType";
+import type { TreeNode, DefaultNodeData } from "../components/TreeNode/TreeType";
 import CreateStrategicOutputModal from "@/features/strategic-output/components/CreateStrategicOutputModal";
-import type {  UpdateStrategicOutputDTO } from "@/features/strategic-output/types/StrategicOutput";
+import type {  UpdateStrategicOutputDTO, CreateStrategicOutputDTO } from "@/features/strategic-output/types/StrategicOutput";
 import { useUpdateStrategicOutput } from "@/features/strategic-output/hooks/useUpdateStrategicOutput";
 import { useCreateStrategicOutput } from "@/features/strategic-output/hooks/useCreateStrategicOutput";
 import { useDeleteStrategicOutput } from "@/features/strategic-output/hooks/useDeleteStrategicOutput";
 import { DeleteStrategicOutputDialog } from "@/features/strategic-output/components/DeleteStrategicOutputDialog";
-import type { UpdateMeasureDTO } from "@/features/measures/types/measureTypes";
+import type { UpdateMeasureDTO, CreateMeasureDTO } from "@/features/measures/types/measureTypes";
 import { useCreateMeasure } from "@/features/measures/hooks/useCreateMeasure";
 import { useUpdateMeasure } from "@/features/measures/hooks/useUpdateMeasure";
 import { useDeleteMeasure } from "@/features/measures/hooks/useDeleteMeasure";
 import CreateMeasureModal from "@/features/measures/components/CreateMeasureModal";
 import { DeleteMeasureDialog } from "@/features/measures/components/DeleteMeasureDialog";
-import type { Indicator } from "@/features/indicator/types/indicatorTypes";
+import type { Indicator, CreateIndicatorDTO } from "@/features/indicator/types/indicatorTypes";
 import CreateIndicatorModal from "@/features/indicator/components/CreateIndicatorModal";
 import { DeleteIndicatorDialog } from "@/features/indicator/components/DeleteIndicatorDialog";
 import { useCreateIndicator } from "@/features/indicator/hooks/useCreateIndicator";
@@ -183,7 +183,7 @@ export default function InfoCountryKpaPage() {
 
   const handleCreateStrategicOutput = async (node: TreeNode) => {
     setEditStrategicOutput(null);
-    setParentKpaId((node.data as any)?.id ?? null);
+    setParentKpaId((node.data as DefaultNodeData)?.id ?? null);
     setOpenStrategicOutputModal(true);
   }
 
@@ -191,7 +191,7 @@ export default function InfoCountryKpaPage() {
     setOpenStrategicOutputModal(true);
     setParentKpaId(node.parent_id ?? null);
     const strategicOut = {
-      id: (node.data as any)?.id!,
+      id: (node.data as DefaultNodeData)?.id!,
       name: node.label,
       country_kpa_id: node.parent_id!
     }
@@ -199,10 +199,10 @@ export default function InfoCountryKpaPage() {
     
   }
 
-  const handleSubmitStrategicOutput = async (dto: any) => {
+  const handleSubmitStrategicOutput = async (dto: CreateStrategicOutputDTO) => {
     const parentKey = editStrategicOutput ? `ck-${editStrategicOutput.country_kpa_id}` : `ck-${dto.country_kpa_id}`;
 
-    if(editStrategicOutput) await updateStrategicOutput({id: editStrategicOutput.id, dto: dto});
+    if(editStrategicOutput) await updateStrategicOutput({id: editStrategicOutput.id, dto: dto as UpdateStrategicOutputDTO});
     else await createStrategicOutput(dto);
     
     setOpenStrategicOutputModal(false);
@@ -214,9 +214,9 @@ export default function InfoCountryKpaPage() {
 
   }
 
-  const handleDeleteStrategicOutput = (node: any) => {
+  const handleDeleteStrategicOutput = (node: TreeNode) => {
     setStrategicOutputToDelete({
-      id: (node.data as any)?.id,
+      id: (node.data as DefaultNodeData)?.id,
       name: node.label,
       countryKpaId: node.parent_id ?? 0,
     });
@@ -232,7 +232,7 @@ export default function InfoCountryKpaPage() {
 
   const handleCreateMeasure = async (node: TreeNode) => {
     setEditMeasure(null);
-    setParentStrategicOutputId((node.data as any)?.id ?? null);
+    setParentStrategicOutputId((node.data as DefaultNodeData)?.id ?? null);
     setOpenMeasureModal(true);
   }
 
@@ -240,17 +240,17 @@ export default function InfoCountryKpaPage() {
     setOpenMeasureModal(true);
     setParentStrategicOutputId(node.parent_id ?? null);
     const measure = {
-      id: (node.data as any)?.id!,
+      id: (node.data as DefaultNodeData)?.id!,
       name: node.label,
       strategic_output_id: node.parent_id!
     }
     setEditMeasure(measure)
   }
 
-  const handleSubmitMeasure = async (dto: any) => {
+  const handleSubmitMeasure = async (dto: CreateMeasureDTO) => {
     const parentKey = editMeasure ? `so-${editMeasure.strategic_output_id}` : `so-${dto.strategic_output_id}`;
 
-    if(editMeasure) await updateMeasure({ id: editMeasure.id, dto: dto });
+    if(editMeasure) await updateMeasure({ id: editMeasure.id, dto: dto as UpdateMeasureDTO });
     else await createMeasure(dto);
     
 
@@ -264,7 +264,7 @@ export default function InfoCountryKpaPage() {
 
   const handleCreateIndicator = async (node: TreeNode) => {
     setEditIndicator(null);
-    setParentMeasureId((node.data as any)?.id ?? null);
+    setParentMeasureId((node.data as DefaultNodeData)?.id ?? null);
     setOpenIndicatorModal(true);
   }
 
@@ -272,7 +272,7 @@ export default function InfoCountryKpaPage() {
     setOpenIndicatorModal(true);
     setParentMeasureId(node.parent_id ?? null);
     const indicator = {
-      id: (node.data as any)?.id!,
+      id: (node.data as DefaultNodeData)?.id!,
       name: node.label,
       target: Number(node.meta!.target!),
       actual_value: Number(node.meta!.actual_value ?? 0),
@@ -287,7 +287,7 @@ export default function InfoCountryKpaPage() {
     setEditIndicator(indicator);
   }
 
-  const handleSubmitIndicator = async (dto: any) => {
+  const handleSubmitIndicator = async (dto: CreateIndicatorDTO) => {
     const parentKey = editIndicator ? `m-${editIndicator.measure_id}` : `m-${dto.measure_id}`;
 
     if(editIndicator) await updateIndicator({ id: editIndicator.id, dto: dto});
@@ -300,9 +300,9 @@ export default function InfoCountryKpaPage() {
     await Promise.all([refetchTree(), refetchImplementation()]);
   }
 
-  const handleDeleteMeasure = (node: any) => {
+  const handleDeleteMeasure = (node: TreeNode) => {
     setMeasureToDelete({
-      id: (node.data as any)?.id,
+      id: (node.data as DefaultNodeData)?.id,
       name: node.label,
       strategicOutputId: node.parent_id ?? 0,
     });
@@ -316,9 +316,9 @@ export default function InfoCountryKpaPage() {
     await Promise.all([refetchTree(), refetchImplementation()]);
   };
 
-  const handleDeleteIndicator = (node: any) => {
+  const handleDeleteIndicator = (node: TreeNode) => {
     setIndicatorToDelete({
-      id: (node.data as any)?.id,
+      id: (node.data as DefaultNodeData)?.id,
       name: node.label,
       measureId: node.parent_id ?? 0,
     });

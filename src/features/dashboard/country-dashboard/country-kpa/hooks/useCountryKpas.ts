@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/shared/lib/axios";
 
@@ -10,19 +11,20 @@ async function fetchCountryKpas(countryId: number, page: number, perPage: number
 
     return {
       country: country ? { ...country, active: country.active ?? false } : country,
-      kpas: kpas.map((item: any) => ({
-        id_kpa: item.id_kpa,
-        id_ck: item.id_ck,
-        name: item.name,
-        implementation: item.implementation,
-        strategic_outputs_count: item.strategic_outputs_count,
-        measures_count: item.measures_count,
-        indicators_count: item.indicators_count,
+      kpas: kpas.map((item: Record<string, unknown>) => ({
+        id_kpa: item.id_kpa as number,
+        id_ck: item.id_ck as number,
+        name: item.name as string,
+        implementation: item.implementation as number,
+        strategic_outputs_count: item.strategic_outputs_count as number,
+        measures_count: item.measures_count as number,
+        indicators_count: item.indicators_count as number,
       })),
       pagination: res.data.data.pagination
     };
-  } catch (err: any) {
-    if (err.response?.status === 404) {
+  } catch (err: unknown) {
+    const axiosError = err as AxiosError;
+    if (axiosError.response?.status === 404) {
       return [];
     }
     throw err;

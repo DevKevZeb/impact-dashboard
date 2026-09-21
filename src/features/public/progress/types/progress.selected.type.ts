@@ -6,14 +6,14 @@ export interface ContributionData {
 
 export interface BeneficiariesData {
   name: string;
-  beneficiaries: any[];
+  beneficiaries: { id: number; name: string }[];
 }
 
 export interface ProgressSelectedData {
   name: string;
   implementation: number;
   resource: number;
-  beneficiaries?: BeneficiariesData[] | any[];
+  beneficiaries?: BeneficiariesData[];
   agencies?: ContributionData[];
   donors?: ContributionData[];
 }

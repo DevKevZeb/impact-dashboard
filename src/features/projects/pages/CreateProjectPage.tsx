@@ -6,12 +6,16 @@ import { useCreateProject } from "../hooks/useCreateProject";
 import { useUpdateProject } from "../hooks/useUpdateProject";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import type { FieldErrors } from "node_modules/react-hook-form/dist/types/errors";
+import type { FieldErrors, UseFormReturn } from "react-hook-form";
 import { useAuthStore } from "@/features/auth/store/authStore";
+import type { UseProjectFormReturn } from "../hooks/useProjectForm";
+import type { ProjectDTO } from "../types/project.types";
 
 interface Props {
   mode: "create" | "edit";
 }
+
+type ProjectFormValues = UseProjectFormReturn["form"] extends UseFormReturn<infer T> ? T : never;
 
 export default function CreateProjectPage({mode}: Props) {
     const { programId, projectId, isValidProgramId, isValidProjectId, programQuery, projectQuery } = useProjectPageData(mode);
@@ -62,17 +66,17 @@ export default function CreateProjectPage({mode}: Props) {
         );
     }
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: ProjectFormValues) => {
         if(mode === "edit" && projectId !== undefined) {
             form.form.reset(data, { keepDirty: true });
-            await updateProject({ id: projectId, dto: data });
+            await updateProject({ id: projectId, dto: data as unknown as ProjectDTO });
         } else {
-            await createProject(data);
+            await createProject(data as unknown as ProjectDTO);
         }
         navigate("/app/projects");
     };
 
-    const onInvalid = (errors: FieldErrors) => { toast.error("Please fix the highlighted errors before submitting."); console.log(errors)}
+    const onInvalid = (errors: FieldErrors<ProjectFormValues>) => { toast.error("Please fix the highlighted errors before submitting."); console.log(errors)}
 
     if (programQuery.error) return <div>Error loading program</div>;
     if (mode === "edit" && projectQuery.error) return <div>Error loading project</div>;

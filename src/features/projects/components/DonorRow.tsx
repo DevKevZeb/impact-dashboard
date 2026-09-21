@@ -5,20 +5,18 @@ import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Percent } from "lucide-react";
-
-type DonorFormValue = {
-  id: number;
-  name: string;
-  contribution: number;
-};
+import type { FetchOptions } from "@/shared/components/AsyncSearchSelect/asyncSearch.type";
+import type { SetFieldValue } from "./AgencyRow";
+import type { Donor } from "@/features/donors/types/donor.types";
+import type { ProjectDonor } from "../types/project.types";
 
 type DonorRowProps = {
   index: number;
-  donor?: DonorFormValue;
+  donor?: ProjectDonor;
   getMaxForDonor: (index: number) => number;
-  setValue: any;
+  setValue: SetFieldValue;
   removeDonor: (index: number) => void;
-  fetchDonors: any;
+  fetchDonors: FetchOptions<Donor>;
 };
 
 export const DonorRow = React.memo(
@@ -57,9 +55,9 @@ export const DonorRow = React.memo(
 
     return (
       <div className="grid lg:grid-cols-2 gap-3">
-        <AsyncSearchSelect
-         enab={false} 
-          value={donor.id ? donor : null}
+        <AsyncSearchSelect<Donor>
+         enab={false}
+          value={donor.id ? (donor as Donor) : null}
           onChange={(v) => {
             setValue(
               `donors.${index}`,

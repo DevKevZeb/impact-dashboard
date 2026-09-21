@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useState } from "react";
 import { Search, Plus, Loader2, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -65,9 +66,10 @@ export function ProgramStatesPage() {
       toast.success(result?.message || "Program status deleted successfully");
       setIsDeleteDialogOpen(false);
       setSelectedProgramState(null);
-    } catch (error: any) {
-      const status = error?.response?.status;
-      const message = error?.response?.data?.message;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      const status = axiosError?.response?.status;
+      const message = axiosError?.response?.data?.message;
 
       if (status === 409) {
         toast.error(message || "Cannot delete program status because it is related to other records.");

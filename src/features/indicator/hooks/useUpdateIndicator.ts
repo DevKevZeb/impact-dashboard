@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateIndicator } from "../services/indicator.api";
 import type { UpdateIndicatorDTO } from "../types/indicatorTypes";
@@ -12,7 +13,7 @@ export function useUpdateIndicator(){
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["indicators"]})
         },
-        onError: (err: any) => {
+        onError: (err: AxiosError<{ message?: string }>) => {
             const message = err?.response?.data?.message ?? err?.message ?? "Error updating";
             toast.error(message); 
         }

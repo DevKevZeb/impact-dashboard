@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useBeneficiaries } from "../hooks/useBeneficiaries";
 import { useCreateBeneficiary } from "../hooks/useCreateBeneficiary";
@@ -75,9 +76,10 @@ export default function BeneficiariesListPage(){
             toast.success(result?.message || "Beneficiary deleted successfully");
             setOpenDeleteModal(false);
             setSelectedBeneficiary(null);
-        } catch (error: any) {
-            const status = error?.response?.status;
-            const message = error?.response?.data?.message;
+        } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+            const status = axiosError?.response?.status;
+            const message = axiosError?.response?.data?.message;
 
             if (status === 409) {
                 toast.error(message || "Cannot delete beneficiary because it is related to other records.");

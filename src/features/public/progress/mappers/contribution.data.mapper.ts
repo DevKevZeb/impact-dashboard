@@ -4,7 +4,12 @@ export function mapContributionToChartData(list: ContributionData[] = []): { id:
   return list.map((c) => ({ id: c.id, name: c.name, implementation: c.contribution }));
 }
 
-export function aggregateContributorsByKpa(kpas: any[], key: "agencies" | "donors"): { id: number; name: string; implementation: number }[] {
+interface KpaContribution {
+  agencies?: ContributionData[];
+  donors?: ContributionData[];
+}
+
+export function aggregateContributorsByKpa(kpas: KpaContribution[], key: "agencies" | "donors"): { id: number; name: string; implementation: number }[] {
   const map = new Map<number, { id: number; name: string; implementation: number }>();
   for (const kpa of kpas ?? []) {
     for (const c of kpa?.[key] ?? []) {

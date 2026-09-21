@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { UpdateStrategicOutputDTO } from "../types/StrategicOutput";
 import { updateStrategicOutput } from "../services/strategic-output.api";
@@ -12,7 +13,7 @@ export function useUpdateStrategicOutput(){
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["so"]})
         },
-        onError: (err: any) => {
+        onError: (err: AxiosError<{ message?: string }>) => {
             const message = err?.response?.data?.message ?? err?.message ?? "Error updating";
         toast.error(message); 
         }

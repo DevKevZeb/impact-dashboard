@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { apiClient } from "@/shared/lib/axios";
 import type { Country, CreateCountryDTO, UpdateCountryDTO } from "../types/CountryType";
 import { toast } from "sonner";
@@ -30,15 +31,16 @@ export async function createCountry(dto: CreateCountryDTO){
         toast.success(data.message);
 
         return mapCountry(data.data ?? data);
-    } catch (error: any) {
-    const status = error.response?.status;
+    } catch (error: unknown) {
+    const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, string[]> }>;
+    const status = axiosError.response?.status;
 
-    if (status === 422 && error.response?.data?.errors) {
-      const errors = error.response.data.errors as Record<string, string[]>;
+    if (status === 422 && axiosError.response?.data?.errors) {
+      const errors = axiosError.response.data.errors;
       Object.values(errors).flat().forEach((msg: string) => {
         toast.error('Error', { description: msg });
       });
-    } 
+    }
 
     throw error;
   }
@@ -50,15 +52,16 @@ export async function updateCountry(id: number, dto: UpdateCountryDTO): Promise<
     const {data} = await apiClient.put(`/countries/${id}`, payload);
     toast.success(data.message);
     return mapCountry(data?.data ?? data);
-  }catch (error: any) {
-    const status = error.response?.status;
+  }catch (error: unknown) {
+    const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, string[]> }>;
+    const status = axiosError.response?.status;
 
-    if (status === 422 && error.response?.data?.errors) {
-      const errors = error.response.data.errors as Record<string, string[]>;
+    if (status === 422 && axiosError.response?.data?.errors) {
+      const errors = axiosError.response.data.errors;
       Object.values(errors).flat().forEach((msg: string) => {
         toast.error('Error', { description: msg });
       });
-    } 
+    }
     throw error;
   }
 }
@@ -105,4 +108,3 @@ export async function activateCountry(id: number): Promise<void> {
   const { data } = await apiClient.patch(`/countries/${id}/activate`);
   toast.success(data.message ?? 'Country activated');
 }
-

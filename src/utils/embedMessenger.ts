@@ -40,7 +40,7 @@ export function initEmbedMessenger(): void {
 
   const patchHistoryMethod = (method: "pushState" | "replaceState"): void => {
     const original = history[method].bind(history);
-    (history[method] as any) = (...args: Parameters<typeof history.pushState>) => {
+    history[method] = (...args: Parameters<typeof history.pushState>) => {
       original(...args);
       sendScrollTop();
       sendReset();

@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { UpdateMeasureDTO } from "../types/measureTypes";
 import { updateMeasure } from "../services/measure.api";
@@ -12,7 +13,7 @@ export function useUpdateMeasure(){
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["measures"]})
         },
-        onError: (err: any) => {
+        onError: (err: AxiosError<{ message?: string }>) => {
             const message = err?.response?.data?.message ?? err?.message ?? "Error updating";
             toast.error(message); 
         }

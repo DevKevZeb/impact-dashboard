@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteProject } from "../services/project.api";
 import { toast } from "sonner";
@@ -13,7 +14,7 @@ export function useDeleteProject(programId: number) {
       queryClient.invalidateQueries({ queryKey: programKeys.detail(programId) });
       queryClient.invalidateQueries({ queryKey: programKeys.lists() });
     },
-    onError: (err: any) => {
+    onError: (err: AxiosError<{ message?: string }>) => {
       const message = err?.response?.data?.message ?? err?.message ?? "Failed to delete project";
       toast.error(message);
     },

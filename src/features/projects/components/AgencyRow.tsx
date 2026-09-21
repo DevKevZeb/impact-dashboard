@@ -5,21 +5,23 @@ import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Percent } from "lucide-react";
+import type { FetchOptions } from "@/shared/components/AsyncSearchSelect/asyncSearch.type";
+import type { Agency } from "@/features/agency/types/agency.types";
+import type { ProjectAgency } from "../types/project.types";
 
-type AgencyFormValue = {
-  id: number;
-  name: string;
-  url?: string;
-  contribution: number;
-};
+export type SetFieldValue = (
+  name: string,
+  value: unknown,
+  options?: { shouldDirty?: boolean; shouldValidate?: boolean; shouldTouch?: boolean }
+) => void;
 
 type AgencyRowProps = {
   index: number;
-  agency?: AgencyFormValue;
+  agency?: ProjectAgency;
   getMaxForContributor: (index: number) => number;
-  setValue: any;
+  setValue: SetFieldValue;
   removeAgency: (index: number) => void;
-  fetchAgencies: any;
+  fetchAgencies: FetchOptions<Agency>;
 };
 
 export const AgencyRow = React.memo(
@@ -66,9 +68,9 @@ export const AgencyRow = React.memo(
     return (
       <div className="grid lg:grid-cols-2 gap-3">
         <div>
-          <AsyncSearchSelect
-            enab={false} 
-            value={agency.id ? agency : null}
+          <AsyncSearchSelect<Agency>
+            enab={false}
+            value={agency.id ? (agency as unknown as Agency) : null}
             onChange={(v) => {
               setValue(
                 `agencies.${index}`,

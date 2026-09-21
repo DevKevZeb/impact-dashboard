@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { Loader2, Plus, Search, Tag } from "lucide-react";
 import { useDonors } from "../hooks/useDonors";
 import { useCreateDonor } from "../hooks/useCreateDonor";
@@ -80,9 +81,10 @@ export default function DonorsListPage() {
         toast.success(result?.message || "Donor eliminado correctamente");
         setOpenDeleteModal(false);
         setSelectedDonor(null);
-      } catch (error: any) {
-        const status = error?.response?.status;
-        const message = error?.response?.data?.message;
+      } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+        const status = axiosError?.response?.status;
+        const message = axiosError?.response?.data?.message;
 
         if (status === 409) {
           toast.error(

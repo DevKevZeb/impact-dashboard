@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { UpdateKpaDto } from "../types/KpaType";
 import { updateKpa } from "../services/kpa.api";
@@ -13,7 +14,7 @@ export function useUpdateKpa(){
             qc.invalidateQueries({ queryKey: ["kpas"]});
         },
 
-        onError: (err: any) => {
+        onError: (err: AxiosError<{ message?: string }>) => {
         const message = err?.response?.data?.message ?? err?.message ?? "Error updating";
         toast.error(message);
     }, 
