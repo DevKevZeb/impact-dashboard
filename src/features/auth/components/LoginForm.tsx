@@ -49,7 +49,7 @@ export function LoginForm() {
     try {
       await resendVerificationEmail(loginEmail);
       navigate("/email-verification-pending", { state: { email: loginEmail } });
-    } catch (error) {
+    } catch {
       // Error toast is shown by the API function
     } finally {
       setIsResending(false);

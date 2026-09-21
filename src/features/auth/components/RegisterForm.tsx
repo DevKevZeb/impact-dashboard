@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { registerSchema, type RegisterFormData } from "../types/register.schema";
@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "sonner";
 
 export function RegisterForm() {
@@ -33,7 +33,7 @@ export function RegisterForm() {
   const { mutate: register, isPending } = useRegister();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const [recaptchaReady, setRecaptchaReady] = useState(false);
+  const [recaptchaReady, setRecaptchaReady] = useState(() => !!window.grecaptcha);
   const recaptchaWidgetIdRef = useRef<number | undefined>(undefined);
   const recaptchaRenderRetryRef = useRef<number>(0);
   const recaptchaRetryTimeoutRef = useRef<number | undefined>(undefined);
@@ -51,7 +51,6 @@ export function RegisterForm() {
     );
 
     if (window.grecaptcha) {
-      setRecaptchaReady(true);
       return;
     }
 
@@ -79,7 +78,7 @@ export function RegisterForm() {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
+    control,
     clearErrors,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -94,7 +93,7 @@ export function RegisterForm() {
     },
   });
 
-  const watchedRoleName = watch("role_name");
+  const watchedRoleName = useWatch({ control, name: "role_name" });
 
   // Render widget explicitly so callbacks can keep form state in sync.
   useEffect(() => {
@@ -159,7 +158,7 @@ export function RegisterForm() {
     };
   }, [recaptchaReady, RECAPTCHA_SITE_KEY, setValue, clearErrors]);
 
-  const onSubmit = (data: RegisterFormData) => {
+  const onSubmit = useCallback((data: RegisterFormData) => {
     // Capture reCAPTCHA token before submission (explicit widget first)
     const token = window.grecaptcha?.getResponse(
       recaptchaWidgetIdRef.current ?? undefined
@@ -196,7 +195,7 @@ export function RegisterForm() {
         setValue("g-recaptcha-response", "", { shouldValidate: true });
       },
     });
-  };
+  }, [register, navigate, setValue]);
 
   const handleRoleChange = (value: string) => {
     setSelectedRole(value);
@@ -225,7 +224,7 @@ export function RegisterForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={(event) => { void handleSubmit(onSubmit)(event); }} className="space-y-4">
           {/* Name */}
           <div className="space-y-2">
             <Label htmlFor="name">

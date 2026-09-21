@@ -1,5 +1,6 @@
 import type { AxiosError } from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { useDidChange } from "@/shared/hooks/useDidChange";
 import { useBeneficiaries } from "../hooks/useBeneficiaries";
 import { useCreateBeneficiary } from "../hooks/useCreateBeneficiary";
 import { useDeleteBeneficiary } from "../hooks/useDeleteBeneficiary";
@@ -24,11 +25,8 @@ export default function BeneficiariesListPage(){
     const [perPage, setPerPage] = useState(10);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const prevSearch = useRef(searchTerm);
-    const prevPage = useRef(page);
-    
-    const searchChanged = prevSearch.current !== searchTerm;
-    const pageChanged = prevPage.current !== page;
+    const searchChanged = useDidChange(searchTerm);
+    const pageChanged = useDidChange(page);
 
     const debouncedSearch = useDebounce(searchTerm, 400);
 
@@ -113,11 +111,6 @@ export default function BeneficiariesListPage(){
         setPage(1);
     }
     
-    useEffect(() => {
-        prevSearch.current = searchTerm;
-        prevPage.current = page;
-    }, [searchTerm, page]);
-
     if (isLoading) return (
         <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center space-y-4">

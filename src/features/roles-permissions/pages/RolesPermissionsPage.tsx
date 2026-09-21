@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useSyncOnChange } from "@/shared/hooks/useDidChange";
 import { Loader2, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,14 +33,14 @@ export function RolesPermissionsPage() {
   const assignMutation = useAssignPermissionToRole();
   const removeMutation = useRemovePermissionFromRole();
 
-  useEffect(() => {
-    if (!selectedRoleId && rolesQuery.data?.length) {
-      setSelectedRoleId(rolesQuery.data[0].id);
+  useSyncOnChange(rolesQuery.data, (data) => {
+    if (!selectedRoleId && data?.length) {
+      setSelectedRoleId(data[0].id);
     }
-  }, [rolesQuery.data, selectedRoleId]);
+  });
 
-  const assignedPermissions = rolePermissionsQuery.data ?? [];
-  const allPermissions = permissionsQuery.data ?? [];
+  const assignedPermissions = useMemo(() => rolePermissionsQuery.data ?? [], [rolePermissionsQuery.data]);
+  const allPermissions = useMemo(() => permissionsQuery.data ?? [], [permissionsQuery.data]);
 
   const assignedIds = useMemo(
     () => new Set(assignedPermissions.map((p) => p.id)),
@@ -55,29 +56,28 @@ export function RolesPermissionsPage() {
     return Array.from(new Set(allPermissions.map((p) => p.module))).sort();
   }, [allPermissions]);
 
-  const filterFn = (permission: {
-    name: string;
-    module: string;
-    description: string;
-  }) => {
-    const term = searchTerm.trim().toLowerCase();
-    const moduleMatches = moduleFilter === "all" || permission.module === moduleFilter;
-    const textMatches =
-      !term ||
-      permission.name.toLowerCase().includes(term) ||
-      permission.module.toLowerCase().includes(term) ||
-      permission.description.toLowerCase().includes(term);
-    return moduleMatches && textMatches;
-  };
+  const filterFn = useCallback(
+    (permission: { name: string; module: string; description: string }) => {
+      const term = searchTerm.trim().toLowerCase();
+      const moduleMatches = moduleFilter === "all" || permission.module === moduleFilter;
+      const textMatches =
+        !term ||
+        permission.name.toLowerCase().includes(term) ||
+        permission.module.toLowerCase().includes(term) ||
+        permission.description.toLowerCase().includes(term);
+      return moduleMatches && textMatches;
+    },
+    [searchTerm, moduleFilter]
+  );
 
   const filteredAssigned = useMemo(
     () => assignedPermissions.filter(filterFn),
-    [assignedPermissions, searchTerm, moduleFilter]
+    [assignedPermissions, filterFn]
   );
 
   const filteredAvailable = useMemo(
     () => availablePermissions.filter(filterFn),
-    [availablePermissions, searchTerm, moduleFilter]
+    [availablePermissions, filterFn]
   );
 
   if (!canReadRoles) {

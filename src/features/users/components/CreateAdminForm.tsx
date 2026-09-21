@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { AxiosError } from "axios";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useCreateAdminUser } from "../api/userQueries";
@@ -25,7 +25,7 @@ export function CreateAdminForm({ onSuccess, onCancel }: CreateAdminFormProps) {
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<CreateAdminFormData>({
@@ -38,7 +38,7 @@ export function CreateAdminForm({ onSuccess, onCancel }: CreateAdminFormProps) {
     },
   });
 
-  const watchedPassword = watch("password", "");
+  const watchedPassword = useWatch({ control, name: "password", defaultValue: "" });
 
   const passwordStrength = useMemo(() => {
     const password = watchedPassword;

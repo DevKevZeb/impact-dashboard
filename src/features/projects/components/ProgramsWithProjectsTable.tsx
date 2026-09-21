@@ -271,7 +271,7 @@ function ProgramProjectsSubTable({ programId, isCountryActive, searchTerm }: Pro
                             </td>
                             <td className="px-4 py-2">
                                 <div className="flex items-center gap-2">
-                                    {!Boolean(project.can_edit) && (
+                                    {!project.can_edit && (
                                         <button
                                             type="button"
                                             className="btn-primary-table"

@@ -37,7 +37,7 @@ export default function CreateBeneficiaryModal( { open, beneficiary, onClose, on
                 name: beneficiary?.name || "",
             });
         }
-    }, [open, beneficiary]);
+    }, [open, beneficiary, reset]);
 
     const submitHandler = (data: BeneficiaryDTO) => {
         onSubmit(data);

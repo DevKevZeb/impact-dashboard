@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
+import { useDidChange } from "@/shared/hooks/useDidChange";
 import CreateIndicatorTypeModal from "../components/CreateIndicatorTypeModal";
 import { DeleteIndicatorTypeDialog } from "../components/DeleteIndicatorTypeDialog";
 import type { IndicatorType, IndicatorTypeDTO } from "../types/IndicatorTypeType";
@@ -23,11 +24,8 @@ export default function IndicatorTypesListPage(){
     const [selectedType, setSelectedType] = useState<IndicatorType | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
 
-    const prevSearch = useRef(searchTerm);
-    const prevPage = useRef(page);
-    
-    const searchChanged = prevSearch.current !== searchTerm;
-    const pageChanged = prevPage.current !== page;
+    const searchChanged = useDidChange(searchTerm);
+    const pageChanged = useDidChange(page);
 
     const debouncedSearch = useDebounce(searchTerm, 400);
 
@@ -74,11 +72,6 @@ export default function IndicatorTypesListPage(){
         setSearchTerm(value);
         setPage(1);
     };
-
-    useEffect(() => {
-        prevSearch.current = searchTerm;
-        prevPage.current = page;
-    }, [searchTerm, page]);
 
     if (isLoading) {
         return (

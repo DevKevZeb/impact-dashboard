@@ -3,7 +3,8 @@ import { Loader2, Plus, Search, Tag } from "lucide-react";
 import { useDonors } from "../hooks/useDonors";
 import { useCreateDonor } from "../hooks/useCreateDonor";
 import { useUpdateDonor } from "../hooks/useUpdateDonor";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { useDidChange } from "@/shared/hooks/useDidChange";
 import type { Donor, DonorDTO } from "../types/donor.types";
 import { Button } from "@/components/ui/button";
 import CreateDonorModal from "../components/CreateDonorModal";
@@ -26,11 +27,8 @@ export default function DonorsListPage() {
     const [perPage, setPerPage] = useState(10);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const prevSearch = useRef(searchTerm);
-    const prevPage = useRef(page);
-    
-    const searchChanged = prevSearch.current !== searchTerm;
-    const pageChanged = prevPage.current !== page;
+    const searchChanged = useDidChange(searchTerm);
+    const pageChanged = useDidChange(page);
 
     const debouncedSearch = useDebounce(searchTerm, 400);
 
@@ -120,11 +118,6 @@ export default function DonorsListPage() {
         setSearchTerm(value);
         setPage(1);
     }
-
-    useEffect(() => {
-        prevSearch.current = searchTerm;
-        prevPage.current = page;
-    }, [searchTerm, page]);
 
     if (isLoading) {
     return (

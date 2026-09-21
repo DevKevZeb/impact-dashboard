@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useSyncOnChange } from "@/shared/hooks/useDidChange";
 import {
   Command,
   CommandInput,
@@ -30,7 +31,7 @@ export function IndicatorTypeComboboxSearchable({ value, onChange, error, label 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data, isLoading } = useSearchIndicatorTypes(search, page);
-  const types: IndicatorTypeOption[] = data?.types ?? [];
+  const types: IndicatorTypeOption[] = useMemo(() => data?.types ?? [], [data]);
   const lastPage = data?.pagination?.last_page ?? 1;
 
   useEffect(() => {
@@ -49,15 +50,13 @@ export function IndicatorTypeComboboxSearchable({ value, onChange, error, label 
   }, []);
 
 
-  useEffect(() => {
-    setPage(1);
-  }, [search]);
+  useSyncOnChange(search, () => setPage(1));
 
-  useEffect(() => {
-    if (value) {
-      setInputValue(value.name);
+  useSyncOnChange(value, (v) => {
+    if (v) {
+      setInputValue(v.name);
     }
-  }, [value]);
+  });
 
   const handleInputChange = (val: string) => {
     setInputValue(val);

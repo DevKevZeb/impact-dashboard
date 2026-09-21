@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
+import { useSyncOnChange } from "@/shared/hooks/useDidChange";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
@@ -21,17 +22,17 @@ type DonorRowProps = {
 
 export const DonorRow = React.memo(
   ({ index, donor, getMaxForDonor, setValue, removeDonor, fetchDonors }: DonorRowProps) => {
-    if (!donor) return null;
-
-    const contribution = donor.contribution ?? 0;
+    const contribution = donor?.contribution ?? 0;
     const max = getMaxForDonor(index);
     const [contributionInput, setContributionInput] = useState(
       contribution === 0 ? "0" : String(contribution)
     );
 
-    useEffect(() => {
-      setContributionInput(contribution === 0 ? "0" : String(contribution));
-    }, [contribution]);
+    useSyncOnChange(contribution, (next) => {
+      setContributionInput(next === 0 ? "0" : String(next));
+    });
+
+    if (!donor) return null;
 
     const commitContribution = (rawValue: string) => {
       const normalizedValue = rawValue.replace(/\D/g, "").replace(/^0+(?=\d)/, "");

@@ -1,6 +1,7 @@
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
+import { useSyncOnChange } from "@/shared/hooks/useDidChange";
 import { z } from "zod";
 import { FolderX, Loader, Search } from "lucide-react";
 import Banner from "../../components/Banner";
@@ -85,20 +86,20 @@ export default function ProgramsPublicPage() {
         ? data.pagination.current_page < data.pagination.last_page
         : false;
 
-    useEffect(() => {
-        if (!data?.programs || !data.pagination) return;
+    useSyncOnChange(data, (d) => {
+        if (!d?.programs || !d.pagination) return;
 
-        if (data.pagination.current_page === 1) {
-            setPrograms(data.programs);
+        if (d.pagination.current_page === 1) {
+            setPrograms(d.programs);
             return;
         }
 
         setPrograms((previous) => {
             const existingIds = new Set(previous.map((program) => program.id));
-            const newPrograms = data.programs.filter((program) => !existingIds.has(program.id));
+            const newPrograms = d.programs.filter((program) => !existingIds.has(program.id));
             return [...previous, ...newPrograms];
         });
-    }, [data]);
+    });
 
     const onSubmit = (submittedFilters: ProgramFiltersForm) => {
         setPage(1);

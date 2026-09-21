@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSyncOnChange } from "@/shared/hooks/useDidChange";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FolderX, Loader, Search } from "lucide-react";
@@ -96,20 +97,20 @@ export default function PublicProjectsExplorer({
   const { data, isLoading, isFetching, error } = useProjects(page, perPage, filters, programId);
   const hasMore = data?.pagination ? data.pagination.current_page < data.pagination.last_page : false;
 
-  useEffect(() => {
-    if (!data?.projects || !data.pagination) return;
+  useSyncOnChange(data, (d) => {
+    if (!d?.projects || !d.pagination) return;
 
-    if (data.pagination.current_page === 1) {
-      setProjects(data.projects);
+    if (d.pagination.current_page === 1) {
+      setProjects(d.projects);
       return;
     }
 
     setProjects((previous) => {
       const existingIds = new Set(previous.map((project) => project.id));
-      const newProjects = data.projects.filter((project) => !existingIds.has(project.id));
+      const newProjects = d.projects.filter((project) => !existingIds.has(project.id));
       return [...previous, ...newProjects];
     });
-  }, [data]);
+  });
 
   const onSubmit = (submitted: ProjectFilterFormValues) => {
     setPage(1);

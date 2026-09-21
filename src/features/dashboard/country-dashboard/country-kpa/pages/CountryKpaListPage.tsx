@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDidChange } from "@/shared/hooks/useDidChange";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import CountryKpaTable from "../components/CountryKpaTable";
 import { useCountries } from "@/features/country/hooks/country/useCountries";
@@ -37,11 +38,8 @@ export default function CountryKpaListPage() {
   const [openModal, setOpenModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const prevSearch = useRef(searchTerm);
-  const prevPage = useRef(page);
-  
-  const searchChanged = prevSearch.current !== searchTerm;
-  const pageChanged = prevPage.current !== page;
+  const searchChanged = useDidChange(searchTerm);
+  const pageChanged = useDidChange(page);
 
   const debouncedSearch = useDebounce(searchTerm, 400);
 
@@ -88,11 +86,6 @@ export default function CountryKpaListPage() {
     }
     setOpenModal(false);
   };
-
-  useEffect(() => {
-      prevSearch.current = searchTerm;
-      prevPage.current = page;
-  }, [searchTerm, page]);
 
   if (!isAdmin) {
     return (

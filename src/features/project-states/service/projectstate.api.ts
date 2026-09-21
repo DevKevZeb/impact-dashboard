@@ -91,11 +91,5 @@ export async function fetchProjectStatesForSelector(params: { query: string, pag
 }
 
 export async function deleteProjectState(id: number): Promise<void> {
-  try {
-    await apiClient.delete(`/project-states/${id}`);
-    return;
-  } catch (error: unknown) {
-    // Let callers handle user-facing notifications; rethrow for caller handling
-    throw error;
-  }
+  await apiClient.delete(`/project-states/${id}`);
 }

@@ -1,4 +1,4 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm, useWatch, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
@@ -68,10 +68,12 @@ export default function CreateIndicatorModal({ open, indicator, parentMeasureId,
     },
   });
 
-  const { register, handleSubmit, reset, control, watch, setValue, formState: { errors } } = form;
+  const { register, handleSubmit, reset, control, setValue, formState: { errors } } = form;
 
-  const selectedType = watch("type");
+  const selectedType = useWatch({ control, name: "type" });
   const isTopDown = selectedType !== null && selectedType?.is_bottom_up === false;
+  const watchedActualValue = useWatch({ control, name: "actual_value" });
+  const watchedTarget = useWatch({ control, name: "target" });
 
   // Clear actual_value when switching from TD → BU so it doesn't persist
   useEffect(() => {
@@ -187,8 +189,8 @@ export default function CreateIndicatorModal({ open, indicator, parentMeasureId,
               />
               <p className="text-xs text-muted-foreground">
                 Implementation = αₓ / Tₓ × 100 = {" "}
-                {watch("actual_value") > 0 && watch("target") > 0
-                  ? `${((watch("actual_value")! / watch("target")) * 100).toFixed(2)}%`
+                {watchedActualValue > 0 && watchedTarget > 0
+                  ? `${((watchedActualValue! / watchedTarget) * 100).toFixed(2)}%`
                   : "—"}
               </p>
               {errors.actual_value && (

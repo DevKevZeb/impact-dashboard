@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { useDidChange } from "@/shared/hooks/useDidChange";
 import type { CreateKpaDto, Kpa } from "../types/KpaType";
 import KpaTable from "../components/KpaTable";
 import { useKpas } from "../hooks/useKpas";
@@ -22,12 +23,9 @@ export default function KpasListPage(){
   const [selectedKpa, setSelectedKpa] = useState<Kpa | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const prevSearch = useRef(searchTerm);
-  const prevPage = useRef(page);
-  
-  const searchChanged = prevSearch.current !== searchTerm;
-  const pageChanged = prevPage.current !== page;
-  
+  const searchChanged = useDidChange(searchTerm);
+  const pageChanged = useDidChange(page);
+
   const debouncedSearch = useDebounce(searchTerm, 400);
 
   const { data, isLoading, isFetching, error } = useKpas(page, perPage, debouncedSearch);
@@ -77,11 +75,6 @@ export default function KpasListPage(){
     setSearchTerm(value);
     setPage(1);
   };
-
-  useEffect(() => {
-      prevSearch.current = searchTerm;
-      prevPage.current = page;
-  }, [searchTerm, page]);
 
   if (isLoading) {
     return (

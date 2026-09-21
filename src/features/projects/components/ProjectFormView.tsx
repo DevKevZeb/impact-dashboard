@@ -24,7 +24,8 @@ import { DonorSection } from "./DonorSection";
 import { AgencySection } from "./AgencySection";
 import { fetchDonorsForSelect } from "@/features/donors/services/donor.api";
 import { fetchAgenciesForSelector } from "@/features/agency/services/agency.api";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useDidChange } from "@/shared/hooks/useDidChange";
 import BackArrow from "@/shared/components/backArrow/BackArrow";
 import {
     fetchProgramKpasForSelect,
@@ -57,11 +58,11 @@ function ProgressPercentInput({
     const [inputValue, setInputValue] = useState(value === 0 || value == null ? "0" : String(Math.round(value)));
     const [isFocused, setIsFocused] = useState(false);
 
-    useEffect(() => {
-        if (!isFocused) {
-            setInputValue(value === 0 || value == null ? "0" : String(Math.round(value)));
-        }
-    }, [value, isFocused]);
+    const valueChanged = useDidChange(value);
+    const focusChanged = useDidChange(isFocused);
+    if ((valueChanged || focusChanged) && !isFocused) {
+        setInputValue(value === 0 || value == null ? "0" : String(Math.round(value)));
+    }
 
     const commitValue = (rawValue: string) => {
         const normalizedValue = rawValue.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
@@ -134,22 +135,22 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
     const project_state = useWatch({ control: form.form.control, name: "project_state" });
     const beneficiary = useWatch({ control: form.form.control, name: "beneficiary" });
 
-    const fetchKpas = useCallback(
-        useProgramContext ? fetchProgramKpasForSelect(programId ?? 0) : fetchKpasForSelect,
+    const fetchKpas = useMemo(
+        () => (useProgramContext ? fetchProgramKpasForSelect(programId ?? 0) : fetchKpasForSelect),
         [useProgramContext, programId]
     );
 
-    const fetchStrategicOutputs = useCallback(
-        useProgramContext
+    const fetchStrategicOutputs = useMemo(
+        () => (useProgramContext
             ? fetchProgramStrategicOutputsForSelect(programId ?? 0, kpa?.id ?? 0)
-            : fetchStrategicOutputsForSelect(kpa?.id ?? 0),
+            : fetchStrategicOutputsForSelect(kpa?.id ?? 0)),
         [useProgramContext, programId, kpa?.id]
     );
 
-    const fetchMeasures = useCallback(
-        useProgramContext
+    const fetchMeasures = useMemo(
+        () => (useProgramContext
             ? fetchProgramMeasuresForSelect(programId ?? 0, strategicOutput?.id ?? 0)
-            : fetchMeasuresForSelect(strategicOutput?.id ?? 0),
+            : fetchMeasuresForSelect(strategicOutput?.id ?? 0)),
         [useProgramContext, programId, strategicOutput?.id]
     );
 
@@ -167,13 +168,13 @@ export default function ProjectFormView({ mode, programName, form, onSubmit, onI
     }, []);
 
 
-    const fetchDonors = useCallback(
-        fetchDonorsForSelect(form.excludedDonorIds),
+    const fetchDonors = useMemo(
+        () => fetchDonorsForSelect(form.excludedDonorIds),
         [form.excludedDonorIds]
     );
-    
-    const fetchAgencies = useCallback(
-        fetchAgenciesForSelector(form.excludedAgencyIds),
+
+    const fetchAgencies = useMemo(
+        () => fetchAgenciesForSelector(form.excludedAgencyIds),
         [form.excludedAgencyIds]
     );
 

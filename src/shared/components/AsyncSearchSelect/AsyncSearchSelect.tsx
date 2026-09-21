@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { AsyncSearchSelectProps } from "./asyncSearch.type";
 import { useAsyncSearch } from "./useAsyncSearch";
+import { useSyncOnChange } from "@/shared/hooks/useDidChange";
 import { Input } from "@/components/ui/input";
 
 export function AsyncSearchSelect<T>({ value, onChange, fetchOptions, getOptionLabel, getOptionKey, placeholder = "Select an option", emptyMessage = "No results found", enab = false, disabled = false }: AsyncSearchSelectProps<T>) {
@@ -18,13 +19,13 @@ export function AsyncSearchSelect<T>({ value, onChange, fetchOptions, getOptionL
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (value) {
-      setQuery(getOptionLabel(value));
+  useSyncOnChange(value, (v) => {
+    if (v) {
+      setQuery(getOptionLabel(v));
     } else {
       setQuery("");
     }
-  }, [value, getOptionLabel]);
+  });
 
   const { options, loading, hasMore, loadMore } = useAsyncSearch( query, fetchOptions, getOptionKey, getOptionLabel, enabled );
 

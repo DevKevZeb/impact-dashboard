@@ -111,16 +111,6 @@
       onSelectionChange(node.key, node);
     };
 
-    const collapseChildren = (children: TreeNode[], expanded: Record<string, boolean>) => {
-      const newKeys = { ...expanded };
-
-      for (const child of children) {
-        if (newKeys[child.key] !== undefined) delete newKeys[child.key];
-        if (child.children) Object.assign(newKeys, collapseChildren(child.children, newKeys));
-      }
-      return newKeys;
-    };
-
     const refreshNode = useCallback(async (key: string) => {
       if (!loadChildren) return;
 

@@ -1,6 +1,7 @@
 import type { AxiosError } from "axios";
 import { Loader2, Plus, Search, Tag } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { useDidChange } from "@/shared/hooks/useDidChange";
 import type { ProjectState, ProjectStateDTO } from "../types/projectstate.types";
 import { useProjectStates } from "../hooks/useProjectStates";
 import { useCreateProjectState } from "../hooks/useCreateProjectState";
@@ -24,11 +25,8 @@ export default function ProjectStateListPage(){
     const [perPage, setPerPage] = useState(10);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const prevSearch = useRef(searchTerm);
-    const prevPage = useRef(page);
-    
-    const searchChanged = prevSearch.current !== searchTerm;
-    const pageChanged = prevPage.current !== page;
+    const searchChanged = useDidChange(searchTerm);
+    const pageChanged = useDidChange(page);
 
     const debouncedSearch = useDebounce(searchTerm, 400);
 
@@ -112,11 +110,6 @@ export default function ProjectStateListPage(){
         setSearchTerm(value);
         setPage(1);
     };
-
-    useEffect(() => {
-        prevSearch.current = searchTerm;
-        prevPage.current = page;
-    }, [searchTerm, page]);
 
     if (isLoading) return (
     <div className="flex items-center justify-center min-h-[60vh]">

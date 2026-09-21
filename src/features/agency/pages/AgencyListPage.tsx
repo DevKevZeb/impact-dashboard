@@ -1,6 +1,7 @@
 import type { AxiosError } from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useDidChange } from "@/shared/hooks/useDidChange";
 import AgencyTable from "../components/AgencyTable";
 import CreateAgencyModal from "../components/CreateAgencyModal";
 import DeleteAgencyDialog from "../components/DeleteAgencyDialog";
@@ -26,12 +27,9 @@ export default function AgencyListPage() {
   const [perPage, setPerPage] = useState(10);
    const [searchTerm, setSearchTerm] = useState('');
 
-  const prevSearch = useRef(searchTerm);
-  const prevPage = useRef(page);
-  
-  const searchChanged = prevSearch.current !== searchTerm;
-  const pageChanged = prevPage.current !== page;
-  
+  const searchChanged = useDidChange(searchTerm);
+  const pageChanged = useDidChange(page);
+
   const debouncedSearch = useDebounce(searchTerm, 400);
 
   const { data, isLoading, isFetching, error } = useAgencies(page, perPage, debouncedSearch);
@@ -122,12 +120,6 @@ export default function AgencyListPage() {
     setSearchTerm(value);
     setPage(1);
   };
-
-  useEffect(() => {
-      prevSearch.current = searchTerm;
-      prevPage.current = page;
-  }, [searchTerm, page]);
-
 
   if (isLoading) {
     return (

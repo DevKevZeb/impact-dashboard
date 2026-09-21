@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useDidChange } from "@/shared/hooks/useDidChange";
 import { useCountries } from "../hooks/country/useCountries";
 import { useCreateCountry } from "../hooks/country/useCreateCountry.ts";
 import { useDeleteCountry } from "../hooks/country/useDeleteCountry.ts";
@@ -32,11 +33,8 @@ export default function CountryListPage() {
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const prevSearch = useRef(searchTerm);
-  const prevPage = useRef(page);
-  
-  const searchChanged = prevSearch.current !== searchTerm;
-  const pageChanged = prevPage.current !== page;
+  const searchChanged = useDidChange(searchTerm);
+  const pageChanged = useDidChange(page);
 
   const debouncedSearch = useDebounce(searchTerm, 400);
 
@@ -119,11 +117,6 @@ export default function CountryListPage() {
     setSearchTerm(value);
     setPage(1);
   };
-
-  useEffect(() => {
-      prevSearch.current = searchTerm;
-      prevPage.current = page;
-  }, [searchTerm, page]);
 
   if (isLoading || loadingCurrencies) {
     return (

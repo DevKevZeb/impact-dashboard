@@ -6,9 +6,9 @@ export function useCreateCountry(){
     
     return useMutation({
         mutationFn: createCountry,
-        onSuccess: () =>{
-            queryClient.invalidateQueries({ queryKey: ["countries"]}),
-            queryClient.invalidateQueries({ queryKey: ["currencies"] })
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["countries"] });
+            queryClient.invalidateQueries({ queryKey: ["currencies"] });
         }
     })
 }

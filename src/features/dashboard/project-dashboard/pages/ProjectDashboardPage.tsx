@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { FolderOpenDot, Loader2, Search } from "lucide-react";
+import { useDidChange } from "@/shared/hooks/useDidChange";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import TableSkeleton from "@/components/ui/TableSkeleton";
@@ -16,11 +17,8 @@ export default function ProjectDashboardPage() {
   const [perPage, setPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const prevSearch = useRef(searchTerm);
-  const prevPage = useRef(page);
-
-  const searchChanged = prevSearch.current !== searchTerm;
-  const pageChanged = prevPage.current !== page;
+  const searchChanged = useDidChange(searchTerm);
+  const pageChanged = useDidChange(page);
 
   const debouncedSearch = useDebounce(searchTerm, 400);
   const { data, isLoading, isFetching, error } = useProjectDashboard(page, perPage, debouncedSearch);
@@ -42,11 +40,6 @@ export default function ProjectDashboardPage() {
     setSearchTerm(value);
     setPage(1);
   };
-
-  useEffect(() => {
-    prevSearch.current = searchTerm;
-    prevPage.current = page;
-  }, [searchTerm, page]);
 
   if (isLoading) {
     return (

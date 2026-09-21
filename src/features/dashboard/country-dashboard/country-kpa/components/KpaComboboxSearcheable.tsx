@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useSyncOnChange } from "@/shared/hooks/useDidChange";
 import {
   Command,
   CommandInput,
@@ -30,7 +31,7 @@ export function KpaComboboxSearchable({ value, onChange, error }: Props) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data, isLoading } = useSearchKpas(search, page, 10);
-  const kpas: KpaOption[] = data?.kpas ?? [];
+  const kpas: KpaOption[] = useMemo(() => data?.kpas ?? [], [data]);
   const lastPage = data?.pagination?.last_page ?? 1;
 
   useEffect(() => {
@@ -42,13 +43,11 @@ export function KpaComboboxSearchable({ value, onChange, error }: Props) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    setPage(1);
-  }, [search]);
+  useSyncOnChange(search, () => setPage(1));
 
-  useEffect(() => {
-    if (value) setInputValue(value.name);
-  }, [value]);
+  useSyncOnChange(value, (v) => {
+    if (v) setInputValue(v.name);
+  });
 
   useEffect(() => {
     if (!listRef.current || isLoading) return;

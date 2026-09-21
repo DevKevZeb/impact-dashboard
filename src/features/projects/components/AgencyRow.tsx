@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AsyncSearchSelect } from "@/shared/components/AsyncSearchSelect/AsyncSearchSelect";
+import { useSyncOnChange } from "@/shared/hooks/useDidChange";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
@@ -33,17 +34,17 @@ export const AgencyRow = React.memo(
     removeAgency,
     fetchAgencies,
   }: AgencyRowProps) => {
-    if (!agency) return null; 
-
-    const contribution = agency.contribution ?? 0;
+    const contribution = agency?.contribution ?? 0;
     const max = getMaxForContributor(index);
     const [contributionInput, setContributionInput] = useState(
       contribution === 0 ? "0" : String(contribution)
     );
 
-    useEffect(() => {
-      setContributionInput(contribution === 0 ? "0" : String(contribution));
-    }, [contribution]);
+    useSyncOnChange(contribution, (next) => {
+      setContributionInput(next === 0 ? "0" : String(next));
+    });
+
+    if (!agency) return null;
 
     const commitContribution = (rawValue: string) => {
       const normalizedValue = rawValue.replace(/\D/g, "").replace(/^0+(?=\d)/, "");

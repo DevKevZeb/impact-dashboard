@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { LazyTree } from "../components/TreeNode/Tree";
 import { loadChildrenCountryKpaTree } from "../components/TreeNode/loadChildrenCountryKpaTree";
@@ -54,14 +54,9 @@ export default function InfoCountryKpaPage() {
 
   // Check if user has access to this country
   const hasAccess = isAdmin || (userCountryId === id);
-  
-  // Early return if non-admin user tries to access a different country
-  const [accessDenied, setAccessDenied] = useState(false);
-  useEffect(() => {
-    if (!hasAccess && userCountryId) {
-      setAccessDenied(true);
-    }
-  }, [hasAccess, userCountryId]);
+
+  // Non-admin user trying to access a different country than their own
+  const accessDenied = !hasAccess && !!userCountryId;
 
   // Only fetch data if user has access
   const { data, isLoading, refetch: refetchTree } = useCountryKpas(id, 1, -1, hasAccess);
@@ -74,7 +69,10 @@ export default function InfoCountryKpaPage() {
     current_page: tablePage,
     last_page: 1,
   };
-  const kpas = !Array.isArray(data) && data?.kpas ? data.kpas : [];
+  const kpas = useMemo(
+    () => (!Array.isArray(data) && data?.kpas ? data.kpas : []),
+    [data]
+  );
   const country = Array.isArray(data) ? undefined : data?.country;
 
   const syncedCountry = (
@@ -191,7 +189,7 @@ export default function InfoCountryKpaPage() {
     setOpenStrategicOutputModal(true);
     setParentKpaId(node.parent_id ?? null);
     const strategicOut = {
-      id: (node.data as DefaultNodeData)?.id!,
+      id: (node.data as DefaultNodeData).id,
       name: node.label,
       country_kpa_id: node.parent_id!
     }
@@ -240,7 +238,7 @@ export default function InfoCountryKpaPage() {
     setOpenMeasureModal(true);
     setParentStrategicOutputId(node.parent_id ?? null);
     const measure = {
-      id: (node.data as DefaultNodeData)?.id!,
+      id: (node.data as DefaultNodeData).id,
       name: node.label,
       strategic_output_id: node.parent_id!
     }
@@ -272,7 +270,7 @@ export default function InfoCountryKpaPage() {
     setOpenIndicatorModal(true);
     setParentMeasureId(node.parent_id ?? null);
     const indicator = {
-      id: (node.data as DefaultNodeData)?.id!,
+      id: (node.data as DefaultNodeData).id,
       name: node.label,
       target: Number(node.meta!.target!),
       actual_value: Number(node.meta!.actual_value ?? 0),

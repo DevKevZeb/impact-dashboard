@@ -39,10 +39,11 @@ export function CreateAdminPage() {
     const { data, isLoading, error } = useAdminUsers(currentPage, perPage);
     const deleteAdminMutation = useDeleteAdminUser();
 
+    const dataUsers = data?.users;
     const admins = useMemo(() => {
-        if (!data?.users) return [];
-        return data.users.filter((admin) => admin.id !== currentUserId);
-    }, [data?.users, currentUserId]);
+        if (!dataUsers) return [];
+        return dataUsers.filter((admin) => admin.id !== currentUserId);
+    }, [dataUsers, currentUserId]);
 
     const handleDeleteClick = (admin: User) => {
         if (admin.id === currentUserId) return;
