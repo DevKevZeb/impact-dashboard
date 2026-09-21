@@ -56,8 +56,8 @@ export function AppRouter() {
 
     return (
     <Routes>
-        {/* Public Routes - Login & Register */}
-        <Route path="/" element={<PublicRoute><PublicLayout/></PublicRoute>}>
+        {/* Public content pages - browsable whether or not the visitor is authenticated */}
+        <Route path="/" element={<PublicLayout/>}>
             <Route index element={<HomePage />} />
             <Route path="home" element={<HomePage />} />
 
@@ -77,12 +77,13 @@ export function AppRouter() {
             <Route path="statistics" element={<StatisticsPage />} />
             <Route path="about" element={<AboutPage />} />
 
-            <Route path="login" element={<LoginPage />} />
-            <Route path="forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="reset-password" element={<ResetPasswordPage />} />
-            <Route path="register" element={<RegisterPage />} />
-            <Route path="email-verification-pending" element={<EmailVerificationPendingPage />} />
-            <Route path="verify-email" element={<VerifyEmailPage />} />
+            {/* Auth-only routes - redirect away if already authenticated */}
+            <Route path="login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+            <Route path="forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+            <Route path="reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
+            <Route path="register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+            <Route path="email-verification-pending" element={<PublicRoute><EmailVerificationPendingPage /></PublicRoute>} />
+            <Route path="verify-email" element={<PublicRoute><VerifyEmailPage /></PublicRoute>} />
         </Route>
 
         {/* Protected Routes - Require Authentication */}

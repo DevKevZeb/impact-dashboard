@@ -8,7 +8,7 @@
 
 A program & project management dashboard for tracking KPIs, SDGs, budgets and results across countries, donors and implementing agencies — with role-based access control, interactive analytics, and a full CRUD workflow for complex, multi-step forms.
 
-**[Live Demo](#) — runs in a self-contained demo mode with realistic mock data, no backend required** <!-- TODO: replace with the deployed Vercel URL -->
+**[Live Demo](https://impact-dashboard-wheat.vercel.app) — runs in a self-contained demo mode with realistic mock data, no backend required**
 
 The demo enforces a **real, restrictive role-based permission model** — three personas, each seeing a different slice of the app. Use the "Login as Demo ..." buttons on the login screen, or sign in manually with any email below and password `demo1234`:
 
