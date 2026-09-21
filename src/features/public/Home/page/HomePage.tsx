@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import Hero from "../components/Hero";
 import { ChartPie, FileSearch, FolderKey, Info, NotebookText } from "lucide-react";
-import NavCard from "../components/NavCard";
+import NavCard, { type NavCardAccent } from "../components/NavCard";
 
 export default function HomePage() {
 
@@ -17,36 +17,41 @@ export default function HomePage() {
         'https://pacificecommerce.org/wp-content/uploads/2024/07/Start-Small-Dream-Big-shop_Leutu-Kiole-1-scaled.jpg'
     ];
 
-    const navCardData = [
+    const navCardData: { title: string; description: string; icon: typeof FileSearch; to: string; accent: NavCardAccent }[] = [
         {
             title: 'Programs',
             description:'Search for information on development programs supporting E-commerce in the Pacific',
             icon: FileSearch,
             to: '/development/programs',
+            accent: 'sky',
         },
         {
             title: 'Business Toolkits',
             description:'Find practical toolkits to help your businesses move online',
             icon: FolderKey,
             to: '/resources/toolkits',
+            accent: 'amber',
         },
         {
             title: 'Reports',
             description:'National and regional E-commerce diagnostic reports and strategies for Pacific Island Countries',
             icon: NotebookText,
             to: '/resources/reports',
+            accent: 'violet',
         },
         {
             title: 'Statistics',
             description:'The most comprehensive compendium of E-commerce statistics available for the Pacific region',
             icon: ChartPie,
             to: '/statistics',
+            accent: 'emerald',
         },
         {
             title: 'About',
             description:'Learn about the mission and regional impact of the Pacific E-commerce Initiative',
             icon: Info,
             to: '/about',
+            accent: 'rose',
         },
 
     ]
@@ -59,7 +64,7 @@ export default function HomePage() {
                     <h2 className="mt-20 mb-20 head-label">Contents</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
                         {navCardData.map((item, index) => (
-                            <NavCard key={index} title={item.title} description={item.description} icon={item.icon} to={item.to}/>
+                            <NavCard key={index} title={item.title} description={item.description} icon={item.icon} to={item.to} accent={item.accent}/>
                         ))}
 
                     </div>

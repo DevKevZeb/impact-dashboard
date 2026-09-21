@@ -24,6 +24,7 @@ import {
   type ProgramUpdateFormData,
 } from "../types/program.schema";
 import type { Program } from "../types/program.types";
+import { resolveStorageUrl } from "@/lib/utils";
 
 interface ProgramEditDialogProps {
   program: Program | null;
@@ -153,9 +154,7 @@ export function ProgramEditDialog({
 
   if (!program) return null;
 
-  const currentBannerUrl = program.banner_img
-    ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '')}/storage/${program.banner_img}`
-    : null;
+  const currentBannerUrl = resolveStorageUrl(program.banner_img);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>

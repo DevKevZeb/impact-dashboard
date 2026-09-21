@@ -1,13 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEmbedMode } from "@/hooks/useEmbedMode";
+import { resolveStorageUrl } from "@/lib/utils";
 
 interface ProgramCardProps {
   id: number | string;
   name: string;
   description: string;
+  bannerImg?: string | null;
 }
 
-export default function ProgramCard({ id, name, description }: ProgramCardProps) {
+const FALLBACK_BANNER = "https://orchid-alligator-247477.hostingersite.com/wp-content/uploads/2022/04/grid-item-image.png";
+
+export default function ProgramCard({ id, name, description, bannerImg }: ProgramCardProps) {
   const navigate = useNavigate();
   const isEmbedded = useEmbedMode();
 
@@ -20,7 +24,7 @@ export default function ProgramCard({ id, name, description }: ProgramCardProps)
     >
       <div className="h-78 w-full overflow-hidden">
         <img
-          src="https://orchid-alligator-247477.hostingersite.com/wp-content/uploads/2022/04/grid-item-image.png"
+          src={resolveStorageUrl(bannerImg) ?? FALLBACK_BANNER}
           alt={name}
           className="h-full w-full object-cover"
         />

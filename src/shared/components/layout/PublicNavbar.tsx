@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { PublicDesktopNavbar } from "./PublicDesktopNavbar";
 import { Link, NavLink } from "react-router-dom";
 import { PublicMobileNavbar } from "./PublicMobileNavbar";
-import { CircleUserRound, Menu, Plus } from "lucide-react";
+import { CircleUserRound, Menu } from "lucide-react";
 import logoSrc from "@/assets/Pacific-Ecommerce-Initiative.webp";
 
 export default function PublicNavbar() {
@@ -19,10 +19,6 @@ export default function PublicNavbar() {
         <PublicDesktopNavbar />
 
         <div className="hidden min-[1290px]:flex items-center gap-3">
-          <NavLink to="/register" className="btn-primary flex space-x-2 items-center">
-            <Plus className="w-5 h-5"/>
-            <span>Register</span>
-          </NavLink>
           <NavLink to="/login" className="btn-secondary flex space-x-2 items-center">
             <CircleUserRound className="text-white w-5 h-5"/>
             <span>Login</span>

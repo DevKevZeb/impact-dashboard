@@ -4,7 +4,7 @@ import { publicNavigation } from "@/shared/types/navigation";
 import { useState, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { useClickOutside } from "@/shared/hooks/uselickOutside";
-import { ChevronDown, ChevronUp, CircleUserRound, Plus } from "lucide-react";
+import { ChevronDown, ChevronUp, CircleUserRound } from "lucide-react";
 
 
 export function PublicMobileNavbar({ onNavigate, ignoreRef, }: { onNavigate: () => void, ignoreRef?: React.RefObject<HTMLElement | null> }) {
@@ -63,10 +63,6 @@ export function PublicMobileNavbar({ onNavigate, ignoreRef, }: { onNavigate: () 
           })}
         </div>
         <div className="py-4 flex items-center gap-2  justify-center">
-          <NavLink to="/register" className="btn-primary flex space-x-2 items-center">
-            <Plus className="w-5 h-5"/>
-            <span>Register</span>
-          </NavLink>
           <NavLink to="/login" className="btn-secondary flex space-x-2 items-center">
             <CircleUserRound className="text-white w-5 h-5"/>
             <span>Login</span>

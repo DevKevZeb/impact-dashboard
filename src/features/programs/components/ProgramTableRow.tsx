@@ -4,6 +4,7 @@ import { DataTableRow, DataTableCell } from "@/shared/components/table";
 import { Can } from "@/features/auth/components/Can";
 import { SCOPES } from "@/features/auth/utils/permissions";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { resolveStorageUrl } from "@/lib/utils";
 
 interface ProgramTableRowProps {
   program: Program;
@@ -26,9 +27,7 @@ export function ProgramTableRow({
   canInvite = false,
   isCountryActive = true,
 }: ProgramTableRowProps) {
-  const bannerUrl = program.banner_img
-    ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '')}/storage/${program.banner_img}`
-    : null;
+  const bannerUrl = resolveStorageUrl(program.banner_img);
 
   const handleView = (e: React.MouseEvent) => {
     e.stopPropagation();

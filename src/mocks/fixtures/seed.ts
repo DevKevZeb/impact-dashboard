@@ -487,16 +487,15 @@ export const sdgs: Sdg[] = Array.from({ length: 17 }, (_, i) => {
     id: n,
     image: `sdg_images/seed_sdg-${padded}.png`,
     filename: `sdg-${padded}.png`,
-    image_url: `https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Sustainable_Development_Goal_${n}${sdgWikiSuffix(n)}`,
+    // Wikimedia thumb URLs need the file's actual hash-prefix folder (e.g.
+    // "9/9d/"), which differs per file and can't be guessed - hardcoding one
+    // prefix for all 17 files (an earlier version of this seed did) 404s for
+    // nearly all of them. `Special:FilePath` is Wikimedia's own redirect
+    // endpoint that resolves the correct thumb URL by filename alone, so this
+    // stays correct without needing to look up 17 individual hashes.
+    image_url: `https://commons.wikimedia.org/wiki/Special:FilePath/Sustainable_Development_Goal_${n}.png?width=240`,
   };
 });
-
-// Wikimedia file names for the official SDG tile icons vary slightly; falling
-// back to a generic placeholder keeps this list maintenance-free and always
-// renders something reasonable even if a specific file name is off.
-function sdgWikiSuffix(_n: number): string {
-  return `.png/240px-Sustainable_Development_Goal_${_n}.png`;
-}
 
 export const contacts: Contact[] = [
   { id: 1, first_name: "Litia", last_name: "Ravouvou", title: "Program Director", email: "litia.ravouvou@example.org", phone: "+6799991001" },
@@ -532,6 +531,14 @@ const programDefinitions: { name: string; description: string; countryId: number
   { name: "Pacific Regional Innovation & Entrepreneurship Fund", description: "Co-funds startup incubation and seed financing for young entrepreneurs across six Pacific countries.", countryId: 1, stateId: 1, sdgIds: [8, 9], contactId: 10 },
 ];
 
+// Lorem Picsum's `/seed/<text>/` endpoint deterministically returns the same
+// photo for the same seed string - unlike Unsplash Source (discontinued) or
+// guessing real photo IDs, this never 404s and needs no per-program lookup.
+function bannerImageFor(name: string): string {
+  const seed = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  return `https://picsum.photos/seed/${seed}/800/450`;
+}
+
 export const programs: SeedProgram[] = programDefinitions.map((def, index) => {
   const id = index + 1;
   const country = findCountry(def.countryId)!;
@@ -539,7 +546,7 @@ export const programs: SeedProgram[] = programDefinitions.map((def, index) => {
     id,
     name: def.name,
     description: def.description,
-    banner_img: null,
+    banner_img: bannerImageFor(def.name),
     program_url: null,
     contact: contacts[def.contactId - 1],
     program_state: programStates.find((s) => s.id === def.stateId)!,

@@ -7,6 +7,7 @@ import {
 import { X, Mail, Phone, Globe, Calendar } from "lucide-react";
 import type { Program } from "../types/program.types";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { resolveStorageUrl } from "@/lib/utils";
 
 interface ProgramDetailDialogProps {
   program: Program | null;
@@ -21,9 +22,7 @@ export function ProgramDetailDialog({
 }: ProgramDetailDialogProps) {
   if (!program) return null;
 
-  const bannerUrl = program.banner_img
-    ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '')}/storage/${program.banner_img}`
-    : null;
+  const bannerUrl = resolveStorageUrl(program.banner_img);
 
   const currencyCode = program.country_user_roles?.[0]?.country?.currency_code ?? "";
   const budget = program.program_summary?.budget ?? 0;

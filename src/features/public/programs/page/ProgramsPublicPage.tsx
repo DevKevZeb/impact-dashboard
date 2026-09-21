@@ -319,6 +319,7 @@ export default function ProgramsPublicPage() {
                                     id={program.id}
                                     name={program.name}
                                     description={program.description}
+                                    bannerImg={program.banner_img}
                                 />
                             ))}
                         </div>
