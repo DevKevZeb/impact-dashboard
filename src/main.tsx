@@ -11,14 +11,23 @@ import { initEmbedMessenger } from './utils/embedMessenger';
 
 initEmbedMessenger();
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-        <Toaster position="top-right" richColors closeButton />
-      </BrowserRouter>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  </StrictMode>,
-)
+async function bootstrap() {
+  if (import.meta.env.VITE_DEMO_MODE === 'true') {
+    const { installDemoMocks } = await import('./mocks');
+    installDemoMocks();
+  }
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+          <Toaster position="top-right" richColors closeButton />
+        </BrowserRouter>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </StrictMode>,
+  )
+}
+
+bootstrap();

@@ -1,14 +1,16 @@
 import type { LucideIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface NavCardProps {
   title: string;
   description: string;
   icon: LucideIcon;
+  to?: string;
 }
 
-export default function NavCard({ title, description, icon: Icon }: NavCardProps) {
-  return (
-    <div  className=" w-auto overflow-hidden text-card-foreground transition-shadow">
+export default function NavCard({ title, description, icon: Icon, to }: NavCardProps) {
+  const content = (
+    <>
       <div className="cursor-pointer h-70 bg-primary flex items-center hover:shadow-lg transition-shadow duration-200 justify-center">
         <div className="rounded-sm p-4">
           <Icon className="w-38 h-38 text-white" />
@@ -24,6 +26,16 @@ export default function NavCard({ title, description, icon: Icon }: NavCardProps
           {description}
         </p>
       </div>
-    </div>
+    </>
   );
+
+  if (to) {
+    return (
+      <Link to={to} className="w-auto overflow-hidden text-card-foreground transition-shadow block">
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className="w-auto overflow-hidden text-card-foreground transition-shadow">{content}</div>;
 }

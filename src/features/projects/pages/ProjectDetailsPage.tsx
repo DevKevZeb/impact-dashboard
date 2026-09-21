@@ -26,12 +26,11 @@ function formatNameList(items?: { name: string }[] | null): string {
 export default function ProjectDetailsPage() {
   const { id } = useParams();
   const parsedId = Number(id);
+  const { data, isLoading, error } = useProject(parsedId);
 
   if (Number.isNaN(parsedId)) {
     return <div>Invalid project</div>;
   }
-
-  const { data, isLoading, error } = useProject(parsedId);
 
   if (isLoading) {
     return (

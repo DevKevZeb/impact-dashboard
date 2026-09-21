@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import Hero from "../components/Hero";
-import { ChartPie, FileSearch, FolderKey, GraduationCap, Newspaper, NotebookText } from "lucide-react";
+import { ChartPie, FileSearch, FolderKey, Info, NotebookText } from "lucide-react";
 import NavCard from "../components/NavCard";
 
 export default function HomePage() {
@@ -22,31 +22,31 @@ export default function HomePage() {
             title: 'Programs',
             description:'Search for information on development programs supporting E-commerce in the Pacific',
             icon: FileSearch,
+            to: '/development/programs',
         },
         {
             title: 'Business Toolkits',
             description:'Find practical toolkits to help your businesses move online',
             icon: FolderKey,
+            to: '/resources/toolkits',
         },
         {
-            title: 'Training Materials',
-            description:'E-commerce training course for Pacific policymakers and businesses, to help create a trustworthy online environment and support successful online selling.',
-            icon: GraduationCap,
-        },
-        {   
             title: 'Reports',
             description:'National and regional E-commerce diagnostic reports and strategies for Pacific Island Countries',
             icon: NotebookText,
+            to: '/resources/reports',
         },
         {
             title: 'Statistics',
             description:'The most comprehensive compendium of E-commerce statistics available for the Pacific region',
             icon: ChartPie,
+            to: '/statistics',
         },
         {
-            title: 'News',
-            description:'Updates and news on e-commerce development in the Pacific',
-            icon: Newspaper,
+            title: 'About',
+            description:'Learn about the mission and regional impact of the Pacific E-commerce Initiative',
+            icon: Info,
+            to: '/about',
         },
 
     ]
@@ -59,13 +59,10 @@ export default function HomePage() {
                     <h2 className="mt-20 mb-20 head-label">Contents</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
                         {navCardData.map((item, index) => (
-                            <NavCard key={index} title={item.title} description={item.description} icon={item.icon}/>
+                            <NavCard key={index} title={item.title} description={item.description} icon={item.icon} to={item.to}/>
                         ))}
 
                     </div>
-                </div>
-                <div className="min-h-screen py-8 w-5/7">
-                    <h2 className="md:mt-10 m-5 head-label">News</h2>
                 </div>
             </div>
         </div>

@@ -33,6 +33,10 @@ import ProgramsPublicPage from "@/features/public/programs/page/ProgramsPublicPa
 import PublicProgramDetailsPage from "@/features/public/programs/page/PublicProgramDetailsPage";
 import ProjectsPublicPage from "@/features/public/projects/page/ProjectsPublicPage";
 import ProgressPublicPage from "@/features/public/progress/page/ProgressPublicPage";
+import StatisticsPage from "@/features/public/statistics/page/StatisticsPage";
+import AboutPage from "@/features/public/about/page/AboutPage";
+import ToolkitsPage from "@/features/public/resources/page/ToolkitsPage";
+import ReportsPage from "@/features/public/resources/page/ReportsPage";
 import PublicProjectDetailsPage from "@/features/public/projects/page/PublicProjectDetailsPage";
 import { ProgramInvitePage } from "@/features/programs/pages/ProgramInvitePage";
 import { RolesPermissionsPage } from "@/features/roles-permissions/pages/RolesPermissionsPage";
@@ -54,7 +58,7 @@ export function AppRouter() {
     <Routes>
         {/* Public Routes - Login & Register */}
         <Route path="/" element={<PublicRoute><PublicLayout/></PublicRoute>}>
-            <Route index element={<LoginPage />} />
+            <Route index element={<HomePage />} />
             <Route path="home" element={<HomePage />} />
 
             <Route path="development">
@@ -66,20 +70,13 @@ export function AppRouter() {
             </Route>
 
             <Route path="resources">
-                <Route path="ecove-community" element={<PlaceholderPage title="eCove Community" />} />
-                <Route path="training" element={<PlaceholderPage title="Training Resources" />} />
+                <Route path="toolkits" element={<ToolkitsPage />} />
+                <Route path="reports" element={<ReportsPage />} />
             </Route>
 
-            <Route path="library">
-                <Route path="toolkit-library" element={<PlaceholderPage title="E-Biz ToolKits Library" />} />
-                <Route path="reports" element={<PlaceholderPage title="Library Reports" />} />
-            </Route>
+            <Route path="statistics" element={<StatisticsPage />} />
+            <Route path="about" element={<AboutPage />} />
 
-            <Route path="statistics" element={<PlaceholderPage title="Statistics Page" />} />
-            <Route path="news" element={<PlaceholderPage title="News Page" />} />
-            <Route path="about" element={<PlaceholderPage title="About Page" />} />
-            <Route path="team" element={<PlaceholderPage title="Team Page" />} />
-            
             <Route path="login" element={<LoginPage />} />
             <Route path="forgot-password" element={<ForgotPasswordPage />} />
             <Route path="reset-password" element={<ResetPasswordPage />} />

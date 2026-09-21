@@ -63,30 +63,6 @@ export default function InfoCountryKpaPage() {
     }
   }, [hasAccess, userCountryId]);
 
-  if (accessDenied) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center space-y-4">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
-          <p className="text-red-600 font-medium">Access Denied</p>
-          <p className="text-sm text-gray-600">You don't have permission to access this country</p>
-          <button
-            onClick={() => {
-              if (userCountryId) {
-                navigate(`/app/country-kpa/${userCountryId}`);
-              } else {
-                navigate('/app');
-              }
-            }}
-            className="text-blue-600 hover:underline text-sm mt-4"
-          >
-            Go to your country
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // Only fetch data if user has access
   const { data, isLoading, refetch: refetchTree } = useCountryKpas(id, 1, -1, hasAccess);
   const { data: dataTable, isLoading: isLoadingTable, refetch: refetchImplementation } = useCountryDashboardImplementation(id, tablePage, tablePerPage, hasAccess);
@@ -356,6 +332,30 @@ export default function InfoCountryKpaPage() {
     await Promise.all([refetchTree(), refetchImplementation()]);
   };
 
+
+  if (accessDenied) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
+          <p className="text-red-600 font-medium">Access Denied</p>
+          <p className="text-sm text-gray-600">You don't have permission to access this country</p>
+          <button
+            onClick={() => {
+              if (userCountryId) {
+                navigate(`/app/country-kpa/${userCountryId}`);
+              } else {
+                navigate('/app');
+              }
+            }}
+            className="text-blue-600 hover:underline text-sm mt-4"
+          >
+            Go to your country
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-4">

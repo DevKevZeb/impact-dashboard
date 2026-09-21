@@ -10,7 +10,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { AxiosError } from "axios";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Sparkles } from "lucide-react";
+
+const IS_DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
+// Mirrors the DEMO_*_CREDENTIALS constants in src/mocks/fixtures/demoAuth.ts
+// (duplicated, rather than imported, so this file never pulls the mocks
+// tree into the real production bundle).
+const DEMO_PERSONAS = [
+  { label: "Admin", credentials: { email: "demo@admin.com", password: "demo1234" } },
+  { label: "Country Manager", credentials: { email: "demo@country.com", password: "demo1234" } },
+  { label: "Project Manager", credentials: { email: "demo@projects.com", password: "demo1234" } },
+];
 
 export function LoginForm() {
   const navigate = useNavigate();
@@ -44,6 +54,10 @@ export function LoginForm() {
     } finally {
       setIsResending(false);
     }
+  };
+
+  const loginWithDemoPersona = (credentials: LoginFormData) => {
+    onSubmit(credentials);
   };
 
   const onSubmit = (data: LoginFormData) => {
@@ -155,6 +169,31 @@ export function LoginForm() {
           >
             {isPending ? "Signing in..." : "Sign In"}
           </Button>
+
+          {IS_DEMO_MODE && (
+            <div className="pt-4 mt-2 border-t border-dashed space-y-2">
+              <p className="text-xs text-center text-gray-500">
+                Portfolio demo &middot; this app enforces the real role-based
+                permission model &mdash; try each role to see what it can (and can't) do:
+              </p>
+              {DEMO_PERSONAS.map((persona) => (
+                <Button
+                  key={persona.credentials.email}
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  disabled={isPending}
+                  onClick={() => loginWithDemoPersona(persona.credentials)}
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Login as Demo {persona.label}
+                </Button>
+              ))}
+              <p className="text-xs text-center text-gray-500">
+                Or sign in manually with any of the emails above and password <code>demo1234</code>
+              </p>
+            </div>
+          )}
         </form>
 
         {/* 403 Error Message Display */}

@@ -27,12 +27,11 @@ function formatDateEN(date: Date | string): string {
 export default function PublicProgramDetailsPage() {
   const { id } = useParams();
   const parsedId = Number(id);
+  const { data, isLoading, error } = usePublicProgram(parsedId);
 
   if (Number.isNaN(parsedId)) {
     return <div className="p-8 text-red-600">Invalid program</div>;
   }
-
-  const { data, isLoading, error } = usePublicProgram(parsedId);
 
   if (isLoading) {
     return (

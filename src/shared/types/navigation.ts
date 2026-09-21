@@ -24,15 +24,8 @@ export const publicNavigation: NavItem[] = [
   {
     label: "RESOURCES",
     children: [
-      { label: "eCove Community", to: "/resources/ecove-community" },
-      { label: "Training", to: "/resources/training" },
-    ],
-  },
-  {
-    label: "LIBRARY",
-    children: [
-      { label: "E-Biz ToolKits", to: "/library/toolkit-library" },
-      { label: "Reports", to: "/library/reports" },
+      { label: "E-Biz Toolkits", to: "/resources/toolkits" },
+      { label: "Reports", to: "/resources/reports" },
     ],
   },
   {
@@ -40,15 +33,7 @@ export const publicNavigation: NavItem[] = [
     to: "/statistics",
   },
   {
-    label: "NEWS",
-    to: "/news",
-  },
-  {
     label: "ABOUT",
     to: "/about",
-  },
-  {
-    label: "TEAM",
-    to: "/team",
   },
 ];

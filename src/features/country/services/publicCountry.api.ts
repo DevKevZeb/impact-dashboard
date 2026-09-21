@@ -9,7 +9,7 @@ import type { Country } from "../types/CountryType";
  * This allows unauthenticated users (registration page) to fetch countries.
  */
 
-const publicApiClient = axios.create({
+export const publicApiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
