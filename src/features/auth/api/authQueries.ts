@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { login, getCurrentUser, refreshToken } from "./auth.api";
-import type { LoginInput } from "../types/auth.types";
+import type { LoginInput, User } from "../types/auth.types";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +9,14 @@ export const authKeys = {
   all: ["auth"] as const,
   me: () => [...authKeys.all, "me"] as const,
 };
+
+// Mirrors the role → landing page mapping in DashboardPage's redirect effect.
+function resolvePostLoginRoute(user: User): string {
+  const roleNames = user.roles.map((role) => role.name);
+  if (roleNames.includes("admin")) return "/app/admin-dashboard";
+  if (roleNames.includes("country-manager")) return "/app/country-kpa";
+  return "/app/dashboard";
+}
 
 export function useLogin() {
   const navigate = useNavigate();
@@ -19,14 +27,18 @@ export function useLogin() {
     mutationFn: (credentials: LoginInput) => login(credentials),
     onSuccess: async (data) => {
       setAuth(data.user, data.access_token);
-      // Fetch full profile to get country_user_role and populate countryUserRoleId
+      // Navigate immediately using the roles already on the login response,
+      // rather than after the getCurrentUser() await below - waiting let this
+      // race against PublicRoute's own authenticated-redirect and could land
+      // back on "/" after already having reached the right dashboard.
+      navigate(resolvePostLoginRoute(data.user), { replace: true });
+      // Fetch full profile in the background to get country_user_role and populate countryUserRoleId
       try {
         const fullUser = await getCurrentUser();
         setUser(fullUser);
       } catch {
         // Login still succeeds even if /auth/me fails
       }
-      navigate("/");
     },
     onError: (error) => {
       console.error("Login failed:", error);
